@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERAS</title>
+    <!-- Favicon - you can replace this with your own -->
+    <link rel="icon" href="{% static 'assets/img/logo.jpg' %}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for "Inter" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo" class="w-8 h-8">
+                <span class="text-xl font-bold text-gray-800">ERAS</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
+                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                <a href="#" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section text-center flex flex-col items-center justify-center p-8 mt-16">
+            <div class="z-10">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">Instant Alerts That Save Lives</h1>
+                <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">Get notified, act fast, stay safe. For every fire, flood, and crisis – we’re ready.</p>
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="bg-white text-custom-red font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-200 transition duration-300 flex items-center space-x-2">
+                        <i class="fas fa-bell"></i>
+                        <span>Enable Emergency Alerts</span>
+                    </button>
+                    <input type="text" placeholder="Search for alerts..." class="py-3 px-6 rounded-full border border-gray-300 focus:outline-none focus:ring-2 ring-custom-red w-full sm:w-auto" />
+                </div>
+                <div class="mt-12 flex flex-col sm:flex-row items-center justify-center space-y-8 sm:space-y-0 sm:space-x-12">
+                    <div class="flex flex-col items-center">
+                        <span class="text-4xl font-bold">24/7</span>
+                        <span class="text-sm">Emergency Monitoring</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-4xl font-bold">5M+</span>
+                        <span class="text-sm">Citizens Protected</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-4xl font-bold">&lt;30s</span>
+                        <span class="text-sm">Alert Response Time</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Emergency Alerts Section -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Live Emergency Alerts</h2>
+                <p class="mt-2 text-gray-600">View real-time, verified emergency alerts in your area.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Alert Card 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-semibold text-custom-red">Fire Alert</span>
+                        <i class="fas fa-fire text-xl text-custom-red"></i>
+                    </div>
+                    <p class="text-gray-700 flex-grow">Fire reported at a commercial building in Gulshan-1. Emergency services are on their way. Please avoid the area.</p>
+                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+                <!-- Alert Card 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-semibold text-custom-red">Medical Emergency</span>
+                        <i class="fas fa-heartbeat text-xl text-custom-red"></i>
+                    </div>
+                    <p class="text-gray-700 flex-grow">Urgent medical assistance needed at a residence in Banani. Ambulance dispatched. Stay clear of the road.</p>
+                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+                <!-- Alert Card 3 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-semibold text-custom-red">Traffic Accident</span>
+                        <i class="fas fa-car-crash text-xl text-custom-red"></i>
+                    </div>
+                    <p class="text-gray-700 flex-grow">Major traffic accident on Mirpur Road near Science Lab. Expect heavy delays. Use alternative routes if possible.</p>
+                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <a href="#" class="bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">View All Alerts</a>
+            </div>
+        </section>
+
+        <!-- Role-Based Emergency Access Section - Added -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Role-Based Emergency Access</h2>
+                <p class="mt-2 text-gray-600">Secure access to critical information based on your user role.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Role Card 1: Citizen -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-friends text-4xl text-custom-red mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Citizen</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Receive timely and relevant alerts based on your location and preferences. Report incidents easily.</p>
+                    <a href="#" class="mt-4 bg-custom-red text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">Access Portal</a>
+                </div>
+                <!-- Role Card 2: Responder -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-shield text-4xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Responder</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Get critical incident details, dispatch information, and real-time coordination tools.</p>
+                    <a href="#" class="mt-4 bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold">Access Portal</a>
+                </div>
+                <!-- Role Card 3: Administrator -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-cog text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Administrator</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Manage alerts, monitor system performance, and analyze data to improve emergency response.</p>
+                    <a href="#" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Portal</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blood Donor Section -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Blood Donor Emergency Network</h2>
+                <p class="mt-2 text-gray-600">Find and connect with blood donors in your area instantly.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Donor Type 1 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <i class="fas fa-tint text-4xl text-custom-red mb-4"></i>
+                    <h3 class="text-lg font-semibold">O+ Donors Needed</h3>
+                    <p class="text-gray-600 mt-2">Urgently seeking O+ blood for a patient at a local hospital. Your donation can save a life.</p>
+                    <a href="#" class="mt-4 block text-custom-red font-semibold hover:underline">Find Donors <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+                <!-- Donor Type 2 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <i class="fas fa-plus text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-lg font-semibold">Available Donors Here</h3>
+                    <p class="text-gray-600 mt-2">Find available donors by blood group in your nearby location instantly.</p>
+                    <a href="#" class="mt-4 block text-green-500 font-semibold hover:underline">Find Donors <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+                <!-- Donor Type 3 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <i class="fas fa-handshake text-4xl text-blue-500 mb-4"></i>
+                    <h3 class="text-lg font-semibold">Connect with Donors</h3>
+                    <p class="text-gray-600 mt-2">Connect with verified blood donors for emergency blood requests and help.</p>
+                    <a href="#" class="mt-4 block text-blue-500 font-semibold hover:underline">Connect <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+                <!-- Donor Type 4 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                    <i class="fas fa-user-plus text-4xl text-purple-500 mb-4"></i>
+                    <h3 class="text-lg font-semibold">Register as a Donor</h3>
+                    <p class="text-gray-600 mt-2">Join our network and become a hero. Register as a blood donor today.</p>
+                    <a href="#" class="mt-4 block text-purple-500 font-semibold hover:underline">Register <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Services Directory Section - Added -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Emergency Services Directory</h2>
+                <p class="mt-2 text-gray-600">Quick access to essential emergency service numbers and contact details.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1: Fire Service -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-fire-extinguisher text-4xl text-custom-red mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Fire Service</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Report fire incidents and get immediate assistance.</p>
+                    <a href="tel:999" class="mt-4 bg-custom-red text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">Call 999</a>
+                </div>
+                <!-- Service Card 2: Police -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-users-cog text-4xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Police</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Report crimes, accidents, and suspicious activities.</p>
+                    <a href="tel:100" class="mt-4 bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold">Call 100</a>
+                </div>
+                <!-- Service Card 3: Medical -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-ambulance text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Medical Emergency</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Request ambulance services and medical aid.</p>
+                    <a href="tel:102" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Call 102</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Security & Privacy Assurance</h2>
+                <p class="mt-2 text-gray-600">Your data is safe and secure with us. We use advanced encryption and security protocols.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Security Features</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold">Secure Data Transfer</h4>
+                                <p class="text-gray-600 text-sm">All data is encrypted in transit and at rest using industry-standard protocols.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold">2-Factor Authentication</h4>
+                                <p class="text-gray-600 text-sm">Add an extra layer of security to your account with 2FA.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold">Privacy Policy</h4>
+                                <p class="text-gray-600 text-sm">We are committed to protecting your privacy. Read our detailed policy.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Our Commitment</h3>
+                    <p class="text-gray-600 mb-6">We ensure your personal data is handled with the utmost care and professionalism.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="text-center">
+                            <i class="fas fa-shield-alt text-4xl text-custom-red mb-2"></i>
+                            <p class="font-semibold">Advanced Encryption</p>
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-lock text-4xl text-blue-500 mb-2"></i>
+                            <p class="font-semibold">Data Privacy</p>
+                        </div>
+                        <div class="text-center">
+                            <i class="fas fa-user-shield text-4xl text-green-500 mb-2"></i>
+                            <p class="font-semibold">System Security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">ERAS</h3>
+                <p class="text-sm">Providing real-time emergency alerts and vital community services to keep you safe.</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Quick Links</h3>
+                <ul class="text-sm space-y-2">
+                    <li><a href="#" class="hover:text-white transition duration-300">Home</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Services</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Support</h3>
+                <ul class="text-sm space-y-2">
+                    <li><a href="#" class="hover:text-white transition duration-300">FAQ</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Help Center</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-8 border-t border-gray-700 pt-6 text-sm">
+            &copy; 2025 Emergency Response & Alert System. All Rights Reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
