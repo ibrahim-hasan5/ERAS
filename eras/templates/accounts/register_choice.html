@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - ERAS</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 100px auto; padding: 20px; }
+        .choice-card { background: white; padding: 30px; margin: 20px 0; border-radius: 10px; text-align: center; }
+        .btn { padding: 15px 30px; background: #e53e3e; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px; }
+        .btn:hover { background: #c53030; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #e53e3e;">Join ERAS</h1>
+        
+        <div class="choice-card">
+            <h2>🧑‍🤝‍🧑 Citizen</h2>
+            <p>Receive emergency alerts, request help, and stay safe</p>
+            <a href="{% url 'register_citizen' %}" class="btn">Register as Citizen</a>
+        </div>
+        
+        <div class="choice-card">
+            <h2>🏥 Service Provider</h2>
+            <p>Hospital, Police, Fire Service, or Emergency Response</p>
+            <a href="{% url 'register_service_provider' %}" class="btn">Register as Provider</a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>
