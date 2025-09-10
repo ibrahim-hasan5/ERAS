@@ -2,32 +2,346 @@
 <html>
 <head>
     <title>Register - ERAS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 100px auto; padding: 20px; }
-        .choice-card { background: white; padding: 30px; margin: 20px 0; border-radius: 10px; text-align: center; }
-        .btn { padding: 15px 30px; background: #e53e3e; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px; }
-        .btn:hover { background: #c53030; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+            position: relative;
+        }
+
+        .logo::before {
+            content: '🚨';
+            font-size: 30px;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 3px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        h1 {
+            color: #1e293b;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 400;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .choice-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .choice-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .choice-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border-color: var(--accent-light);
+        }
+
+        .citizen-card {
+            --accent-color: #ef4444;
+            --accent-light: #fecaca;
+        }
+
+        .provider-card {
+            --accent-color: #10b981;
+            --accent-light: #a7f3d0;
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-info h2 {
+            color: #1e293b;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-info p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-section {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .login-section p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .login-section a {
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .login-section a:hover {
+            color: #dc2626;
+            text-decoration: underline;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            color: #475569;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-indicator::before {
+            content: '● ';
+            color: #22c55e;
+        }
+
+        /* Responsive design */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-indicator {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 0 auto 20px;
+                display: inline-block;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="status-indicator">System Online</div>
+    
     <div class="container">
-        <h1 style="text-align: center; color: #e53e3e;">Join ERAS</h1>
-        
-        <div class="choice-card">
-            <h2>🧑‍🤝‍🧑 Citizen</h2>
-            <p>Receive emergency alerts, request help, and stay safe</p>
-            <a href="{% url 'register_citizen' %}" class="btn">Register as Citizen</a>
+        <div class="header-section">
+            <div class="logo"></div>
+            <h1>Create Account</h1>
+            <p class="subtitle">Choose your role in the Emergency Response & Alert System</p>
         </div>
         
-        <div class="choice-card">
-            <h2>🏥 Service Provider</h2>
-            <p>Hospital, Police, Fire Service, or Emergency Response</p>
-            <a href="{% url 'register_service_provider' %}" class="btn">Register as Provider</a>
+        <div class="choices-container">
+            <div class="choice-card citizen-card">
+                <div class="card-content">
+                    <div class="card-icon">👤</div>
+                    <div class="card-info">
+                        <h2>Citizen Account</h2>
+                        <p>Receive emergency alerts, report incidents, and access emergency services in your area.</p>
+                        <a href="{% url 'register_citizen' %}" class="btn">Register as Citizen</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="choice-card provider-card">
+                <div class="card-content">
+                    <div class="card-icon">🏥</div>
+                    <div class="card-info">
+                        <h2>Service Provider</h2>
+                        <p>Hospital, Police, Fire Service, or Emergency Response teams. Manage alerts and coordinate responses.</p>
+                        <a href="{% url 'register_service_provider' %}" class="btn">Register as Provider</a>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div style="text-align: center; margin-top: 30px;">
-            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">Real-time Alerts</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">Secure Platform</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📍</div>
+                <div class="feature-text">Location Based</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">Mobile Ready</div>
+            </div>
+        </div>
+        
+        <div class="login-section">
+            <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
         </div>
     </div>
 </body>

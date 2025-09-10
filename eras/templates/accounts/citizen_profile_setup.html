@@ -1,40 +1,625 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Complete Your Profile - ERAS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - ERAS</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'assets/img/logo.jpg' %}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: Arial; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 20px; }
-        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .btn { padding: 12px 20px; background: #e53e3e; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .btn:hover { background: #c53030; }
+        :root {
+            --emergency-red: #dc2626;
+            --emergency-red-dark: #b91c1c;
+            --emergency-red-light: #fee2e2;
+            --emergency-orange: #ea580c;
+            --emergency-dark: #441d2b;
+        }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #5a0322 0%, #ce1861 100%);
+            min-height: 100vh;
+        }
+        
+        .profile-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .emergency-gradient {
+            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
+        }
+        
+        .profile-pic {
+            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+            border: 4px solid white;
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .form-input:focus {
+            border-color: var(--emergency-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            outline: none;
+            background: white;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--emergency-red);
+        }
+        
+        .emergency-btn {
+            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        
+        .emergency-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.4);
+        }
+        
+        .blood-status-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .blood-status-toggle.active {
+            background: var(--emergency-red);
+        }
+        
+        .blood-status-toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .blood-status-toggle.active::after {
+            transform: translateX(30px);
+        }
+        
+        .alert-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .emergency-icon {
+            color: var(--emergency-red);
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 style="text-align: center; color: #e53e3e;">Complete Your Profile</h1>
-        
-        <div class="card">
-            <p>Please complete your profile information to get the most out of ERAS.</p>
-            
-            <form method="post">
-                {% csrf_token %}
-                
-                {% for field in form %}
-                <div class="form-group">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small style="color: #666;">{{ field.help_text }}</small>
-                    {% endif %}
+    <!-- Header -->
+    <header class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'homepage' %}" class="flex items-center space-x-2 text-white hover:text-red-300 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                        <span class="font-medium">Back to Dashboard</span>
+                    </a>
                 </div>
-                {% endfor %}
+                <div class="flex items-center space-x-3">
+                    <img src="{% static 'assets/img/logo.jpg' %}" alt="ERAS Logo" class="w-10 h-10 rounded-full border-2 border-white/50">
+                    <span class="text-2xl font-bold text-white">ERAS</span>
+                    <div class="alert-badge">Emergency Ready</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Profile Header -->
+        <div class="profile-container rounded-2xl p-8 mb-8">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+                <!-- Profile Picture Section -->
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="profile-pic">
+                        {{ user.username|slice:":1"|upper }}
+                    </div>
+                    <button class="text-red-600 font-medium hover:text-red-700 transition-colors">
+                        <i class="fas fa-camera mr-2"></i>Change Photo
+                    </button>
+                </div>
                 
-                <button type="submit" class="btn">Save Profile</button>
-            </form>
+                <!-- Profile Info -->
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-6">
+                        <h1 class="text-4xl font-bold text-gray-900">Edit Profile</h1>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-green-600 font-medium">Profile Active</span>
+                            </div>
+                            <a href="{% url 'logout' %}" class="flex items-center space-x-2 text-red-600 hover:text-red-700 font-medium transition-colors">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Sign Out</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-red-50 p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-red-600">{{ user.username }}</div>
+                            <div class="text-red-500 font-medium">Emergency Citizen</div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-blue-600">24/7</div>
+                            <div class="text-blue-500 font-medium">Alert Ready</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-green-600">Verified</div>
+                            <div class="text-green-500 font-medium">Account Status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Personal Information -->
+            <div class="section-card p-8">
+                <div class="flex items-center mb-6">
+                    <i class="emergency-icon fas fa-user"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Personal Information</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-id-card text-red-500 mr-2"></i>Full Name
+                        </label>
+                        <input type="text" value="{{ user.username }}" class="form-input w-full" readonly>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-envelope text-red-500 mr-2"></i>Email Address
+                        </label>
+                        <input type="email" value="{{ user.email }}" class="form-input w-full" readonly>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone text-red-500 mr-2"></i>Primary Phone Number
+                        </label>
+                        <input type="tel" value="{{ user.phone_number }}" class="form-input w-full" readonly>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone-alt text-red-500 mr-2"></i>Extra Contact Number
+                        </label>
+                        {{ form.emergency_contact }}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-calendar text-red-500 mr-2"></i>Date of Birth
+                        </label>
+                        {{ form.date_of_birth }}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-tint text-red-500 mr-2"></i>Blood Group
+                        </label>
+                        {{ form.blood_group }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Preferences -->
+            <div class="section-card p-8">
+                <div class="flex items-center mb-6">
+                    <i class="emergency-icon fas fa-bell"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Emergency Alert Preferences</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-gray-800">Alert Types</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 bg-red-50 rounded-lg">
+                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
+                                <i class="fas fa-fire text-red-500 mx-3"></i>
+                                <span class="font-medium text-red-700">Fire Emergencies</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-blue-50 rounded-lg">
+                                <input type="checkbox" class="text-blue-600 focus:ring-blue-500" checked>
+                                <i class="fas fa-ambulance text-blue-500 mx-3"></i>
+                                <span class="font-medium text-blue-700">Medical Emergencies</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-yellow-50 rounded-lg">
+                                <input type="checkbox" class="text-yellow-600 focus:ring-yellow-500">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mx-3"></i>
+                                <span class="font-medium text-yellow-700">Natural Disasters</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-purple-50 rounded-lg">
+                                <input type="checkbox" class="text-purple-600 focus:ring-purple-500">
+                                <i class="fas fa-shield-alt text-purple-500 mx-3"></i>
+                                <span class="font-medium text-purple-700">Security Alerts</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-gray-800">Notification Methods</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
+                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
+                                <i class="fas fa-mobile-alt text-gray-500 mx-3"></i>
+                                <span class="font-medium text-gray-700">SMS Alerts</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
+                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
+                                <i class="fas fa-envelope text-gray-500 mx-3"></i>
+                                <span class="font-medium text-gray-700">Email Alerts</span>
+                            </label>
+                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
+                                <input type="checkbox" class="text-red-600 focus:ring-red-500">
+                                <i class="fas fa-phone text-gray-500 mx-3"></i>
+                                <span class="font-medium text-gray-700">Voice Calls</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="section-card p-8">
+                <div class="flex items-center mb-6">
+                    <i class="emergency-icon fas fa-home"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Address Information</h2>
+                </div>
+                
+                <div class="space-y-8">
+                    <!-- Present Address -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Present Address (Current Location)
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
+                                <select class="form-input w-full">
+                                    <option>Select Division</option>
+                                    <option>Dhaka</option>
+                                    <option>Chittagong</option>
+                                    <option>Rajshahi</option>
+                                    <option>Khulna</option>
+                                    <option>Barisal</option>
+                                    <option>Sylhet</option>
+                                    <option>Rangpur</option>
+                                    <option>Mymensingh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
+                                <select class="form-input w-full">
+                                    <option>Select District</option>
+                                    <option>Dhaka</option>
+                                    <option>Gazipur</option>
+                                    <option>Narayanganj</option>
+                                    <option>Manikganj</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
+                                <select class="form-input w-full">
+                                    <option>Select Upazila</option>
+                                    <option>Dhanmondi</option>
+                                    <option>Gulshan</option>
+                                    <option>Banani</option>
+                                    <option>Mirpur</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., Gulshan-1, Dhanmondi-27">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Road/Street</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., Road 12, Street 5A">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">House/Flat No.</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., House 25, Flat 4B">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., 1212">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Permanent Address -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-building text-red-500 mr-2"></i>Permanent Address
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
+                                <select class="form-input w-full">
+                                    <option>Select Division</option>
+                                    <option>Dhaka</option>
+                                    <option>Chittagong</option>
+                                    <option>Rajshahi</option>
+                                    <option>Khulna</option>
+                                    <option>Barisal</option>
+                                    <option>Sylhet</option>
+                                    <option>Rangpur</option>
+                                    <option>Mymensingh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
+                                <select class="form-input w-full">
+                                    <option>Select District</option>
+                                    <option>Dhaka</option>
+                                    <option>Gazipur</option>
+                                    <option>Narayanganj</option>
+                                    <option>Manikganj</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
+                                <select class="form-input w-full">
+                                    <option>Select Upazila</option>
+                                    <option>Dhanmondi</option>
+                                    <option>Gulshan</option>
+                                    <option>Banani</option>
+                                    <option>Mirpur</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., Village name, Locality">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Road/Street</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., Main Road, Lane">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">House/Flat No.</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., House 10">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., 1340">
+                            </div>
+                        </div>
+                        <div class="flex items-center mt-3">
+                            <input type="checkbox" class="text-red-600 focus:ring-red-500 mr-2">
+                            <span class="text-sm text-gray-600">Same as present address</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Other Frequent Address -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="fas fa-route text-red-500 mr-2"></i>Other Frequent Address (Office/Workplace)
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
+                                <select class="form-input w-full">
+                                    <option>Select Division</option>
+                                    <option>Dhaka</option>
+                                    <option>Chittagong</option>
+                                    <option>Rajshahi</option>
+                                    <option>Khulna</option>
+                                    <option>Barisal</option>
+                                    <option>Sylhet</option>
+                                    <option>Rangpur</option>
+                                    <option>Mymensingh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
+                                <select class="form-input w-full">
+                                    <option>Select District</option>
+                                    <option>Dhaka</option>
+                                    <option>Gazipur</option>
+                                    <option>Narayanganj</option>
+                                    <option>Manikganj</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
+                                <select class="form-input w-full">
+                                    <option>Select Upazila</option>
+                                    <option>Dhanmondi</option>
+                                    <option>Gulshan</option>
+                                    <option>Banani</option>
+                                    <option>Mirpur</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., Business District, Commercial Area">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Building/Office Name</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., ABC Tower, XYZ Building">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Floor/Suite</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., 5th Floor, Suite 502">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
+                                <input type="text" class="form-input w-full" placeholder="e.g., 1000">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Places where you spend significant time (office, relatives, etc.)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Donation Information -->
+            <div class="section-card p-8">
+                <div class="flex items-center mb-6">
+                    <i class="emergency-icon fas fa-heart"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Blood Donation Information</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-calendar-check text-red-500 mr-2"></i>Last Blood Donation Date
+                        </label>
+                        <input type="date" class="form-input w-full">
+                        <p class="text-xs text-gray-500 mt-1">When did you last donate blood?</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user-check text-red-500 mr-2"></i>Blood Donation Availability
+                        </label>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
+                                <input type="radio" name="blood_donation_status" id="available" class="text-red-600 focus:ring-red-500" checked>
+                                <label for="available" class="flex items-center text-green-700 font-medium">
+                                    <i class="fas fa-check-circle mr-2"></i>Available for Blood Donation
+                                </label>
+                            </div>
+                            <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg">
+                                <input type="radio" name="blood_donation_status" id="not_available" class="text-red-600 focus:ring-red-500">
+                                <label for="not_available" class="flex items-center text-red-700 font-medium">
+                                    <i class="fas fa-times-circle mr-2"></i>Not Available for Blood Donation
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-500">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-red-500 mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-red-900 mb-2">Blood Donation Network</h4>
+                            <p class="text-red-800 text-sm">Join our emergency blood donation network to help save lives during critical situations. Your availability status helps us connect you with urgent blood requests in your area.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex items-center justify-between bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex items-center text-sm text-gray-600">
+                    <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                    Your information is encrypted and secure
+                </div>
+                <div class="flex space-x-4">
+                    <button type="button" class="px-6 py-3 border-2 border-red-500 text-red-600 rounded-xl font-semibold hover:bg-red-50 transition-colors">
+                        <i class="fas fa-save mr-2"></i>Save as Draft
+                    </button>
+                    <button type="submit" class="emergency-btn">
+                        <i class="fas fa-check mr-2"></i>Update Profile
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">15</div>
+                        <div class="text-gray-600">Alerts Received</div>
+                    </div>
+                    <i class="fas fa-bell text-red-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">3</div>
+                        <div class="text-gray-600">Emergency Actions</div>
+                    </div>
+                    <i class="fas fa-hands-helping text-blue-500 text-2xl"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-2xl font-bold text-gray-900">2</div>
+                        <div class="text-gray-600">Blood Donations</div>
+                    </div>
+                    <i class="fas fa-heart text-green-500 text-2xl"></i>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Add form styling
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input:not([readonly]), select, textarea');
+            inputs.forEach(input => {
+                input.className += ' form-input w-full';
+            });
+        });
+    </script>
 </body>
 </html>
