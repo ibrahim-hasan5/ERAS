@@ -22,6 +22,14 @@
 
 </head>
 <body class="bg-gray-100 text-gray-800">
+    {% if user.is_authenticated and user.user_type == 'citizen' and not user.citizen_profile.blood_group %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 fixed top-16 left-0 right-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <p class="font-bold">Complete Your Profile</p>
+            <a href="{% url 'citizen_profile_setup' %}" class="bg-custom-red text-white py-1 px-3 rounded text-sm hover:bg-red-700">Complete Now</a>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
@@ -39,8 +47,16 @@
             </div>
             <div class="flex items-center space-x-4">
                 <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
-                <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
-                <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+                {% if user.is_authenticated %}
+        <span class="text-gray-600">Welcome, {{ user.username }}</span>
+                    {% if user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_profile_setup' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Profile</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                    <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+                {% endif %}
             </div>
         </nav>
     </header>

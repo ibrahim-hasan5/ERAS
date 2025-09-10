@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Your Profile - ERAS</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { padding: 12px 20px; background: #e53e3e; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #c53030; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #e53e3e;">Complete Your Profile</h1>
+        
+        <div class="card">
+            <p>Please complete your profile information to get the most out of ERAS.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small style="color: #666;">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn">Save Profile</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
