@@ -1,625 +1,498 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - ERAS</title>
-    <!-- Favicon -->
-    <link rel="icon" href="{% static 'assets/img/logo.jpg' %}">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --emergency-red: #dc2626;
-            --emergency-red-dark: #b91c1c;
-            --emergency-red-light: #fee2e2;
-            --emergency-orange: #ea580c;
-            --emergency-dark: #441d2b;
-        }
-        
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(135deg, #5a0322 0%, #ce1861 100%);
-            min-height: 100vh;
-        }
-        
-        .profile-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .emergency-gradient {
-            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
-        }
-        
-        .profile-pic {
-            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-            font-weight: 800;
-            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
-            border: 4px solid white;
-        }
-        
-        .form-input {
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .form-input:focus {
-            border-color: var(--emergency-red);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-            outline: none;
-            background: white;
-        }
-        
-        .section-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid var(--emergency-red);
-        }
-        
-        .emergency-btn {
-            background: linear-gradient(135deg, var(--emergency-red) 0%, var(--emergency-orange) 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        }
-        
-        .emergency-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.4);
-        }
-        
-        .blood-status-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: #e5e7eb;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .blood-status-toggle.active {
-            background: var(--emergency-red);
-        }
-        
-        .blood-status-toggle::after {
-            content: '';
-            position: absolute;
-            width: 26px;
-            height: 26px;
-            background: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .blood-status-toggle.active::after {
-            transform: translateX(30px);
-        }
-        
-        .alert-badge {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .emergency-icon {
-            color: var(--emergency-red);
-            font-size: 1.5rem;
-            margin-right: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile - ERAS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass-morphism {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    
+    .gradient-border {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2px;
+      border-radius: 16px;
+    }
+    
+    .gradient-border-content {
+      background: white;
+      border-radius: 14px;
+      padding: 2rem;
+    }
+    
+    .floating-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .glow-effect {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+    
+    .form-field {
+      transition: all 0.3s ease;
+    }
+    
+    .form-field:focus-within {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    
+    .sidebar-item:hover::before {
+      left: 100%;
+    }
+    
+    .progress-indicator {
+      background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #ef4444);
+      background-size: 400% 400%;
+      animation: gradient-shift 8s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .pulse-ring {
+      animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+    }
+    
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.8);
+        opacity: 1;
+      }
+      80%, 100% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+    
+    .section-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.4s ease;
+    }
+    
+    .section-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .readonly-field {
+      background: #f8fafc !important;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    .locked-icon {
+      color: #9ca3af;
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .completion-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .status-incomplete {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-complete {
+      background: #d1fae5;
+      color: #059669;
+    }
+  </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'homepage' %}" class="flex items-center space-x-2 text-white hover:text-red-300 transition-colors">
-                        <i class="fas fa-arrow-left"></i>
-                        <span class="font-medium">Back to Dashboard</span>
-                    </a>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <img src="{% static 'assets/img/logo.jpg' %}" alt="ERAS Logo" class="w-10 h-10 rounded-full border-2 border-white/50">
-                    <span class="text-2xl font-bold text-white">ERAS</span>
-                    <div class="alert-badge">Emergency Ready</div>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 font-inter text-gray-800 overflow-x-hidden">
+  
+  <!-- Animated Background Elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-400 to-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-10 floating-animation" style="animation-delay: 4s;"></div>
+  </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-8">
-        <!-- Profile Header -->
-        <div class="profile-container rounded-2xl p-8 mb-8">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
-                <!-- Profile Picture Section -->
-                <div class="flex flex-col items-center space-y-4">
-                    <div class="profile-pic">
-                        {{ user.username|slice:":1"|upper }}
-                    </div>
-                    <button class="text-red-600 font-medium hover:text-red-700 transition-colors">
-                        <i class="fas fa-camera mr-2"></i>Change Photo
-                    </button>
-                </div>
-                
-                <!-- Profile Info -->
-                <div class="flex-1">
-                    <div class="flex items-center justify-between mb-6">
-                        <h1 class="text-4xl font-bold text-gray-900">Edit Profile</h1>
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                                <span class="text-green-600 font-medium">Profile Active</span>
-                            </div>
-                            <a href="{% url 'logout' %}" class="flex items-center space-x-2 text-red-600 hover:text-red-700 font-medium transition-colors">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Sign Out</span>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-red-50 p-4 rounded-xl">
-                            <div class="text-2xl font-bold text-red-600">{{ user.username }}</div>
-                            <div class="text-red-500 font-medium">Emergency Citizen</div>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-xl">
-                            <div class="text-2xl font-bold text-blue-600">24/7</div>
-                            <div class="text-blue-500 font-medium">Alert Ready</div>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-xl">
-                            <div class="text-2xl font-bold text-green-600">Verified</div>
-                            <div class="text-green-500 font-medium">Account Status</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="flex min-h-screen relative z-10">
+    
+    <!-- Enhanced Sidebar -->
+    <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+      <div>
+        <!-- Logo Section with Glow -->
+        <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
+          <div class="relative">
+            <div class="absolute inset-0 bg-red-500 rounded-full blur-sm opacity-75 pulse-ring"></div>
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23ef4444'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='30' fill='white' text-anchor='middle'%3EE%3C/text%3E%3C/svg%3E" class="w-12 h-12 rounded-full shadow-lg relative z-10">
+          </div>
+          <div>
+            <span class="font-bold text-2xl bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">ERAS</span>
+            <div class="text-xs text-gray-500">Emergency Response System</div>
+          </div>
         </div>
 
-        <form method="post" class="space-y-8">
-            {% csrf_token %}
+        <!-- Progress Indicator -->
+        <div class="px-6 py-4 border-b border-gray-100/50">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-600">Profile Completion</span>
+            <span class="text-sm font-bold text-red-600" id="completion-percentage">25%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-full w-1/4 rounded-full bg-gradient-to-r from-red-500 to-pink-500" id="completion-bar"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">Complete your profile to unlock all features</div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="px-4 py-6 space-y-2">
+          <a href="{% url 'homepage' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group">
+            <i class="fas fa-home mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+            <span class="font-medium">Home</span>
+          </a>
+          <div class="sidebar-item flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium glow-effect">
+            <i class="fas fa-user mr-4"></i> Complete Profile
+            <span class="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full">Required</span>
+          </div>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group opacity-50 cursor-not-allowed">
+            <i class="fas fa-bell mr-4 text-gray-400"></i> 
+            <span class="font-medium">Alerts</span>
+            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
+          </a>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group opacity-50 cursor-not-allowed">
+            <i class="fas fa-map-marker-alt mr-4 text-gray-400"></i> 
+            <span class="font-medium">Emergency Services</span>
+            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
+          </a>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group opacity-50 cursor-not-allowed">
+            <i class="fas fa-heart mr-4 text-gray-400"></i> 
+            <span class="font-medium">Blood Network</span>
+            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
+          </a>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group">
+            <i class="fas fa-cog mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+            <span class="font-medium">Settings</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Logout Section -->
+      <div class="p-4 border-t border-gray-100/50">
+        <a href="{% url 'logout' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
+          <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+          <span class="font-medium">Log Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      
+      <!-- Enhanced Profile Header -->
+      <div class="section-card rounded-2xl p-8 mb-8">
+        <div class="flex items-center space-x-6">
+          <div class="relative group">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-red-400 to-pink-500 p-1">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f3f4f6'/%3E%3Ccircle cx='50' cy='35' r='15' fill='%23ef4444'/%3E%3Cpath d='M25 75 Q25 55 50 55 Q75 55 75 75' fill='%23ef4444'/%3E%3C/svg%3E" alt="Profile" class="w-full h-full object-cover rounded-xl bg-white">
+            </div>
+            <button class="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+              <i class="fas fa-camera text-xs"></i>
+            </button>
+          </div>
+          <div class="flex-1">
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              {{ user.get_full_name|default:user.username }}
+            </h2>
+            <p class="text-gray-500 mb-2">Citizen Profile</p>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                <span class="text-sm text-yellow-600 font-medium">Profile Incomplete</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-shield-alt text-blue-500"></i>
+                <span class="text-sm text-blue-600 font-medium">Account Verified</span>
+              </div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-red-600" id="header-completion">25%</div>
+            <div class="text-sm text-gray-500">Complete</div>
+            <div class="text-xs text-red-600 font-medium mt-1">Profile Required</div>
+          </div>
+        </div>
+      </div>
+
+      <form method="post" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Personal Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Personal Information</h2>
+                <p class="text-gray-500 text-sm">Your account details (cannot be changed here)</p>
+              </div>
+            </div>
+            <div class="completion-status status-complete">
+              <i class="fas fa-check-circle"></i>
+              <span>Registered</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+              <div class="relative">
+                <input type="text" value="{{ user.get_full_name|default:user.username }}" readonly class="readonly-field w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-gray-300 transition-all pl-12">
+                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i class="fas fa-lock locked-icon"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Registered during account creation</p>
+            </div>
             
-            <!-- Personal Information -->
-            <div class="section-card p-8">
-                <div class="flex items-center mb-6">
-                    <i class="emergency-icon fas fa-user"></i>
-                    <h2 class="text-2xl font-bold text-gray-900">Personal Information</h2>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-id-card text-red-500 mr-2"></i>Full Name
-                        </label>
-                        <input type="text" value="{{ user.username }}" class="form-input w-full" readonly>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-envelope text-red-500 mr-2"></i>Email Address
-                        </label>
-                        <input type="email" value="{{ user.email }}" class="form-input w-full" readonly>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-phone text-red-500 mr-2"></i>Primary Phone Number
-                        </label>
-                        <input type="tel" value="{{ user.phone_number }}" class="form-input w-full" readonly>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-phone-alt text-red-500 mr-2"></i>Extra Contact Number
-                        </label>
-                        {{ form.emergency_contact }}
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-calendar text-red-500 mr-2"></i>Date of Birth
-                        </label>
-                        {{ form.date_of_birth }}
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-tint text-red-500 mr-2"></i>Blood Group
-                        </label>
-                        {{ form.blood_group }}
-                    </div>
-                </div>
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+              <div class="relative">
+                <input type="email" value="{{ user.email }}" readonly class="readonly-field w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-gray-300 transition-all pl-12">
+                <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i class="fas fa-lock locked-icon"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Primary email for alerts and notifications</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+              <div class="relative">
+                <input type="text" value="{{ user.username }}" readonly class="readonly-field w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-gray-300 transition-all pl-12">
+                <i class="fas fa-at absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i class="fas fa-lock locked-icon"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your login username</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+              <div class="relative">
+                <input type="tel" name="phone_number" value="{{ user.phone_number }}" placeholder="+880 xxx xxx xxxx" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
+                <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-red-600 mt-1">Required for emergency notifications</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Contact *</label>
+              <div class="relative">
+                <input type="tel" name="emergency_contact" value="{{ form.emergency_contact.value|default_if_none:'' }}" placeholder="+880 xxx xxx xxxx" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
+                <i class="fas fa-phone-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Alternative contact in emergencies</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth *</label>
+              <div class="relative">
+                <input type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12" max="{{ today|date:'Y-m-d' }}">
+                <i class="fas fa-calendar-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Required for age-appropriate alerts</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Blood Group *</label>
+              <div class="relative">
+                <select name="blood_group" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12 appearance-none bg-white">
+                  <option value="">Select Blood Group</option>
+                  <option value="A+" {% if form.blood_group.value == "A+" %}selected{% endif %}>A+</option>
+                  <option value="A-" {% if form.blood_group.value == "A-" %}selected{% endif %}>A-</option>
+                  <option value="B+" {% if form.blood_group.value == "B+" %}selected{% endif %}>B+</option>
+                  <option value="B-" {% if form.blood_group.value == "B-" %}selected{% endif %}>B-</option>
+                  <option value="AB+" {% if form.blood_group.value == "AB+" %}selected{% endif %}>AB+</option>
+                  <option value="AB-" {% if form.blood_group.value == "AB-" %}selected{% endif %}>AB-</option>
+                  <option value="O+" {% if form.blood_group.value == "O+" %}selected{% endif %}>O+</option>
+                  <option value="O-" {% if form.blood_group.value == "O-" %}selected{% endif %}>O-</option>
+                </select>
+                <i class="fas fa-tint absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-red-600 mt-1">Required for blood donation network</p>
             </div>
 
-            <!-- Emergency Preferences -->
-            <div class="section-card p-8">
-                <div class="flex items-center mb-6">
-                    <i class="emergency-icon fas fa-bell"></i>
-                    <h2 class="text-2xl font-bold text-gray-900">Emergency Alert Preferences</h2>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <h3 class="font-semibold text-gray-800">Alert Types</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center p-3 bg-red-50 rounded-lg">
-                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
-                                <i class="fas fa-fire text-red-500 mx-3"></i>
-                                <span class="font-medium text-red-700">Fire Emergencies</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-blue-50 rounded-lg">
-                                <input type="checkbox" class="text-blue-600 focus:ring-blue-500" checked>
-                                <i class="fas fa-ambulance text-blue-500 mx-3"></i>
-                                <span class="font-medium text-blue-700">Medical Emergencies</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-yellow-50 rounded-lg">
-                                <input type="checkbox" class="text-yellow-600 focus:ring-yellow-500">
-                                <i class="fas fa-exclamation-triangle text-yellow-500 mx-3"></i>
-                                <span class="font-medium text-yellow-700">Natural Disasters</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-purple-50 rounded-lg">
-                                <input type="checkbox" class="text-purple-600 focus:ring-purple-500">
-                                <i class="fas fa-shield-alt text-purple-500 mx-3"></i>
-                                <span class="font-medium text-purple-700">Security Alerts</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <h3 class="font-semibold text-gray-800">Notification Methods</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
-                                <i class="fas fa-mobile-alt text-gray-500 mx-3"></i>
-                                <span class="font-medium text-gray-700">SMS Alerts</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <input type="checkbox" class="text-red-600 focus:ring-red-500" checked>
-                                <i class="fas fa-envelope text-gray-500 mx-3"></i>
-                                <span class="font-medium text-gray-700">Email Alerts</span>
-                            </label>
-                            <label class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <input type="checkbox" class="text-red-600 focus:ring-red-500">
-                                <i class="fas fa-phone text-gray-500 mx-3"></i>
-                                <span class="font-medium text-gray-700">Voice Calls</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+              <div class="relative">
+                <textarea name="address" placeholder="Enter your full address" class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12 resize-none pt-4">{{ form.address.value|default_if_none:'' }}</textarea>
+                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your current residential address</p>
             </div>
 
-            <!-- Address Information -->
-            <div class="section-card p-8">
-                <div class="flex items-center mb-6">
-                    <i class="emergency-icon fas fa-home"></i>
-                    <h2 class="text-2xl font-bold text-gray-900">Address Information</h2>
-                </div>
-                
-                <div class="space-y-8">
-                    <!-- Present Address -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-4">
-                            <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Present Address (Current Location)
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
-                                <select class="form-input w-full">
-                                    <option>Select Division</option>
-                                    <option>Dhaka</option>
-                                    <option>Chittagong</option>
-                                    <option>Rajshahi</option>
-                                    <option>Khulna</option>
-                                    <option>Barisal</option>
-                                    <option>Sylhet</option>
-                                    <option>Rangpur</option>
-                                    <option>Mymensingh</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
-                                <select class="form-input w-full">
-                                    <option>Select District</option>
-                                    <option>Dhaka</option>
-                                    <option>Gazipur</option>
-                                    <option>Narayanganj</option>
-                                    <option>Manikganj</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
-                                <select class="form-input w-full">
-                                    <option>Select Upazila</option>
-                                    <option>Dhanmondi</option>
-                                    <option>Gulshan</option>
-                                    <option>Banani</option>
-                                    <option>Mirpur</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., Gulshan-1, Dhanmondi-27">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Road/Street</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., Road 12, Street 5A">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">House/Flat No.</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., House 25, Flat 4B">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., 1212">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Permanent Address -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-4">
-                            <i class="fas fa-building text-red-500 mr-2"></i>Permanent Address
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
-                                <select class="form-input w-full">
-                                    <option>Select Division</option>
-                                    <option>Dhaka</option>
-                                    <option>Chittagong</option>
-                                    <option>Rajshahi</option>
-                                    <option>Khulna</option>
-                                    <option>Barisal</option>
-                                    <option>Sylhet</option>
-                                    <option>Rangpur</option>
-                                    <option>Mymensingh</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
-                                <select class="form-input w-full">
-                                    <option>Select District</option>
-                                    <option>Dhaka</option>
-                                    <option>Gazipur</option>
-                                    <option>Narayanganj</option>
-                                    <option>Manikganj</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
-                                <select class="form-input w-full">
-                                    <option>Select Upazila</option>
-                                    <option>Dhanmondi</option>
-                                    <option>Gulshan</option>
-                                    <option>Banani</option>
-                                    <option>Mirpur</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., Village name, Locality">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Road/Street</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., Main Road, Lane">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">House/Flat No.</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., House 10">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., 1340">
-                            </div>
-                        </div>
-                        <div class="flex items-center mt-3">
-                            <input type="checkbox" class="text-red-600 focus:ring-red-500 mr-2">
-                            <span class="text-sm text-gray-600">Same as present address</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Other Frequent Address -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-4">
-                            <i class="fas fa-route text-red-500 mr-2"></i>Other Frequent Address (Office/Workplace)
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Division</label>
-                                <select class="form-input w-full">
-                                    <option>Select Division</option>
-                                    <option>Dhaka</option>
-                                    <option>Chittagong</option>
-                                    <option>Rajshahi</option>
-                                    <option>Khulna</option>
-                                    <option>Barisal</option>
-                                    <option>Sylhet</option>
-                                    <option>Rangpur</option>
-                                    <option>Mymensingh</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">District</label>
-                                <select class="form-input w-full">
-                                    <option>Select District</option>
-                                    <option>Dhaka</option>
-                                    <option>Gazipur</option>
-                                    <option>Narayanganj</option>
-                                    <option>Manikganj</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Upazila/Thana</label>
-                                <select class="form-input w-full">
-                                    <option>Select Upazila</option>
-                                    <option>Dhanmondi</option>
-                                    <option>Gulshan</option>
-                                    <option>Banani</option>
-                                    <option>Mirpur</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Area/Locality</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., Business District, Commercial Area">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Building/Office Name</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., ABC Tower, XYZ Building">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Floor/Suite</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., 5th Floor, Suite 502">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Postal Code</label>
-                                <input type="text" class="form-input w-full" placeholder="e.g., 1000">
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">Places where you spend significant time (office, relatives, etc.)</p>
-                    </div>
-                </div>
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+              <div class="relative">
+                <input type="text" name="location" value="{{ form.location.value|default_if_none:'' }}" placeholder="Enter your area/district" class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
+                <i class="fas fa-location-arrow absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your general location for alerts</p>
             </div>
-
-            <!-- Blood Donation Information -->
-            <div class="section-card p-8">
-                <div class="flex items-center mb-6">
-                    <i class="emergency-icon fas fa-heart"></i>
-                    <h2 class="text-2xl font-bold text-gray-900">Blood Donation Information</h2>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-calendar-check text-red-500 mr-2"></i>Last Blood Donation Date
-                        </label>
-                        <input type="date" class="form-input w-full">
-                        <p class="text-xs text-gray-500 mt-1">When did you last donate blood?</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-user-check text-red-500 mr-2"></i>Blood Donation Availability
-                        </label>
-                        <div class="space-y-3">
-                            <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
-                                <input type="radio" name="blood_donation_status" id="available" class="text-red-600 focus:ring-red-500" checked>
-                                <label for="available" class="flex items-center text-green-700 font-medium">
-                                    <i class="fas fa-check-circle mr-2"></i>Available for Blood Donation
-                                </label>
-                            </div>
-                            <div class="flex items-center space-x-4 p-4 bg-red-50 rounded-lg">
-                                <input type="radio" name="blood_donation_status" id="not_available" class="text-red-600 focus:ring-red-500">
-                                <label for="not_available" class="flex items-center text-red-700 font-medium">
-                                    <i class="fas fa-times-circle mr-2"></i>Not Available for Blood Donation
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-l-4 border-red-500">
-                    <div class="flex items-start">
-                        <i class="fas fa-info-circle text-red-500 mt-1 mr-3"></i>
-                        <div>
-                            <h4 class="font-semibold text-red-900 mb-2">Blood Donation Network</h4>
-                            <p class="text-red-800 text-sm">Join our emergency blood donation network to help save lives during critical situations. Your availability status helps us connect you with urgent blood requests in your area.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Save Button -->
-            <div class="flex items-center justify-between bg-white p-6 rounded-xl shadow-lg">
-                <div class="flex items-center text-sm text-gray-600">
-                    <i class="fas fa-shield-alt text-green-500 mr-2"></i>
-                    Your information is encrypted and secure
-                </div>
-                <div class="flex space-x-4">
-                    <button type="button" class="px-6 py-3 border-2 border-red-500 text-red-600 rounded-xl font-semibold hover:bg-red-50 transition-colors">
-                        <i class="fas fa-save mr-2"></i>Save as Draft
-                    </button>
-                    <button type="submit" class="emergency-btn">
-                        <i class="fas fa-check mr-2"></i>Update Profile
-                    </button>
-                </div>
-            </div>
-        </form>
-
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-2xl font-bold text-gray-900">15</div>
-                        <div class="text-gray-600">Alerts Received</div>
-                    </div>
-                    <i class="fas fa-bell text-red-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-2xl font-bold text-gray-900">3</div>
-                        <div class="text-gray-600">Emergency Actions</div>
-                    </div>
-                    <i class="fas fa-hands-helping text-blue-500 text-2xl"></i>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-2xl font-bold text-gray-900">2</div>
-                        <div class="text-gray-600">Blood Donations</div>
-                    </div>
-                    <i class="fas fa-heart text-green-500 text-2xl"></i>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
 
-    <script>
-        // Add form styling
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input:not([readonly]), select, textarea');
-            inputs.forEach(input => {
-                input.className += ' form-input w-full';
-            });
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center pt-8 border-t border-gray-200">
+          <button type="button" class="flex items-center space-x-2 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 transition-all" onclick="window.location.href='{% url 'homepage' %}'">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+          </button>
+          
+          <div class="flex space-x-4">
+            <button type="button" class="flex items-center space-x-2 px-6 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">
+              <i class="fas fa-save"></i>
+              <span>Save Draft</span>
+            </button>
+            
+            <button type="submit" class="flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all glow-effect">
+              <i class="fas fa-check-circle"></i>
+              <span>Complete Profile</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Alert Banner -->
+      <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-6 rounded-xl">
+        <div class="flex items-start space-x-3">
+          <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mt-1"></i>
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-2">Profile Completion Required</h3>
+            <p class="text-gray-700 text-sm mb-3">
+              Your profile is incomplete. To receive emergency alerts and access all ERAS features, you must complete the required fields marked with asterisks (*).
+            </p>
+            <div class="bg-white/50 p-3 rounded-lg border border-yellow-200">
+              <p class="text-xs text-gray-600">
+                <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                <strong>Note:</strong> Your registered information (name, email, username) cannot be changed through this form. 
+                Contact support if you need to update these details.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Form validation and interaction
+    document.addEventListener('DOMContentLoaded', function() {
+      // Form field interactions
+      document.querySelectorAll('.form-field input, .form-field select, .form-field textarea').forEach(field => {
+        field.addEventListener('focus', function() {
+          if (!this.readOnly && !this.disabled) {
+            this.closest('.form-field').style.transform = 'translateY(-1px)';
+          }
         });
-    </script>
+        
+        field.addEventListener('blur', function() {
+          this.closest('.form-field').style.transform = 'translateY(0)';
+        });
+      });
+
+      // Update progress based on completed fields
+      function updateProgress() {
+        const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+        let completed = 0;
+        
+        requiredFields.forEach(field => {
+          if (field.value.trim() !== '') {
+            completed++;
+          }
+        });
+        
+        const percentage = Math.round((completed / requiredFields.length) * 100);
+        const progressBar = document.getElementById('completion-bar');
+        const progressText = document.getElementById('completion-percentage');
+        const headerCompletion = document.getElementById('header-completion');
+        
+        if (progressBar && progressText && headerCompletion) {
+          progressBar.style.width = `${percentage}%`;
+          progressText.textContent = `${percentage}%`;
+          headerCompletion.textContent = `${percentage}%`;
+        }
+      }
+
+      // Add event listeners to required fields
+      document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+        field.addEventListener('input', updateProgress);
+        field.addEventListener('change', updateProgress);
+      });
+
+      // Initial progress calculation
+      updateProgress();
+
+      // Form submission validation
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
+        let hasEmpty = false;
+        
+        requiredFields.forEach(field => {
+          if (field.value.trim() === '') {
+            hasEmpty = true;
+            field.classList.add('border-red-500');
+            if (!field.classList.contains('readonly-field')) {
+              field.focus();
+            }
+          } else {
+            field.classList.remove('border-red-500');
+          }
+        });
+        
+        if (hasEmpty) {
+          e.preventDefault();
+          alert('Please fill in all required fields marked with asterisks (*).');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import CitizenRegistrationForm, ServiceProviderRegistrationForm, CitizenProfileForm
 from .models import CitizenProfile
 from django.contrib.auth import logout
+from datetime import date
 
 
 def register_choice(request):
@@ -41,10 +42,17 @@ def citizen_profile_setup(request):
         if form.is_valid():
             form.save()
             return redirect('homepage')
+        else:
+            # Print form errors for debugging
+            print(form.errors)
     else:
         form = CitizenProfileForm(instance=profile)
 
-    return render(request, 'accounts/citizen_profile_setup.html', {'form': form})
+    return render(request, 'accounts/citizen_profile_setup.html', {
+        'form': form,
+        'user': request.user,
+        'today': date.today()
+    })
 
 
 def register_service_provider(request):
