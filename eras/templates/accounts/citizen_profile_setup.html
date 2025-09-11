@@ -422,77 +422,164 @@
     </main>
   </div>
 
-  <script>
-    // Form validation and interaction
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Form field interactions
-      document.querySelectorAll('.form-field input, .form-field select, .form-field textarea').forEach(field => {
-        field.addEventListener('focus', function() {
-          if (!this.readOnly && !this.disabled) {
-            this.closest('.form-field').style.transform = 'translateY(-1px)';
-          }
+        // ===== EXISTING FUNCTIONALITY =====
+        // Form field interactions
+        document.querySelectorAll('.form-field input, .form-field select, .form-field textarea').forEach(field => {
+            field.addEventListener('focus', function() {
+                if (!this.readOnly && !this.disabled) {
+                    this.closest('.form-field').style.transform = 'translateY(-1px)';
+                }
+            });
+            
+            field.addEventListener('blur', function() {
+                this.closest('.form-field').style.transform = 'translateY(0)';
+            });
         });
-        
-        field.addEventListener('blur', function() {
-          this.closest('.form-field').style.transform = 'translateY(0)';
-        });
-      });
 
-      // Update progress based on completed fields
-      function updateProgress() {
-        const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
-        let completed = 0;
-        
-        requiredFields.forEach(field => {
-          if (field.value.trim() !== '') {
-            completed++;
-          }
-        });
-        
-        const percentage = Math.round((completed / requiredFields.length) * 100);
-        const progressBar = document.getElementById('completion-bar');
-        const progressText = document.getElementById('completion-percentage');
-        const headerCompletion = document.getElementById('header-completion');
-        
-        if (progressBar && progressText && headerCompletion) {
-          progressBar.style.width = `${percentage}%`;
-          progressText.textContent = `${percentage}%`;
-          headerCompletion.textContent = `${percentage}%`;
-        }
-      }
-
-      // Add event listeners to required fields
-      document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-        field.addEventListener('input', updateProgress);
-        field.addEventListener('change', updateProgress);
-      });
-
-      // Initial progress calculation
-      updateProgress();
-
-      // Form submission validation
-      document.querySelector('form').addEventListener('submit', function(e) {
-        const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
-        let hasEmpty = false;
-        
-        requiredFields.forEach(field => {
-          if (field.value.trim() === '') {
-            hasEmpty = true;
-            field.classList.add('border-red-500');
-            if (!field.classList.contains('readonly-field')) {
-              field.focus();
+        // Update progress based on completed fields
+        function updateProgress() {
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            let completed = 0;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim() !== '') {
+                    completed++;
+                }
+            });
+            
+            const percentage = Math.round((completed / requiredFields.length) * 100);
+            const progressBar = document.getElementById('completion-bar');
+            const progressText = document.getElementById('completion-percentage');
+            const headerCompletion = document.getElementById('header-completion');
+            
+            if (progressBar && progressText && headerCompletion) {
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${percentage}%`;
+                headerCompletion.textContent = `${percentage}%`;
             }
-          } else {
-            field.classList.remove('border-red-500');
-          }
+        }
+
+        // Add event listeners to required fields
+        document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+            field.addEventListener('input', updateProgress);
+            field.addEventListener('change', updateProgress);
+        });
+
+        // Initial progress calculation
+        updateProgress();
+
+        // Form submission validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
+            let hasEmpty = false;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim() === '') {
+                    hasEmpty = true;
+                    field.classList.add('border-red-500');
+                    if (!field.classList.contains('readonly-field')) {
+                        field.focus();
+                    }
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+            
+            if (hasEmpty) {
+                e.preventDefault();
+                alert('Please fill in all required fields marked with asterisks (*).');
+            }
         });
         
-        if (hasEmpty) {
-          e.preventDefault();
-          alert('Please fill in all required fields marked with asterisks (*).');
+        // ===== NEW FUNCTIONALITY =====
+        // Set max date to today for date of birth
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.querySelector('input[name="date_of_birth"]');
+        if (dateInput) {
+            dateInput.setAttribute('max', today);
+            
+            // Enhanced date validation
+            dateInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                
+                if (selectedDate > today) {
+                    alert('Date of birth cannot be in the future');
+                    this.value = '';
+                    this.classList.add('border-red-500');
+                } else {
+                    this.classList.remove('border-red-500');
+                }
+                
+                // Update progress when date changes
+                updateProgress();
+            });
         }
-      });
+        
+        // Address same as present address functionality
+        const permanentDivisionField = document.querySelector('select[name="permanent_division"]');
+        if (permanentDivisionField) {
+            const copyAddressCheckbox = document.createElement('div');
+            copyAddressCheckbox.innerHTML = `
+                <label class="flex items-center mt-2">
+                    <input type="checkbox" id="copyAddress" class="mr-2">
+                    <span class="text-sm text-gray-600">Same as Present Address</span>
+                </label>
+            `;
+            
+            const permanentAddressSection = permanentDivisionField.closest('.form-field');
+            if (permanentAddressSection) {
+                permanentAddressSection.appendChild(copyAddressCheckbox);
+                
+                document.getElementById('copyAddress').addEventListener('change', function() {
+                    if (this.checked) {
+                        // Copy all present address fields to permanent address
+                        const fieldsToCopy = ['division', 'district', 'upazila', 'post_office', 'post_code'];
+                        fieldsToCopy.forEach(field => {
+                            const presentField = document.querySelector(`[name="present_${field}"]`);
+                            const permanentField = document.querySelector(`[name="permanent_${field}"]`);
+                            if (presentField && permanentField) {
+                                permanentField.value = presentField.value;
+                            }
+                        });
+                        
+                        // Copy address details
+                        const presentDetails = document.querySelector('[name="present_address_details"]');
+                        const permanentDetails = document.querySelector('[name="permanent_address_details"]');
+                        if (presentDetails && permanentDetails) {
+                            permanentDetails.value = presentDetails.value;
+                        }
+                        
+                        // Update progress after copying
+                        updateProgress();
+                    }
+                });
+            }
+        }
+        
+        // Auto-format phone numbers
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.startsWith('880')) {
+                    value = '+' + value;
+                } else if (value.length > 0 && !value.startsWith('+')) {
+                    value = '+880' + value;
+                }
+                
+                // Format with spaces: +880 XXX XXX XXXX
+                if (value.length > 4) {
+                    value = value.replace(/(\+\d{3})(\d{3})(\d{3})(\d+)/, '$1 $2 $3 $4');
+                }
+                
+                e.target.value = value;
+            });
+        });
+        
     });
-  </script>
+</script>
 </body>
 </html>
