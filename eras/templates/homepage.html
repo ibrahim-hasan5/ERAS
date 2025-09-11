@@ -131,6 +131,64 @@
             </div>
         </section>
 
+
+        <!-- Role Card 2: Service Provider -->
+<div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+    <i class="fas fa-hospital text-4xl text-green-500 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Service Provider</h3>
+    <p class="text-gray-600 text-sm flex-grow">Emergency services, hospitals, fire stations, and police. Manage alerts and coordinate emergency responses.</p>
+    
+    {% if user.is_authenticated and user.user_type == 'service_provider' %}
+        <a href="{% url 'service_provider_dashboard' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Dashboard</a>
+    {% else %}
+        <a href="{% url 'register_service_provider' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Register Organization</a>
+    {% endif %}
+</div>
+
+<!-- Add this new section after the Role-Based Emergency Access Section -->
+<!-- Emergency Services Directory Section -->
+<section class="container mx-auto px-6 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900">Emergency Services Directory</h2>
+        <p class="mt-2 text-gray-600">Find verified emergency service providers in your area instantly.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Service Type 1 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-hospital text-4xl text-red-500 mb-4"></i>
+            <h3 class="text-lg font-semibold">Hospitals</h3>
+            <p class="text-gray-600 mt-2">Find nearby hospitals and medical facilities for emergency medical care.</p>
+        </div>
+        
+        <!-- Service Type 2 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-fire-extinguisher text-4xl text-orange-500 mb-4"></i>
+            <h3 class="text-lg font-semibold">Fire Stations</h3>
+            <p class="text-gray-600 mt-2">Connect with fire departments and emergency response units in your area.</p>
+        </div>
+        
+        <!-- Service Type 3 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-shield-alt text-4xl text-blue-500 mb-4"></i>
+            <h3 class="text-lg font-semibold">Police Stations</h3>
+            <p class="text-gray-600 mt-2">Locate police stations and law enforcement agencies near you.</p>
+        </div>
+        
+        <!-- Service Type 4 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+            <i class="fas fa-ambulance text-4xl text-green-500 mb-4"></i>
+            <h3 class="text-lg font-semibold">Ambulance Services</h3>
+            <p class="text-gray-600 mt-2">Find ambulance services and emergency medical transportation.</p>
+        </div>
+    </div>
+    
+    <div class="text-center">
+        <a href="{% url 'service_provider_directory' %}" class="bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">
+            <i class="fas fa-search mr-2"></i> Browse All Providers
+        </a>
+    </div>
+</section>
         <!-- Role-Based Emergency Access Section - Added -->
         <section class="container mx-auto px-6 py-16">
             <div class="text-center mb-12">

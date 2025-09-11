@@ -12,4 +12,15 @@ urlpatterns = [
 
     path('profile/setup/', views.citizen_profile_setup,
          name='citizen_profile_setup'),
+
+
+     # Service Provider Profile URLs
+    path('profile/service-provider/setup/', views.service_provider_profile_setup, name='service_provider_profile_setup'),
+    path('dashboard/service-provider/', views.service_provider_dashboard, name='service_provider_dashboard'),
+    path('profile/service-provider/quick-update/', views.quick_update_service_provider, name='quick_update_service_provider'),
+    path('settings/service-provider/', views.service_provider_settings, name='service_provider_settings'),
+    
+    # Public Directory URLs
+    path('directory/service-providers/', views.service_provider_directory, name='service_provider_directory'),
+    path('directory/service-provider/<int:provider_id>/', views.service_provider_detail, name='service_provider_detail'),     
 ]
