@@ -38,7 +38,7 @@ def citizen_profile_setup(request):
         profile = CitizenProfile.objects.create(user=request.user)
 
     if request.method == 'POST':
-        form = CitizenProfileForm(request.POST, instance=profile)
+        form = CitizenProfileForm(request.POST or None, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('homepage')
