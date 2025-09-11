@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Organization Profile - ERAS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass-morphism {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    
+    .gradient-border {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      padding: 2px;
+      border-radius: 16px;
+    }
+    
+    .gradient-border-content {
+      background: white;
+      border-radius: 14px;
+      padding: 2rem;
+    }
+    
+    .floating-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .form-field {
+      transition: all 0.3s ease;
+    }
+    
+    .form-field:focus-within {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar-item {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sidebar-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    
+    .sidebar-item:hover::before {
+      left: 100%;
+    }
+    
+    .section-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.4s ease;
+    }
+    
+    .section-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .completion-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .status-incomplete {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-complete {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .status-registered {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .service-provider-bg {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen service-provider-bg font-inter text-gray-800 overflow-x-hidden">
+  
+  <!-- Animated Background Elements -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-green-400 to-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-400 to-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-green-400 to-teal-400 rounded-full mix-blend-multiply filter blur-xl opacity-10 floating-animation" style="animation-delay: 4s;"></div>
+  </div>
+
+  <div class="flex min-h-screen relative z-10">
+    
+    <!-- Enhanced Sidebar -->
+    <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+      <div>
+        <!-- Logo Section -->
+        <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+              <i class="fas fa-hospital text-white text-xl"></i>
+            </div>
+          </div>
+          <div>
+            <span class="font-bold text-2xl bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">ERAS</span>
+            <div class="text-xs text-gray-500">Service Provider Portal</div>
+          </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="px-6 py-4 border-b border-gray-100/50">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-gray-600">Profile Completion</span>
+            <span class="text-sm font-bold text-green-600" id="completion-percentage">30%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div class="h-full w-1/3 rounded-full bg-gradient-to-r from-green-500 to-teal-500" id="completion-bar"></div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">Complete profile to start receiving alerts</div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="px-4 py-6 space-y-2">
+          <a href="{% url 'homepage' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
+            <i class="fas fa-home mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
+            <span class="font-medium">Home</span>
+          </a>
+          <div class="sidebar-item flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 text-white font-medium">
+            <i class="fas fa-building mr-4"></i> Complete Profile
+            <span class="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full">Required</span>
+          </div>
+          <a href="{% url 'service_provider_dashboard' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
+            <i class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
+            <span class="font-medium">Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group opacity-50 cursor-not-allowed">
+            <i class="fas fa-bell mr-4 text-gray-400"></i> 
+            <span class="font-medium">Emergency Alerts</span>
+            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
+          </a>
+          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group opacity-50 cursor-not-allowed">
+            <i class="fas fa-users mr-4 text-gray-400"></i> 
+            <span class="font-medium">Network</span>
+            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
+          </a>
+          <a href="{% url 'service_provider_settings' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
+            <i class="fas fa-cog mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
+            <span class="font-medium">Settings</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Logout Section -->
+      <div class="p-4 border-t border-gray-100/50">
+        <a href="{% url 'logout' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
+          <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+          <span class="font-medium">Log Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      
+      <!-- Enhanced Profile Header -->
+      <div class="section-card rounded-2xl p-8 mb-8">
+        <div class="flex items-center space-x-6">
+          <div class="relative group">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-green-400 to-teal-500 p-1">
+              <div class="w-full h-full rounded-xl bg-white flex items-center justify-center">
+                <i class="fas fa-hospital text-3xl text-green-500"></i>
+              </div>
+            </div>
+            <button class="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+              <i class="fas fa-camera text-xs"></i>
+            </button>
+          </div>
+          <div class="flex-1">
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              {{ profile.organization_name }}
+            </h2>
+            <p class="text-gray-500 mb-2">{{ profile.get_service_display_name }}</p>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                <span class="text-sm text-yellow-600 font-medium">Profile Incomplete</span>
+              </div>
+              {% if profile.is_verified %}
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-shield-alt text-green-500"></i>
+                <span class="text-sm text-green-600 font-medium">Verified Organization</span>
+              </div>
+              {% else %}
+              <div class="flex items-center space-x-2">
+                <i class="fas fa-clock text-orange-500"></i>
+                <span class="text-sm text-orange-600 font-medium">Pending Verification</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-green-600" id="header-completion">30%</div>
+            <div class="text-sm text-gray-500">Complete</div>
+            <div class="text-xs text-green-600 font-medium mt-1">Profile Required</div>
+          </div>
+        </div>
+      </div>
+
+      <form method="post" class="space-y-8">
+        {% csrf_token %}
+        
+        <!-- Organization Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-building text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Organization Information</h2>
+                <p class="text-gray-500 text-sm">Basic details about your organization</p>
+              </div>
+            </div>
+            <div class="completion-status status-registered">
+              <i class="fas fa-check-circle"></i>
+              <span>Registered</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Organization Name *</label>
+              <div class="relative">
+                {{ form.organization_name }}
+                <i class="fas fa-building absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Service Type *</label>
+              <div class="relative">
+                {{ form.service_type }}
+                <i class="fas fa-tags absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field" id="other-service-field" style="display: none;">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Specify Service Type *</label>
+              <div class="relative">
+                {{ form.service_type_other }}
+                <i class="fas fa-edit absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+              <div class="relative">
+                {{ form.email }}
+                <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number *</label>
+              <div class="relative">
+                {{ form.contact_number }}
+                <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Registration Number</label>
+              <div class="relative">
+                {{ form.registration_number }}
+                <i class="fas fa-certificate absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Official license or registration number</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-map-marker-alt text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Location Information</h2>
+                <p class="text-gray-500 text-sm">Where your organization is located</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Required</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
+              <div class="relative">
+                {{ form.street_address }}
+                <i class="fas fa-road absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Area/Sector *</label>
+              <div class="relative">
+                {{ form.area_sector }}
+                <i class="fas fa-map absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+              <div class="relative">
+                {{ form.city }}
+                <i class="fas fa-city absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
+              <div class="relative">
+                {{ form.postal_code }}
+                <i class="fas fa-mail-bulk absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Capabilities Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-cogs text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Service Capabilities</h2>
+                <p class="text-gray-500 text-sm">Your organization's capacity and capabilities</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-info-circle"></i>
+              <span>Optional</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Specialized Services</label>
+              <div class="relative">
+                {{ form.specialized_services }}
+                <i class="fas fa-list absolute left-4 top-4 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Equipment Available</label>
+              <div class="relative">
+                {{ form.equipment_available }}
+                <i class="fas fa-tools absolute left-4 top-4 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Staff Count</label>
+              <div class="relative">
+                {{ form.staff_count }}
+                <i class="fas fa-users absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Maximum Capacity</label>
+              <div class="relative">
+                {{ form.maximum_capacity }}
+                <i class="fas fa-expand-arrows-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Average Response Time (minutes)</label>
+              <div class="relative">
+                {{ form.average_response_time }}
+                <i class="fas fa-clock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Current Available Capacity</label>
+              <div class="relative">
+                {{ form.current_capacity }}
+                <i class="fas fa-battery-three-quarters absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-phone-alt text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Contact Information</h2>
+                <p class="text-gray-500 text-sm">Emergency contact details</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Required</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Primary Contact Person *</label>
+              <div class="relative">
+                {{ form.primary_contact_person }}
+                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Designation/Title</label>
+              <div class="relative">
+                {{ form.contact_person_designation }}
+                <i class="fas fa-id-badge absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Hotline *</label>
+              <div class="relative">
+                {{ form.emergency_hotline }}
+                <i class="fas fa-phone-volume absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Email</label>
+              <div class="relative">
+                {{ form.emergency_email }}
+                <i class="fas fa-at absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Operating Hours</label>
+              <div class="relative">
+                {{ form.operating_hours }}
+                <i class="fas fa-business-time absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">e.g., "24/7" or "8:00 AM - 6:00 PM"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center mt-8">
+          <a href="{% url 'service_provider_dashboard' %}" class="px-8 py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+          </a>
+          <div class="flex space-x-4">
+            <button type="submit" name="save_draft" class="px-8 py-4 bg-gray-500 text-white rounded-xl font-medium hover:bg-gray-600 transition-colors">
+              <i class="fas fa-save mr-2"></i> Save Draft
+            </button>
+            <button type="submit" class="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+              Save Profile <i class="fas fa-check ml-2"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Service type conditional field
+    const serviceTypeSelect = document.querySelector('select[name="service_type"]');
+    const otherField = document.getElementById('other-service-field');
+    const otherInput = document.querySelector('input[name="service_type_other"]');
+
+    function toggleOtherField() {
+      if (serviceTypeSelect.value === 'others') {
+        otherField.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherField.style.display = 'none';
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    if (serviceTypeSelect) {
+      serviceTypeSelect.addEventListener('change', toggleOtherField);
+      toggleOtherField(); // Initialize
+    }
+
+    // Progress calculation
+    function updateCompletion() {
+      const requiredFields = [
+        'organization_name', 'service_type', 'email', 'contact_number',
+        'street_address', 'area_sector', 'city', 'postal_code',
+        'primary_contact_person', 'emergency_hotline'
+      ];
+      
+      let filledCount = 0;
+      requiredFields.forEach(field => {
+        const element = document.querySelector(`[name="${field}"]`);
+        if (element && element.value.trim() !== '') {
+          filledCount++;
+        }
+      });
+      
+      const completionPercentage = Math.round((filledCount / requiredFields.length) * 100);
+      
+      document.getElementById('completion-bar').style.width = `${completionPercentage}%`;
+      document.getElementById('completion-percentage').textContent = `${completionPercentage}%`;
+      document.getElementById('header-completion').textContent = `${completionPercentage}%`;
+    }
+
+    // Add event listeners to required fields
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+      field.addEventListener('input', updateCompletion);
+      field.addEventListener('change', updateCompletion);
+    });
+
+    updateCompletion(); // Initial calculation
+  });
+</script>
+
+</body>
+</html>
