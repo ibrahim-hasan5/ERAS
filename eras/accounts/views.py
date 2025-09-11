@@ -43,8 +43,7 @@ def citizen_profile_setup(request):
             form.save()
             return redirect('homepage')
         else:
-            # Print form errors for debugging
-            print(form.errors)
+            print(form.errors)  # For debugging
     else:
         form = CitizenProfileForm(instance=profile)
 

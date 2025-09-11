@@ -19,17 +19,41 @@ class CitizenRegistrationForm(UserCreationForm):
 
 
 class CitizenProfileForm(forms.ModelForm):
+    phone_number = forms.CharField(max_length=15, required=True)
+    emergency_contact_name = forms.CharField(max_length=100, required=True)
+    emergency_contact_phone = forms.CharField(max_length=15, required=True)
+    emergency_contact_relationship = forms.CharField(max_length=50, required=True)
+    house_road_no = forms.CharField(max_length=200, required=True)
+    area_sector = forms.CharField(max_length=100, required=True)
+    city = forms.CharField(max_length=100, required=True)
+    postal_code = forms.CharField(max_length=10, required=True)
+    landmarks = forms.CharField(required=False)
+    last_blood_donation = forms.DateField(required=False)
+    available_to_donate = forms.ChoiceField(
+        choices=[('', 'Select Option'), ('yes', 'Yes'), ('no', 'No')], 
+        required=False
+    )
     class Meta:
         model = CitizenProfile
         fields = [
-            'date_of_birth', 'blood_group', 'emergency_contact',
-            'present_division', 'present_district', 'present_upazila',
-            'present_post_office', 'present_post_code', 'present_address_details',
-            'permanent_division', 'permanent_district', 'permanent_upazila',
-            'permanent_post_office', 'permanent_post_code', 'permanent_address_details',
-            'frequent_division', 'frequent_district', 'frequent_upazila',
-            'frequent_post_office', 'frequent_post_code', 'frequent_address_details',
-            'medical_conditions', 'allergies', 'regular_medications'
+            'date_of_birth',
+            'blood_group',
+            'phone_number',
+            'house_road_no',
+            'area_sector',
+            'city',
+            'postal_code',
+            'landmarks',
+            'emergency_contact_name',
+            'emergency_contact_phone',
+            'emergency_contact_relationship',
+            'last_blood_donation',
+            'available_to_donate',
+            'medical_conditions',
+            'allergies',
+            
+            
+            'regular_medications'
         ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={

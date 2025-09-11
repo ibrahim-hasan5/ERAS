@@ -29,18 +29,6 @@ class CitizenProfile(models.Model):
         ('O-', 'O-'),
     ]
 
-    DIVISION_CHOICES = [
-        ('', 'Select Division'),
-        ('dhaka', 'Dhaka'),
-        ('chattogram', 'Chattogram'),
-        ('khulna', 'Khulna'),
-        ('rajshahi', 'Rajshahi'),
-        ('barishal', 'Barishal'),
-        ('sylhet', 'Sylhet'),
-        ('rangpur', 'Rangpur'),
-        ('mymensingh', 'Mymensingh'),
-    ]
-
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='citizen_profile')
 
@@ -48,34 +36,26 @@ class CitizenProfile(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     blood_group = models.CharField(
         max_length=5, choices=BLOOD_GROUP_CHOICES, blank=True)
-    emergency_contact = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True)
+    emergency_contact_name = models.CharField(max_length=100, blank=True)
+    emergency_contact_phone = models.CharField(max_length=15, blank=True)
+    emergency_contact_relationship = models.CharField(
+        max_length=50, blank=True)
 
-    # Present Address
-    present_division = models.CharField(
-        max_length=50, choices=DIVISION_CHOICES, blank=True)
-    present_district = models.CharField(max_length=100, blank=True)
-    present_upazila = models.CharField(max_length=100, blank=True)
-    present_post_office = models.CharField(max_length=100, blank=True)
-    present_post_code = models.CharField(max_length=10, blank=True)
-    present_address_details = models.TextField(blank=True)
+    # Address Information
+    house_road_no = models.CharField(max_length=200, blank=True)
+    area_sector = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    postal_code = models.CharField(max_length=10, blank=True)
+    landmarks = models.CharField(max_length=200, blank=True)
 
-    # Permanent Address
-    permanent_division = models.CharField(
-        max_length=50, choices=DIVISION_CHOICES, blank=True)
-    permanent_district = models.CharField(max_length=100, blank=True)
-    permanent_upazila = models.CharField(max_length=100, blank=True)
-    permanent_post_office = models.CharField(max_length=100, blank=True)
-    permanent_post_code = models.CharField(max_length=10, blank=True)
-    permanent_address_details = models.TextField(blank=True)
-
-    # Frequent Address (for those who move frequently)
-    frequent_division = models.CharField(
-        max_length=50, choices=DIVISION_CHOICES, blank=True)
-    frequent_district = models.CharField(max_length=100, blank=True)
-    frequent_upazila = models.CharField(max_length=100, blank=True)
-    frequent_post_office = models.CharField(max_length=100, blank=True)
-    frequent_post_code = models.CharField(max_length=10, blank=True)
-    frequent_address_details = models.TextField(blank=True)
+    # Blood Donation Info
+    last_blood_donation = models.DateField(null=True, blank=True)
+    available_to_donate = models.CharField(
+        max_length=10,
+        choices=[('', 'Select Option'), ('yes', 'Yes'), ('no', 'No')],
+        blank=True
+    )
 
     # Additional emergency information
     medical_conditions = models.TextField(blank=True)
@@ -87,7 +67,8 @@ class CitizenProfile(models.Model):
 
     def is_profile_complete(self):
         required_fields = [
-            self.date_of_birth, self.blood_group, self.emergency_contact,
-            self.present_division, self.present_district
+            self.date_of_birth, self.blood_group, self.phone_number,
+            self.emergency_contact_name, self.emergency_contact_phone,
+            self.house_road_no, self.area_sector, self.city, self.postal_code
         ]
         return all(required_fields)

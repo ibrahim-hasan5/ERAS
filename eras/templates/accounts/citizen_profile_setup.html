@@ -315,271 +315,331 @@
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
               <div class="relative">
-                <input type="tel" name="phone_number" value="{{ user.phone_number }}" placeholder="+880 xxx xxx xxxx" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
+                <input type="tel" name="phone_number" value="{{ user.citizen_profile.phone_number |default:'' }}" placeholder="+880 xxx xxx xxxx" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
                 <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               </div>
-              <p class="text-xs text-red-600 mt-1">Required for emergency notifications</p>
+              <p class="text-xs text-gray-500 mt-1">Required for emergency contact</p>
             </div>
-            
-            <div class="form-field">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Contact *</label>
-              <div class="relative">
-                <input type="tel" name="emergency_contact" value="{{ form.emergency_contact.value|default_if_none:'' }}" placeholder="+880 xxx xxx xxxx" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
-                <i class="fas fa-phone-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              </div>
-              <p class="text-xs text-gray-500 mt-1">Alternative contact in emergencies</p>
-            </div>
-            
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth *</label>
               <div class="relative">
-                <input type="date" name="date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d' }}" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12" max="{{ today|date:'Y-m-d' }}">
+                <input type="date" name="date_of_birth" value="{% if user.citizen_profile.date_of_birth %}{{ user.citizen_profile.date_of_birth|date:'Y-m-d' }}{% endif %}" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 
+           focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
                 <i class="fas fa-calendar-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               </div>
-              <p class="text-xs text-gray-500 mt-1">Required for age-appropriate alerts</p>
+              <p class="text-xs text-gray-500 mt-1">Your birth date (age will be auto-calculated)</p>
+              <p class="text-sm font-medium text-gray-700 mt-1">Age: <span id="calculated-age">—</span></p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Address Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-home text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Address Information</h2>
+                <p class="text-gray-500 text-sm">Required for emergency response</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Required</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">House/Road No. *</label>
+              <div class="relative">
+                <input type="text" name="house_road_no" placeholder="House #123, Road #456" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-home absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your house and road number</p>
             </div>
             
             <div class="form-field">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Blood Group *</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Area/Sector *</label>
               <div class="relative">
-                <select name="blood_group" required class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12 appearance-none bg-white">
-                  <option value="">Select Blood Group</option>
-                  <option value="A+" {% if form.blood_group.value == "A+" %}selected{% endif %}>A+</option>
-                  <option value="A-" {% if form.blood_group.value == "A-" %}selected{% endif %}>A-</option>
-                  <option value="B+" {% if form.blood_group.value == "B+" %}selected{% endif %}>B+</option>
-                  <option value="B-" {% if form.blood_group.value == "B-" %}selected{% endif %}>B-</option>
-                  <option value="AB+" {% if form.blood_group.value == "AB+" %}selected{% endif %}>AB+</option>
-                  <option value="AB-" {% if form.blood_group.value == "AB-" %}selected{% endif %}>AB-</option>
-                  <option value="O+" {% if form.blood_group.value == "O+" %}selected{% endif %}>O+</option>
-                  <option value="O-" {% if form.blood_group.value == "O-" %}selected{% endif %}>O-</option>
+                <input type="text" name="area_sector" placeholder="Gulshan, Banani, etc." class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-map-marker-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your residential area or sector</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+              <div class="relative">
+                <input type="text" name="city" placeholder="Dhaka, Chittagong, etc." class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-city absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your city of residence</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
+              <div class="relative">
+                <input type="text" name="postal_code" placeholder="1212" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-envelope-open-text absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Your postal/zip code</p>
+            </div>
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Landmarks</label>
+              <div class="relative">
+                <textarea name="landmarks" placeholder="Nearby landmarks, building name, etc." class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" rows="3"></textarea>
+                <i class="fas fa-map-pin absolute left-4 top-4 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Optional: Additional information to help locate your address</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Contact Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-phone-alt text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Emergency Contact</h2>
+                <p class="text-gray-500 text-sm">Someone to contact in case of emergency</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Required</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Contact Name *</label>
+              <div class="relative">
+                <input type="text" name="emergency_contact_name" placeholder="Full name" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-user-friends absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Full name of your emergency contact</p>
+            </div>
+            
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Contact Phone *</label>
+              <div class="relative">
+                <input type="tel" name="emergency_contact_phone" placeholder="+880 xxx xxx xxxx" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Phone number of your emergency contact</p>
+            </div>
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Relationship *</label>
+              <div class="relative">
+                <select name="emergency_contact_relationship" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" required>
+                  <option value="">Select Relationship</option>
+                  <option value="parent">Parent</option>
+                  <option value="spouse">Spouse</option>
+                  <option value="sibling">Sibling</option>
+                  <option value="child">Child</option>
+                  <option value="friend">Friend</option>
+                  <option value="relative">Relative</option>
+                  <option value="other">Other</option>
                 </select>
+                <i class="fas fa-heart absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Relationship to you</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical Information Section -->
+        <div class="section-card rounded-2xl p-8">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-heartbeat text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-800">Medical Information</h2>
+                <p class="text-gray-500 text-sm">Important for first responders</p>
+              </div>
+            </div>
+            <div class="completion-status status-incomplete">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Optional</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Blood Type</label>
+              <div class="relative">
+                <select name="blood_group">
+                    <option value="">Select Blood Type</option>
+                    <option value="A+" {% if user.citizen_profile.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                    <option value="A-" {% if user.citizen_profile.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                    <option value="B+" {% if user.citizen_profile.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                    <option value="B-" {% if user.citizen_profile.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                    <option value="AB+" {% if user.citizen_profile.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                    <option value="AB-" {% if user.citizen_profile.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+                    <option value="O+" {% if user.citizen_profile.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                    <option value="O-" {% if user.citizen_profile.blood_group == 'O-' %}selected{% endif %}>O-</option>
+
+                </select>
+                
                 <i class="fas fa-tint absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <i class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               </div>
-              <p class="text-xs text-red-600 mt-1">Required for blood donation network</p>
+              <p class="text-xs text-gray-500 mt-1">Your blood type (important for emergencies)</p>
+            </div>
+
+
+            <div class="form-field">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Last Date of Blood Donation</label>
+              <div class="relative">
+                <input type="date" name="last_blood_donation" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 
+           focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12">
+                <i class="fas fa-tint absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Leave blank if never donated</p>
             </div>
 
             <div class="form-field">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Available to Donate?</label>
               <div class="relative">
-                <textarea name="address" placeholder="Enter your full address" class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12 resize-none pt-4">{{ form.address.value|default_if_none:'' }}</textarea>
-                <i class="fas fa-map-marker-alt absolute left-4 top-4 text-gray-400"></i>
+                <select name="available_to_donate" class="w-full h-14 px-4 rounded-xl border-2 border-gray-200 
+            focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12">
+                  <option value="">Select Option</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+                <i class="fas fa-hand-holding-heart absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
               </div>
-              <p class="text-xs text-gray-500 mt-1">Your current residential address</p>
             </div>
 
-            <div class="form-field">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Known Allergies</label>
               <div class="relative">
-                <input type="text" name="location" value="{{ form.location.value|default_if_none:'' }}" placeholder="Enter your area/district" class="w-full h-14 px-4 rounded-xl border-2 border-gray-300 focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all pl-12">
-                <i class="fas fa-location-arrow absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <textarea name="allergies" placeholder="List any known allergies" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" rows="2"></textarea>
+                <i class="fas fa-allergies absolute left-4 top-4 text-gray-400"></i>
               </div>
-              <p class="text-xs text-gray-500 mt-1">Your general location for alerts</p>
+              <p class="text-xs text-gray-500 mt-1">Any allergies that emergency personnel should know about</p>
+            </div>
+            
+            <div class="form-field md:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Medical Conditions</label>
+              <div class="relative">
+                <textarea name="medical_conditions" placeholder="List any chronic or serious medical conditions" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all pl-12" rows="2"></textarea>
+                <i class="fas fa-stethoscope absolute left-4 top-4 text-gray-400"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Any conditions that emergency personnel should know about</p>
             </div>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-between items-center pt-8 border-t border-gray-200">
-          <button type="button" class="flex items-center space-x-2 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 transition-all" onclick="window.location.href='{% url 'homepage' %}'">
-            <i class="fas fa-arrow-left"></i>
-            <span>Back to Home</span>
+        <div class="flex justify-between items-center mt-8">
+          <a href="{% url 'homepage' %}" class="px-8 py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Home
+          </a>
+          <button type="submit" class="px-8 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+            Save Profile <i class="fas fa-check ml-2"></i>
           </button>
-          
-          <div class="flex space-x-4">
-            <button type="button" class="flex items-center space-x-2 px-6 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">
-              <i class="fas fa-save"></i>
-              <span>Save Draft</span>
-            </button>
-            
-            <button type="submit" class="flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all glow-effect">
-              <i class="fas fa-check-circle"></i>
-              <span>Complete Profile</span>
-            </button>
-          </div>
         </div>
       </form>
-
-      <!-- Alert Banner -->
-      <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-6 rounded-xl">
-        <div class="flex items-start space-x-3">
-          <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mt-1"></i>
-          <div>
-            <h3 class="font-semibold text-gray-800 mb-2">Profile Completion Required</h3>
-            <p class="text-gray-700 text-sm mb-3">
-              Your profile is incomplete. To receive emergency alerts and access all ERAS features, you must complete the required fields marked with asterisks (*).
-            </p>
-            <div class="bg-white/50 p-3 rounded-lg border border-yellow-200">
-              <p class="text-xs text-gray-600">
-                <i class="fas fa-info-circle text-blue-500 mr-1"></i>
-                <strong>Note:</strong> Your registered information (name, email, username) cannot be changed through this form. 
-                Contact support if you need to update these details.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
   </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ===== EXISTING FUNCTIONALITY =====
-        // Form field interactions
-        document.querySelectorAll('.form-field input, .form-field select, .form-field textarea').forEach(field => {
-            field.addEventListener('focus', function() {
-                if (!this.readOnly && !this.disabled) {
-                    this.closest('.form-field').style.transform = 'translateY(-1px)';
-                }
-            });
-            
-            field.addEventListener('blur', function() {
-                this.closest('.form-field').style.transform = 'translateY(0)';
-            });
-        });
+  document.addEventListener('DOMContentLoaded', function() {
 
-        // Update progress based on completed fields
-        function updateProgress() {
-            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
-            let completed = 0;
-            
-            requiredFields.forEach(field => {
-                if (field.value.trim() !== '') {
-                    completed++;
-                }
-            });
-            
-            const percentage = Math.round((completed / requiredFields.length) * 100);
-            const progressBar = document.getElementById('completion-bar');
-            const progressText = document.getElementById('completion-percentage');
-            const headerCompletion = document.getElementById('header-completion');
-            
-            if (progressBar && progressText && headerCompletion) {
-                progressBar.style.width = `${percentage}%`;
-                progressText.textContent = `${percentage}%`;
-                headerCompletion.textContent = `${percentage}%`;
-            }
+    // --- Function to update profile completion percentage ---
+    function updateCompletion() {
+      const requiredFields = [
+        'phone_number',
+        'house_road_no',
+        'area_sector',
+        'city',
+        'postal_code',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+        'emergency_contact_relationship',
+        'date_of_birth'   // NEW required field
+      ];
+      
+      let filledCount = 0;
+      requiredFields.forEach(field => {
+        const element = document.querySelector(`[name="${field}"]`);
+        if (element && element.value.trim() !== '') {
+          filledCount++;
         }
+      });
+      
+      const completionPercentage = Math.round((filledCount / requiredFields.length) * 100);
+      
+      // Update progress UI
+      document.getElementById('completion-bar').style.width = `${completionPercentage}%`;
+      document.getElementById('completion-percentage').textContent = `${completionPercentage}%`;
+      document.getElementById('header-completion').textContent = `${completionPercentage}%`;
+    }
 
-        // Add event listeners to required fields
-        document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
-            field.addEventListener('input', updateProgress);
-            field.addEventListener('change', updateProgress);
-        });
-
-        // Initial progress calculation
-        updateProgress();
-
-        // Form submission validation
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const requiredFields = this.querySelectorAll('input[required], select[required], textarea[required]');
-            let hasEmpty = false;
-            
-            requiredFields.forEach(field => {
-                if (field.value.trim() === '') {
-                    hasEmpty = true;
-                    field.classList.add('border-red-500');
-                    if (!field.classList.contains('readonly-field')) {
-                        field.focus();
-                    }
-                } else {
-                    field.classList.remove('border-red-500');
-                }
-            });
-            
-            if (hasEmpty) {
-                e.preventDefault();
-                alert('Please fill in all required fields marked with asterisks (*).');
-            }
-        });
-        
-        // ===== NEW FUNCTIONALITY =====
-        // Set max date to today for date of birth
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.querySelector('input[name="date_of_birth"]');
-        if (dateInput) {
-            dateInput.setAttribute('max', today);
-            
-            // Enhanced date validation
-            dateInput.addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const today = new Date();
-                
-                if (selectedDate > today) {
-                    alert('Date of birth cannot be in the future');
-                    this.value = '';
-                    this.classList.add('border-red-500');
-                } else {
-                    this.classList.remove('border-red-500');
-                }
-                
-                // Update progress when date changes
-                updateProgress();
-            });
+    // --- Function to auto-calculate Age from DOB ---
+    const dobField = document.querySelector('[name="date_of_birth"]');
+    if (dobField) {
+      dobField.addEventListener('change', function() {
+        if (dobField.value) {
+          const today = new Date();
+          const birthDate = new Date(dobField.value);
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          document.getElementById('calculated-age').textContent = age;
+        } else {
+          document.getElementById('calculated-age').textContent = '—';
         }
-        
-        // Address same as present address functionality
-        const permanentDivisionField = document.querySelector('select[name="permanent_division"]');
-        if (permanentDivisionField) {
-            const copyAddressCheckbox = document.createElement('div');
-            copyAddressCheckbox.innerHTML = `
-                <label class="flex items-center mt-2">
-                    <input type="checkbox" id="copyAddress" class="mr-2">
-                    <span class="text-sm text-gray-600">Same as Present Address</span>
-                </label>
-            `;
-            
-            const permanentAddressSection = permanentDivisionField.closest('.form-field');
-            if (permanentAddressSection) {
-                permanentAddressSection.appendChild(copyAddressCheckbox);
-                
-                document.getElementById('copyAddress').addEventListener('change', function() {
-                    if (this.checked) {
-                        // Copy all present address fields to permanent address
-                        const fieldsToCopy = ['division', 'district', 'upazila', 'post_office', 'post_code'];
-                        fieldsToCopy.forEach(field => {
-                            const presentField = document.querySelector(`[name="present_${field}"]`);
-                            const permanentField = document.querySelector(`[name="permanent_${field}"]`);
-                            if (presentField && permanentField) {
-                                permanentField.value = presentField.value;
-                            }
-                        });
-                        
-                        // Copy address details
-                        const presentDetails = document.querySelector('[name="present_address_details"]');
-                        const permanentDetails = document.querySelector('[name="permanent_address_details"]');
-                        if (presentDetails && permanentDetails) {
-                            permanentDetails.value = presentDetails.value;
-                        }
-                        
-                        // Update progress after copying
-                        updateProgress();
-                    }
-                });
-            }
+      });
+    }
+
+    // --- Optional: Auto-check blood donation availability based on last donation date ---
+    const donationDateField = document.querySelector('[name="last_blood_donation"]');
+    const availabilityField = document.querySelector('[name="available_to_donate"]');
+
+    if (donationDateField && availabilityField) {
+      donationDateField.addEventListener('change', function() {
+        if (donationDateField.value) {
+          const today = new Date();
+          const lastDonation = new Date(donationDateField.value);
+          const diffDays = Math.floor((today - lastDonation) / (1000 * 60 * 60 * 24));
+          
+          // Many guidelines suggest 90 days gap for safe donation
+          if (diffDays >= 90) {
+            availabilityField.value = "yes";
+          } else {
+            availabilityField.value = "no";
+          }
         }
-        
-        // Auto-format phone numbers
-        const phoneInputs = document.querySelectorAll('input[type="tel"]');
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.startsWith('880')) {
-                    value = '+' + value;
-                } else if (value.length > 0 && !value.startsWith('+')) {
-                    value = '+880' + value;
-                }
-                
-                // Format with spaces: +880 XXX XXX XXXX
-                if (value.length > 4) {
-                    value = value.replace(/(\+\d{3})(\d{3})(\d{3})(\d+)/, '$1 $2 $3 $4');
-                }
-                
-                e.target.value = value;
-            });
-        });
-        
+      });
+    }
+
+    // --- Add event listeners to required fields ---
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+      field.addEventListener('input', updateCompletion);
+      field.addEventListener('change', updateCompletion);
     });
+
+    // --- Initial run ---
+    updateCompletion();
+  });
 </script>
+
 </body>
 </html>
