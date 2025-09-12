@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile Dashboard - ERAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Styles from citizen_profile_setup.html for consistency */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .section-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar-item:hover::before {
+            left: 100%;
+        }
+
+        .pulse-ring {
+          animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 1; }
+          80%, 100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .glow-effect {
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .completion-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          padding: 2px 8px;
+          border-radius: 12px;
+        }
+    
+        .status-incomplete {
+          background: #fef3c7;
+          color: #d97706;
+        }
+    
+        .status-complete {
+          background: #d1fae5;
+          color: #059669;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 font-inter text-gray-800 overflow-x-hidden">
+    
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-400 to-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-10 floating-animation" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="flex min-h-screen relative z-10">
+        
+        <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+            <div>
+                <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-red-500 rounded-full blur-sm opacity-75 pulse-ring"></div>
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23ef4444'/%3E%3Ctext x='50' y='55' font-family='Arial' font-size='30' fill='white' text-anchor='middle'%3EE%3C/text%3E%3C/svg%3E" class="w-12 h-12 rounded-full shadow-lg relative z-10">
+                    </div>
+                    <div>
+                        <span class="font-bold text-2xl bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">ERAS</span>
+                        <div class="text-xs text-gray-500">Emergency Response System</div>
+                    </div>
+                </div>
+
+                <nav class="px-4 py-6 space-y-2">
+                    <a href="{% url 'homepage' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group">
+                        <i class="fas fa-home mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
+                        <span class="font-medium">Home</span>
+                    </a>
+                    <a href="{% url 'citizen_dashboard' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium glow-effect">
+                        <i class="fas fa-user mr-4"></i> View Profile
+                    </a>
+                    <a href="{% url 'citizen_profile_update' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group">
+                        <i class="fas fa-user-edit mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
+                        <span class="font-medium">Edit Profile</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-gray-100/50">
+                <a href="{% url 'logout' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
+                    <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+                    <span class="font-medium">Log Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto">
+            <h1 class="text-3xl font-bold mb-6 text-gray-800">Your Profile Dashboard</h1>
+            
+            <div class="section-card rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Personal Information</h2>
+                            <p class="text-gray-500 text-sm">Your account and personal details</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'citizen_profile_update' %}" class="px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors duration-300">
+                        <i class="fas fa-user-edit mr-2"></i> Edit Profile
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Name:</p>
+                        <p class="font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Username:</p>
+                        <p class="font-medium text-gray-900">{{ user.username }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Email:</p>
+                        <p class="font-medium text-gray-900">{{ user.email }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Phone Number:</p>
+                        <p class="font-medium text-gray-900">{{ user.phone_number|default:"Not specified" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Date of Birth:</p>
+                        <p class="font-medium text-gray-900">{{ profile.date_of_birth|default:"Not specified" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-semibold mb-1">Blood Group:</p>
+                        <p class="font-medium text-gray-900">{{ profile.get_blood_group_display|default:"Not specified" }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Address Information</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">House/Road No.:</p>
+                            <p class="font-medium text-gray-900">{{ profile.house_road_no|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Area/Sector:</p>
+                            <p class="font-medium text-gray-900">{{ profile.area_sector|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">City:</p>
+                            <p class="font-medium text-gray-900">{{ profile.city|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Postal Code:</p>
+                            <p class="font-medium text-gray-900">{{ profile.postal_code|default:"Not specified" }}</p>
+                        </div>
+                        {% if profile.landmarks %}
+                        <div class="md:col-span-2">
+                            <p class="text-gray-600 font-semibold mb-1">Landmarks:</p>
+                            <p class="font-medium text-gray-900">{{ profile.landmarks }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-phone-alt text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Emergency Contact</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Name:</p>
+                            <p class="font-medium text-gray-900">{{ profile.emergency_contact_name|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Phone:</p>
+                            <p class="font-medium text-gray-900">{{ profile.emergency_contact_phone|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Relationship:</p>
+                            <p class="font-medium text-gray-900">{{ profile.emergency_contact_relationship|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-heartbeat text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Medical Information</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% if profile.medical_conditions %}
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Medical Conditions:</p>
+                            <p class="font-medium text-gray-900">{{ profile.medical_conditions }}</p>
+                        </div>
+                        {% endif %}
+                        {% if profile.allergies %}
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Allergies:</p>
+                            <p class="font-medium text-gray-900">{{ profile.allergies }}</p>
+                        </div>
+                        {% endif %}
+                        {% if profile.regular_medications %}
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Regular Medications:</p>
+                            <p class="font-medium text-gray-900">{{ profile.regular_medications }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-hand-holding-heart text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Blood Donation Information</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Last Blood Donation:</p>
+                            <p class="font-medium text-gray-900">{{ profile.last_blood_donation|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 font-semibold mb-1">Available to Donate:</p>
+                            <p class="font-medium text-gray-900">
+                                {% if profile.available_to_donate == 'yes' %}Yes
+                                {% elif profile.available_to_donate == 'no' %}No
+                                {% else %}Not specified
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

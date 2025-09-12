@@ -6,8 +6,10 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Avg
 from datetime import date, datetime
+from .forms import CitizenProfileForm
+from .models import CitizenProfile
 from .forms import (
-    CitizenRegistrationForm, ServiceProviderRegistrationForm, 
+    CitizenRegistrationForm, ServiceProviderRegistrationForm,
     CitizenProfileForm, ServiceProviderProfileForm, QuickUpdateForm,
     ServiceProviderRatingForm
 )
@@ -35,30 +37,66 @@ def register_citizen(request):
 
 
 @login_required
-def citizen_profile_setup(request):
+def citizen_dashboard(request):
+    """
+    Displays the logged-in citizen's profile information.
+    """
     if request.user.user_type != 'citizen':
+        messages.error(request, 'Access denied.')
         return redirect('homepage')
 
     try:
         profile = request.user.citizen_profile
     except CitizenProfile.DoesNotExist:
-        profile = CitizenProfile.objects.create(user=request.user)
+        messages.info(request, 'Please complete your profile.')
+        return redirect('citizen_profile_update')
+
+    context = {
+        'profile': profile,
+    }
+    return render(request, 'accounts/citizen_dashboard.html', context)
+
+
+@login_required
+def citizen_profile_update(request):
+    """
+    Handles both initial setup and updating of the Citizen Profile.
+    """
+    if request.user.user_type != 'citizen':
+        messages.error(request, 'Access denied.')
+        return redirect('homepage')
+
+    try:
+        profile = request.user.citizen_profile
+        is_setup = False  # This is an update, not initial setup
+    except CitizenProfile.DoesNotExist:
+        profile = CitizenProfile(user=request.user)
+        is_setup = True  # This is initial setup
 
     if request.method == 'POST':
-        form = CitizenProfileForm(request.POST or None, instance=profile)
+        form = CitizenProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('homepage')
+            # Update user's full name
+            full_name = request.POST.get('full_name', '').strip()
+            if full_name:
+                name_parts = full_name.split(' ', 1)
+                request.user.first_name = name_parts[0]
+                request.user.last_name = name_parts[1] if len(
+                    name_parts) > 1 else ''
+                request.user.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('citizen_dashboard')
         else:
-            print(form.errors)  # For debugging
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = CitizenProfileForm(instance=profile)
 
-    return render(request, 'accounts/citizen_profile_setup.html', {
+    context = {
         'form': form,
-        'user': request.user,
-        'today': date.today()
-    })
+        'is_setup': is_setup,
+    }
+    return render(request, 'accounts/citizen_profile_setup.html', context)
 
 
 def register_service_provider(request):
@@ -80,8 +118,6 @@ def logout_view(request):
     return redirect('homepage')
 
 
-
-
 def register_service_provider(request):
     """Service Provider Registration View"""
     if request.method == 'POST':
@@ -90,7 +126,8 @@ def register_service_provider(request):
             try:
                 user = form.save()
                 login(request, user)
-                messages.success(request, 'Registration successful! Please complete your organization profile.')
+                messages.success(
+                    request, 'Registration successful! Please complete your organization profile.')
                 return redirect('service_provider_profile_setup')
             except Exception as e:
                 messages.error(request, f'Registration failed: {str(e)}')
@@ -100,7 +137,7 @@ def register_service_provider(request):
                     messages.error(request, f'{field}: {error}')
     else:
         form = ServiceProviderRegistrationForm()
-    
+
     return render(request, 'accounts/register_service_provider.html', {'form': form})
 
 
@@ -108,7 +145,8 @@ def register_service_provider(request):
 def service_provider_profile_setup(request):
     """Service Provider Profile Setup/Update View"""
     if request.user.user_type != 'service_provider':
-        messages.error(request, 'Access denied. This page is for service providers only.')
+        messages.error(
+            request, 'Access denied. This page is for service providers only.')
         return redirect('homepage')
 
     try:
@@ -121,20 +159,21 @@ def service_provider_profile_setup(request):
         form = ServiceProviderProfileForm(request.POST, instance=profile)
         if form.is_valid():
             profile = form.save(commit=False)
-            
+
             # Mark profile as completed if all required fields are filled
             if profile.is_profile_complete():
                 if not profile.profile_completed_at:
                     profile.profile_completed_at = datetime.now()
-                    messages.success(request, 'Congratulations! Your profile is now complete.')
-            
+                    messages.success(
+                        request, 'Congratulations! Your profile is now complete.')
+
             profile.save()
             messages.success(request, 'Profile updated successfully!')
-            
+
             # Check if this was a save draft or save & update
             if 'save_draft' in request.POST:
                 messages.info(request, 'Profile saved as draft.')
-            
+
             return redirect('service_provider_dashboard')
         else:
             for field, errors in form.errors.items():
@@ -150,7 +189,7 @@ def service_provider_profile_setup(request):
         'today': date.today(),
         'is_complete': profile.is_profile_complete()
     }
-    
+
     return render(request, 'accounts/service_provider_profile_setup.html', context)
 
 
@@ -164,16 +203,19 @@ def service_provider_dashboard(request):
     try:
         profile = request.user.service_provider_profile
     except ServiceProviderProfile.DoesNotExist:
-        messages.error(request, 'Profile not found. Please complete your registration.')
+        messages.error(
+            request, 'Profile not found. Please complete your registration.')
         return redirect('service_provider_profile_setup')
 
     # Get recent emergency responses (you'll implement this when you create the emergency system)
-    recent_responses = profile.emergency_responses.all().order_by('-created_at')[:5]
-    
+    recent_responses = profile.emergency_responses.all().order_by(
+        '-created_at')[:5]
+
     # Calculate average rating
-    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))[
+        'avg_rating'] or 0
     total_ratings = profile.ratings.count()
-    
+
     # Get capacity percentage
     capacity_percentage = profile.get_capacity_percentage()
 
@@ -185,7 +227,7 @@ def service_provider_dashboard(request):
         'capacity_percentage': capacity_percentage,
         'is_complete': profile.is_profile_complete()
     }
-    
+
     return render(request, 'accounts/service_provider_dashboard.html', context)
 
 
@@ -216,52 +258,52 @@ def quick_update_service_provider(request):
                 'success': False,
                 'errors': form.errors
             })
-    
+
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 def service_provider_directory(request):
     """Public Service Provider Directory"""
     providers = ServiceProviderProfile.objects.filter(
-        is_verified=True, 
+        is_verified=True,
         current_status='active'
     ).select_related('user').prefetch_related('ratings')
-    
+
     # Search functionality
     search_query = request.GET.get('search', '')
     service_type_filter = request.GET.get('service_type', '')
     city_filter = request.GET.get('city', '')
-    
+
     if search_query:
         providers = providers.filter(
             Q(organization_name__icontains=search_query) |
             Q(specialized_services__icontains=search_query)
         )
-    
+
     if service_type_filter:
         providers = providers.filter(service_type=service_type_filter)
-    
+
     if city_filter:
         providers = providers.filter(city__icontains=city_filter)
-    
+
     # Add average rating to each provider
     for provider in providers:
         provider.avg_rating = provider.ratings.aggregate(
             avg_rating=Avg('rating')
         )['avg_rating'] or 0
         provider.total_ratings = provider.ratings.count()
-    
+
     # Pagination
     paginator = Paginator(providers, 12)  # 12 providers per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     # Get filter options
     service_types = ServiceProviderProfile.SERVICE_TYPE_CHOICES
     cities = ServiceProviderProfile.objects.filter(
         is_verified=True
     ).values_list('city', flat=True).distinct().exclude(city='')
-    
+
     context = {
         'page_obj': page_obj,
         'search_query': search_query,
@@ -271,34 +313,36 @@ def service_provider_directory(request):
         'cities': sorted(cities),
         'total_providers': providers.count()
     }
-    
+
     return render(request, 'accounts/service_provider_directory.html', context)
 
 
 def service_provider_detail(request, provider_id):
     """Service Provider Detail View"""
     provider = get_object_or_404(
-        ServiceProviderProfile.objects.select_related('user').prefetch_related('ratings__user'),
+        ServiceProviderProfile.objects.select_related(
+            'user').prefetch_related('ratings__user'),
         id=provider_id,
         is_verified=True
     )
-    
+
     # Calculate ratings
     ratings = provider.ratings.all().order_by('-created_at')
     avg_rating = ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
     rating_counts = {}
     for i in range(1, 6):
         rating_counts[i] = ratings.filter(rating=i).count()
-    
+
     # Check if current user has already rated
     user_rating = None
     if request.user.is_authenticated:
         user_rating = ratings.filter(user=request.user).first()
-    
+
     # Handle rating submission
     if request.method == 'POST' and request.user.is_authenticated:
         if user_rating:
-            messages.warning(request, 'You have already rated this service provider.')
+            messages.warning(
+                request, 'You have already rated this service provider.')
         else:
             rating_form = ServiceProviderRatingForm(request.POST)
             if rating_form.is_valid():
@@ -308,9 +352,9 @@ def service_provider_detail(request, provider_id):
                 rating.save()
                 messages.success(request, 'Thank you for your rating!')
                 return redirect('service_provider_detail', provider_id=provider.id)
-    
+
     rating_form = ServiceProviderRatingForm() if request.user.is_authenticated else None
-    
+
     context = {
         'provider': provider,
         'avg_rating': round(avg_rating, 1),
@@ -321,7 +365,7 @@ def service_provider_detail(request, provider_id):
         'rating_form': rating_form,
         'capacity_percentage': provider.get_capacity_percentage()
     }
-    
+
     return render(request, 'accounts/service_provider_detail.html', context)
 
 
@@ -342,6 +386,5 @@ def service_provider_settings(request):
         'profile': profile,
         'user': request.user
     }
-    
-    return render(request, 'accounts/service_provider_settings.html', context)
 
+    return render(request, 'accounts/service_provider_settings.html', context)
