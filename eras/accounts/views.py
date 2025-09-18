@@ -255,25 +255,24 @@ def service_provider_dashboard(request):
     disaster_stats = {
         'reported': Disaster.objects.filter(reporter=request.user).count(),
         'responded_to': disaster_responses.count(),
-        'pending_responses': nearby_disasters.filter(
+        'pending_responses': Disaster.objects.filter(
+            status='approved',
+            city=profile.city,
             responses__service_provider=profile,
             responses__response_status__in=['notified', 'responding']
         ).count()
     }
 
-    context = {
+    return render(request, 'accounts/service_provider_dashboard.html', {
         'profile': profile,
         'recent_responses': recent_responses,
         'disaster_responses': disaster_responses,
         'nearby_disasters': nearby_disasters,
-        'avg_rating': round(avg_rating, 1),
+        'avg_rating': avg_rating,
         'total_ratings': total_ratings,
         'capacity_percentage': capacity_percentage,
         'disaster_stats': disaster_stats,
-        'is_complete': profile.is_profile_complete()
-    }
-
-    return render(request, 'accounts/service_provider_dashboard.html', context)
+    })
 
 
 @login_required

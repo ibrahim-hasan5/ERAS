@@ -1,3 +1,4 @@
+{% load disasters_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,6 +81,8 @@
                     {% elif user.user_type == 'service_provider' %}
                         <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-red-500 transition-colors">Dashboard</a>
                     {% endif %}
+                   {% get_user_alerts_count as alert_count %}
+                    <span class="badge">{{ alert_count }} alerts</span>
                     <a href="{% url 'disasters:create_disaster' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
                         <i class="fas fa-plus mr-2"></i>Report Disaster
                     </a>

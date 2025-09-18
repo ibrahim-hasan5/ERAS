@@ -1,0 +1,247 @@
+{% load disasters_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Inappropriate Content - ERAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .report-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="report-section max-w-2xl w-full rounded-2xl p-8 shadow-2xl">
+
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-flag text-2xl text-orange-500"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Report Inappropriate Content</h2>
+                <p class="text-gray-600">Help us maintain a safe and accurate emergency reporting system</p>
+            </div>
+
+            <!-- Disaster Info -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-gray-900 mb-2">Reporting about:</h3>
+                <div class="flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                        <i class="{{ disaster.get_disaster_icon }}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-gray-900 truncate">{{ disaster.title }}</h4>
+                        <p class="text-sm text-gray-600">{{ disaster.get_disaster_type_display }}</p>
+                        <p class="text-sm text-gray-500">{{ disaster.city }}, {{ disaster.area_sector }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Reported by {{ disaster.reporter.get_full_name|default:disaster.reporter.username }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Form -->
+            <form method="post" id="reportForm">
+                {% csrf_token %}
+
+                <!-- Reason Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Why are you reporting this content? *</label>
+                    {{ form.reason }}
+                    {% if form.reason.errors %}
+                        <p class="text-red-500 text-sm mt-2">{{ form.reason.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Description *</label>
+                    {{ form.description }}
+                    <p class="text-xs text-gray-500 mt-2">Please provide specific details about why this content is inappropriate or inaccurate.</p>
+                    {% if form.description.errors %}
+                        <p class="text-red-500 text-sm mt-2">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Guidelines -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
+                        <div class="text-sm text-blue-700">
+                            <p class="font-medium mb-2">Reporting Guidelines:</p>
+                            <ul class="list-disc list-inside space-y-1 text-xs">
+                                <li>Only report content that violates our community standards</li>
+                                <li>Provide specific, factual information about the issue</li>
+                                <li>False reports may result in account restrictions</li>
+                                <li>Reports are reviewed by our moderation team within 24-48 hours</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation -->
+                <div class="mb-6">
+                    <label class="flex items-start space-x-3">
+                        <input type="checkbox" id="confirmReport" required
+                               class="mt-1 rounded text-orange-500 focus:ring-orange-500">
+                        <span class="text-sm text-gray-700">
+                            I confirm that I am reporting this content in good faith and that my report is based on factual concerns about inappropriate or inaccurate information.
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-4">
+                    <button type="submit" id="submitBtn" disabled
+                            class="flex-1 bg-orange-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                        <i class="fas fa-flag mr-2"></i>Submit Report
+                    </button>
+                    <a href="{% url 'disasters:disaster_detail' disaster.id %}"
+                       class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition-colors text-center">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+
+            <!-- Additional Information -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="font-semibold text-gray-900 mb-3">What happens next?</h3>
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                        <span>Your report will be reviewed by our moderation team</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                        <span>If the content violates our guidelines, appropriate action will be taken</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                        <span>You may receive a follow-up notification about the outcome</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                        <span>False or malicious reports will be investigated</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enable/disable submit button based on checkbox
+        const confirmCheckbox = document.getElementById('confirmReport');
+        const submitBtn = document.getElementById('submitBtn');
+
+        confirmCheckbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+            if (this.checked) {
+                submitBtn.classList.remove('disabled:bg-gray-300', 'disabled:cursor-not-allowed');
+                submitBtn.classList.add('hover:bg-orange-600');
+            } else {
+                submitBtn.classList.add('disabled:bg-gray-300', 'disabled:cursor-not-allowed');
+                submitBtn.classList.remove('hover:bg-orange-600');
+            }
+        });
+
+        // Form submission with validation and loading state
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            const reason = document.querySelector('[name="reason"]').value;
+            const description = document.querySelector('[name="description"]').value.trim();
+
+            if (!reason || !description || !confirmCheckbox.checked) {
+                e.preventDefault();
+                alert('Please fill in all required fields and confirm your report.');
+                return;
+            }
+
+            if (description.length < 10) {
+                e.preventDefault();
+                alert('Please provide a more detailed description (minimum 10 characters).');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting Report...';
+        });
+
+        // Character counter for description
+        const descriptionField = document.querySelector('[name="description"]');
+        if (descriptionField) {
+            const counter = document.createElement('div');
+            counter.className = 'text-xs text-gray-500 mt-1';
+            counter.textContent = '0 characters';
+            descriptionField.parentNode.appendChild(counter);
+
+            descriptionField.addEventListener('input', function() {
+                const length = this.value.length;
+                counter.textContent = `${length} characters`;
+
+                if (length < 10) {
+                    counter.className = 'text-xs text-red-500 mt-1';
+                } else if (length > 500) {
+                    counter.className = 'text-xs text-orange-500 mt-1';
+                } else {
+                    counter.className = 'text-xs text-gray-500 mt-1';
+                }
+            });
+        }
+
+        // Auto-expand textarea
+        if (descriptionField && descriptionField.tagName === 'TEXTAREA') {
+            descriptionField.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        }
+
+        // Escape key to cancel
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (confirm('Are you sure you want to cancel? Your report will not be submitted.')) {
+                    window.location.href = '{% url "disasters:disaster_detail" disaster.id %}';
+                }
+            }
+        });
+
+        // Reason-specific guidance
+        document.querySelector('[name="reason"]').addEventListener('change', function() {
+            const reason = this.value;
+            const descriptionField = document.querySelector('[name="description"]');
+
+            let placeholder = 'Please provide specific details about the issue...';
+
+            switch (reason) {
+                case 'false_info':
+                    placeholder = 'Explain what information is false or misleading and provide correct details if known...';
+                    break;
+                case 'inappropriate':
+                    placeholder = 'Describe what makes this content inappropriate (offensive language, irrelevant content, etc.)...';
+                    break;
+                case 'spam':
+                    placeholder = 'Explain why you believe this is spam or promotional content...';
+                    break;
+                case 'duplicate':
+                    placeholder = 'Provide details about the original report or where this has been reported before...';
+                    break;
+                case 'resolved':
+                    placeholder = 'Explain how you know this disaster has been resolved and when it was resolved...';
+                    break;
+                case 'other':
+                    placeholder = 'Please provide detailed information about the issue you are reporting...';
+                    break;
+            }
+
+            descriptionField.placeholder = placeholder;
+        });
+    </script>
+</body>
+</html>

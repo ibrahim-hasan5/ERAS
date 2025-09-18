@@ -1,0 +1,265 @@
+{% load disasters_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Disasters - ERAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .disaster-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .disaster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
+
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-green-400 to-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-400 to-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-lg sticky top-0 z-50 border-b border-white/20">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-green-500 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+                <div class="h-6 w-px bg-gray-300"></div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center text-white">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900">Nearby Disasters</h1>
+                        <p class="text-sm text-gray-500">{{ profile.city }}, {{ profile.area_sector }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="text-sm text-gray-600">
+                    <i class="fas fa-sync-alt mr-2" id="refreshIcon"></i>
+                    Auto-refresh enabled
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8 relative z-10">
+
+        <!-- Service Area Info -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-hospital text-green-600"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">{{ profile.organization_name }}</h2>
+                        <p class="text-gray-600">{{ profile.get_service_display_name }}</p>
+                        <p class="text-sm text-gray-500">Service Area: {{ profile.city }}, {{ profile.area_sector }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-green-600">{{ disasters|length }}</div>
+                    <div class="text-sm text-gray-500">Active Nearby</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disasters List -->
+        {% if disasters %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for disaster in disasters %}
+                    <div class="disaster-card rounded-2xl p-6 shadow-lg">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-xl">
+                                    <i class="{{ disaster.get_disaster_icon }}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ disaster.title|truncatechars:30 }}</h3>
+                                    <p class="text-sm text-gray-500">{{ disaster.get_disaster_type_display }}</p>
+                                </div>
+                            </div>
+                            <div class="px-3 py-1 rounded-full text-xs font-bold {{ disaster.get_severity_color }}">
+                                {{ disaster.get_severity_display|upper }}
+                            </div>
+                        </div>
+
+                        <!-- Location and Distance -->
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                <span class="text-sm font-medium">{{ disaster.city }}, {{ disaster.area_sector }}</span>
+                                {% if disaster.area_sector == profile.area_sector %}
+                                    <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Same Area</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-clock mr-2 text-orange-500"></i>
+                                <span class="text-sm">{{ disaster.get_time_since_reported }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <p class="text-gray-700 text-sm leading-relaxed">
+                                {{ disaster.description|truncatechars:120 }}
+                            </p>
+                        </div>
+
+                        <!-- Response Status -->
+                        <div class="mb-4">
+                            {% if disaster.user_response %}
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm font-medium text-green-800">Your Response:</span>
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full
+                                            {% if disaster.user_response.response_status == 'completed' %}bg-green-100 text-green-800
+                                            {% elif disaster.user_response.response_status == 'on_scene' %}bg-blue-100 text-blue-800
+                                            {% elif disaster.user_response.response_status == 'responding' %}bg-yellow-100 text-yellow-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ disaster.user_response.get_response_status_display }}
+                                        </span>
+                                    </div>
+                                    {% if disaster.user_response.response_notes %}
+                                        <p class="text-xs text-green-700">{{ disaster.user_response.response_notes|truncatechars:60 }}</p>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
+                                    <div class="text-sm font-medium text-yellow-800 mb-2">No Response Yet</div>
+                                    <p class="text-xs text-yellow-700">This disaster needs emergency response</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Other Responses -->
+                        {% if disaster.responses.exists %}
+                            <div class="mb-4">
+                                <div class="flex items-center text-sm text-gray-600 mb-2">
+                                    <i class="fas fa-ambulance mr-2"></i>
+                                    <span>{{ disaster.responses.count }} Total Response{{ disaster.responses.count|pluralize }}</span>
+                                </div>
+                                <div class="flex flex-wrap gap-1">
+                                    {% for response in disaster.responses.all|slice:":3" %}
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                                            {{ response.service_provider.get_service_display_name }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if disaster.responses.count > 3 %}
+                                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded">
+                                            +{{ disaster.responses.count|add:"-3" }} more
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Actions -->
+                        <div class="flex space-x-2 pt-4 border-t border-gray-100">
+                            <a href="{% url 'disasters:disaster_detail' disaster.id %}"
+                               class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-center text-sm font-medium">
+                                <i class="fas fa-eye mr-1"></i>View Details
+                            </a>
+
+                            {% if disaster.user_response %}
+                                <a href="{% url 'disasters:add_response' disaster.id %}"
+                                   class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors text-center text-sm font-medium">
+                                    <i class="fas fa-edit mr-1"></i>Update
+                                </a>
+                            {% else %}
+                                <a href="{% url 'disasters:add_response' disaster.id %}"
+                                   class="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors text-center text-sm font-medium">
+                                    <i class="fas fa-ambulance mr-1"></i>Respond
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No nearby disasters -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-4xl text-green-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-700 mb-2">All Clear in Your Area</h3>
+                <p class="text-gray-500 mb-6">No active disasters requiring response in {{ profile.city }}, {{ profile.area_sector }}</p>
+                <div class="space-y-4">
+                    <a href="{% url 'disasters:disaster_list' %}"
+                       class="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-medium">
+                        <i class="fas fa-globe mr-2"></i>View All Disasters
+                    </a>
+                    <div>
+                        <a href="{% url 'disasters:create_disaster' %}"
+                           class="text-red-600 hover:text-red-700 font-medium">
+                            Report New Emergency <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Auto-refresh functionality
+        let refreshInterval;
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                const refreshIcon = document.getElementById('refreshIcon');
+                refreshIcon.classList.add('fa-spin');
+
+                // Reload page to get fresh data
+                location.reload();
+            }, 60000); // 60 seconds
+        }
+
+        // Start auto-refresh when page loads
+        document.addEventListener('DOMContentLoaded', startAutoRefresh);
+
+        // Pause auto-refresh when page is not visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(refreshInterval);
+            } else {
+                startAutoRefresh();
+            }
+        });
+
+        // Enhanced card interactions
+        document.querySelectorAll('.disaster-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

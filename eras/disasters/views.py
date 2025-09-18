@@ -80,6 +80,8 @@ def create_disaster(request):
     return render(request, 'disasters/create_disaster.html', context)
 
 
+
+
 @login_required
 def edit_disaster(request, disaster_id):
     """Edit an existing disaster report"""
@@ -90,18 +92,17 @@ def edit_disaster(request, disaster_id):
         messages.error(request, 'You do not have permission to edit this disaster report.')
         return redirect('disaster_detail', disaster_id=disaster.id)
 
+    # Define ImageFormSet ONCE here
+    ImageFormSet = formset_factory(DisasterImageForm, extra=1, can_delete=True)
+
     if request.method == 'POST':
         form = DisasterForm(request.POST, instance=disaster, user=request.user)
-
-        # Get existing images for the formset
-        existing_images = disaster.images.all()
-        ImageFormSet = formset_factory(DisasterImageForm, extra=1, can_delete=True)
         image_formset = ImageFormSet(request.POST, request.FILES)
 
         if form.is_valid() and image_formset.is_valid():
             try:
                 with transaction.atomic():
-                    # Store old values for update tracking
+                    # Store old values
                     old_values = {
                         'title': disaster.title,
                         'disaster_type': disaster.disaster_type,
@@ -116,17 +117,15 @@ def edit_disaster(request, disaster_id):
                     for image_form in image_formset:
                         if image_form.cleaned_data:
                             if image_form.cleaned_data.get('DELETE'):
-                                # Delete marked images
                                 image_id = image_form.cleaned_data.get('id')
                                 if image_id:
                                     image_id.delete()
                             elif image_form.cleaned_data.get('image'):
-                                # Add new images
                                 image = image_form.save(commit=False)
                                 image.disaster = disaster
                                 image.save()
 
-                    # Create update record
+                    # Track updates
                     new_values = {
                         'title': disaster.title,
                         'disaster_type': disaster.disaster_type,
@@ -152,7 +151,6 @@ def edit_disaster(request, disaster_id):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = DisasterForm(instance=disaster, user=request.user)
-        # Prepare initial data for image formset
         image_formset = ImageFormSet(initial=[
             {'image': img.image, 'caption': img.caption, 'is_primary': img.is_primary, 'id': img}
             for img in disaster.images.all()
@@ -165,6 +163,7 @@ def edit_disaster(request, disaster_id):
         'is_create': False,
     }
     return render(request, 'disasters/create_disaster.html', context)
+
 
 
 @login_required

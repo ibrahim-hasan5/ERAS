@@ -122,6 +122,18 @@
                         <i class="fas fa-cog mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
                         <span class="font-medium">Settings</span>
                     </a>
+                    <a href="{% url 'disasters:create_disaster' %}" class="flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group transition-colors">
+                        <i class="fas fa-exclamation-triangle mr-4"></i>
+                        <span class="font-medium">Report Incident</span>
+                    </a>
+                    <a href="{% url 'disasters:nearby_disasters' %}" class="flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group transition-colors">
+                        <i class="fas fa-map mr-4"></i>
+                        <span class="font-medium">Nearby Disasters</span>
+                    </a>
+                    <a href="{% url 'disasters:my_disasters' %}" class="flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group transition-colors">
+                         <i class="fas fa-list mr-4"></i>
+                         <span class="font-medium">My Reports</span>
+                    </a>
                 </nav>
             </div>
 

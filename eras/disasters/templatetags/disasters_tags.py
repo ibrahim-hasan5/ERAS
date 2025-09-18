@@ -284,3 +284,8 @@ def status_color(status):
         'cancelled': 'text-gray-600 bg-gray-100'
     }
     return colors.get(status, 'text-gray-600 bg-gray-100')
+
+@register.filter
+def replace(value, args):
+    old, new = args.split(',')
+    return value.replace(old, new)

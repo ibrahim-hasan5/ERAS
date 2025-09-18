@@ -1,3 +1,5 @@
+{% load static %}
+{% load disasters_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +294,7 @@
                                 {{ disaster.reporter.get_full_name|default:disaster.reporter.username }}
                             </div>
                             <div class="text-sm text-gray-600 capitalize">
-                                {{ disaster.reporter.user_type|replace:"_":" " }}
+                                {{ disaster.reporter.user_type|replace:"_," }}
                             </div>
                         </div>
                     </div>
