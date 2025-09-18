@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Emergency Alerts - ERAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .disaster-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .disaster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .severity-badge {
+            animation: pulse 2s infinite;
+        }
+        .severity-critical {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .severity-high {
+            background: linear-gradient(45deg, #f97316, #ea580c);
+            color: white;
+        }
+        .severity-medium {
+            background: linear-gradient(45deg, #eab308, #ca8a04);
+            color: white;
+        }
+        .severity-low {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+        }
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50">
+
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-red-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-orange-400 to-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-lg sticky top-0 z-50 border-b border-white/20">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">ERAS</h1>
+                    <p class="text-xs text-gray-500">Emergency Response System</p>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-red-500 transition-colors">Home</a>
+                {% if user.is_authenticated %}
+                    {% if user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-red-500 transition-colors">Dashboard</a>
+                    {% elif user.user_type == 'service_provider' %}
+                        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-red-500 transition-colors">Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'disasters:create_disaster' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Report Disaster
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-red-500 transition-colors">Login</a>
+                    <a href="{% url 'register_choice' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8 relative z-10">
+
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Live Emergency Alerts</h2>
+            <p class="text-xl text-gray-600">Real-time disaster reports and emergency situations</p>
+            <div class="mt-6 flex items-center justify-center space-x-8">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-red-600">{{ total_disasters }}</div>
+                    <div class="text-sm text-gray-500">Active Alerts</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-orange-600">24/7</div>
+                    <div class="text-sm text-gray-500">Monitoring</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600">&lt;5min</div>
+                    <div class="text-sm text-gray-500">Response Time</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="filter-section rounded-2xl p-6 mb-8 shadow-lg">
+            <form method="get" class="space-y-4">
+                <!-- Search Bar -->
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <input type="text" name="search" value="{{ search_query }}"
+                               placeholder="Search disasters by title, description, or location..."
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    </div>
+                    <button type="submit" class="px-8 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+
+                <!-- Filter Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Disaster Type</label>
+                        {{ filter_form.disaster_type }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Severity</label>
+                        {{ filter_form.severity }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        {{ filter_form.city }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Area/Sector</label>
+                        {{ filter_form.area_sector }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+                        {{ filter_form.date_from }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+                        {{ filter_form.date_to }}
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'disasters:disaster_list' %}" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                        Clear Filters
+                    </a>
+                    <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Auto-refresh indicator -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="text-gray-600">
+                <i class="fas fa-sync-alt mr-2 animate-spin" id="refreshIcon" style="display: none;"></i>
+                Last updated: <span id="lastUpdated">{{ "now"|date:"H:i:s" }}</span>
+            </div>
+            <div class="text-sm text-gray-500">
+                Auto-refresh every 30 seconds
+            </div>
+        </div>
+
+        <!-- Disaster Cards Grid -->
+        {% if page_obj.object_list %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8" id="disasterGrid">
+                {% for disaster in page_obj.object_list %}
+                    <div class="disaster-card rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-xl">
+                                    <i class="{{ disaster.get_disaster_icon }}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ disaster.title|truncatechars:30 }}</h3>
+                                    <p class="text-sm text-gray-500">{{ disaster.get_disaster_type_display }}</p>
+                                </div>
+                            </div>
+                            <div class="severity-badge severity-{{ disaster.severity }} px-3 py-1 rounded-full text-xs font-bold">
+                                {{ disaster.get_severity_display|upper }}
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="flex items-center text-gray-600 mb-3">
+                            <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                            <span class="text-sm font-medium">{{ disaster.city }}, {{ disaster.area_sector }}</span>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="flex items-center text-gray-600 mb-4">
+                            <i class="fas fa-clock mr-2 text-orange-500"></i>
+                            <span class="text-sm">{{ disaster.get_time_since_reported }}</span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <p class="text-gray-700 text-sm leading-relaxed">
+                                {{ disaster.description|truncatechars:120 }}
+                            </p>
+                        </div>
+
+                        <!-- Images Preview -->
+                        {% if disaster.images.exists %}
+                            <div class="mb-4">
+                                <div class="flex space-x-2 overflow-x-auto">
+                                    {% for image in disaster.images.all|slice:":3" %}
+                                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Disaster image' }}"
+                                             class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+                                    {% endfor %}
+                                    {% if disaster.images.count > 3 %}
+                                        <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-xs font-medium text-gray-600">
+                                            +{{ disaster.images.count|add:"-3" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Response Status -->
+                        {% if disaster.responses.exists %}
+                            <div class="mb-4 flex items-center text-green-600">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="text-sm font-medium">{{ disaster.responses.count }} Response{{ disaster.responses.count|pluralize }}</span>
+                            </div>
+                        {% endif %}
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <a href="{% url 'disasters:disaster_detail' disaster.id %}"
+                               class="flex items-center text-red-600 hover:text-red-700 font-medium text-sm transition-colors">
+                                <i class="fas fa-eye mr-2"></i>View Details
+                            </a>
+
+                            <div class="flex items-center space-x-4">
+                                <span class="text-xs text-gray-500 flex items-center">
+                                    <i class="fas fa-eye mr-1"></i>{{ disaster.view_count }}
+                                </span>
+
+                                {% if user.is_authenticated and user.user_type == 'service_provider' %}
+                                    <a href="{% url 'disasters:add_response' disaster.id %}"
+                                       class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-green-600 transition-colors">
+                                        Respond
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="flex items-center justify-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% for key, value in request.GET.items %}{% if key != 'page' and key != 'search' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-4 py-2 bg-red-500 text-white rounded-lg font-medium">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% for key, value in request.GET.items %}{% if key != 'page' and key != 'search' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                               class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% for key, value in request.GET.items %}{% if key != 'page' and key != 'search' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- No disasters found -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-search text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-700 mb-2">No Disasters Found</h3>
+                <p class="text-gray-500 mb-6">
+                    {% if search_query or request.GET %}
+                        No disasters match your current search criteria.
+                    {% else %}
+                        No active disaster reports at the moment.
+                    {% endif %}
+                </p>
+                <div class="space-x-4">
+                    {% if search_query or request.GET %}
+                        <a href="{% url 'disasters:disaster_list' %}"
+                           class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                            Clear Filters
+                        </a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'disasters:create_disaster' %}"
+                           class="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Report Disaster
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Emergency FAB (Floating Action Button) -->
+    {% if user.is_authenticated %}
+        <div class="fixed bottom-8 right-8">
+            <a href="{% url 'disasters:create_disaster' %}"
+               class="bg-gradient-to-r from-red-500 to-pink-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 group">
+                <i class="fas fa-plus text-xl group-hover:rotate-90 transition-transform duration-300"></i>
+            </a>
+            <div class="absolute bottom-20 right-0 bg-black text-white px-3 py-1 rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Report Emergency
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Alert Notifications (if user is logged in) -->
+    {% if user.is_authenticated %}
+        <div id="alertNotifications" class="fixed top-20 right-4 space-y-2 z-50" style="display: none;">
+            <!-- Alerts will be populated via JavaScript -->
+        </div>
+    {% endif %}
+
+    <script>
+        // Auto-refresh functionality
+        let refreshInterval;
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(async () => {
+                const refreshIcon = document.getElementById('refreshIcon');
+                const lastUpdated = document.getElementById('lastUpdated');
+
+                refreshIcon.style.display = 'inline';
+
+                try {
+                    const response = await fetch(window.location.href);
+                    if (response.ok) {
+                        const text = await response.text();
+                        const parser = new DOMParser();
+                        const newDoc = parser.parseFromString(text, 'text/html');
+
+                        // Update the disaster grid
+                        const newGrid = newDoc.getElementById('disasterGrid');
+                        const currentGrid = document.getElementById('disasterGrid');
+                        if (newGrid && currentGrid) {
+                            currentGrid.innerHTML = newGrid.innerHTML;
+                        }
+
+                        // Update timestamp
+                        const now = new Date();
+                        lastUpdated.textContent = now.toLocaleTimeString();
+                    }
+                } catch (error) {
+                    console.error('Auto-refresh failed:', error);
+                } finally {
+                    setTimeout(() => {
+                        refreshIcon.style.display = 'none';
+                    }, 1000);
+                }
+            }, 30000); // 30 seconds
+        }
+
+        // Start auto-refresh when page loads
+        document.addEventListener('DOMContentLoaded', startAutoRefresh);
+
+        // Pause auto-refresh when page is not visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(refreshInterval);
+            } else {
+                startAutoRefresh();
+            }
+        });
+
+        {% if user.is_authenticated %}
+        // Notification system
+        async function checkForAlerts() {
+            try {
+                const response = await fetch('{% url "disasters:user_alerts" %}');
+                const data = await response.json();
+
+                if (data.alerts && data.alerts.length > 0) {
+                    showAlertNotifications(data.alerts);
+                }
+            } catch (error) {
+                console.error('Error checking alerts:', error);
+            }
+        }
+
+        function showAlertNotifications(alerts) {
+            const container = document.getElementById('alertNotifications');
+            container.innerHTML = '';
+
+            alerts.slice(0, 3).forEach(alert => { // Show max 3 alerts
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'bg-red-500 text-white p-4 rounded-lg shadow-lg max-w-sm transform translate-x-full transition-transform duration-300';
+                alertDiv.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="font-bold text-sm mb-1">${alert.disaster_type} - ${alert.severity.toUpperCase()}</div>
+                            <div class="text-xs mb-2">${alert.location}</div>
+                            <div class="text-xs opacity-90">${alert.description}</div>
+                        </div>
+                        <button onclick="dismissAlert(this, ${alert.id})" class="ml-2 text-white hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-3 flex justify-between items-center">
+                        <span class="text-xs opacity-75">${alert.time_reported}</span>
+                        <a href="{% url 'disasters:disaster_detail' 0 %}".replace('0', alert.disaster_id)
+                           class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
+                            View
+                        </a>
+                    </div>
+                `;
+
+                container.appendChild(alertDiv);
+                container.style.display = 'block';
+
+                // Animate in
+                setTimeout(() => {
+                    alertDiv.classList.remove('translate-x-full');
+                }, 100);
+
+                // Auto-dismiss after 10 seconds
+                setTimeout(() => {
+                    dismissAlert(alertDiv, alert.id);
+                }, 10000);
+            });
+        }
+
+        async function dismissAlert(element, alertId) {
+            const alertDiv = element.closest ? element.closest('div') : element;
+
+            // Mark as read
+            try {
+                await fetch(`{% url 'disasters:mark_alert_read' 0 %}`.replace('0', alertId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                        'Content-Type': 'application/json',
+                    }
+                });
+            } catch (error) {
+                console.error('Error marking alert as read:', error);
+            }
+
+            // Animate out
+            alertDiv.classList.add('translate-x-full');
+            setTimeout(() => {
+                alertDiv.remove();
+
+                // Hide container if no more alerts
+                const container = document.getElementById('alertNotifications');
+                if (container.children.length === 0) {
+                    container.style.display = 'none';
+                }
+            }, 300);
+        }
+
+        // Check for alerts when page loads and every minute
+        document.addEventListener('DOMContentLoaded', () => {
+            checkForAlerts();
+            setInterval(checkForAlerts, 60000); // Check every minute
+        });
+        {% endif %}
+
+        // Smooth scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show scroll to top button when scrolled down
+        window.addEventListener('scroll', () => {
+            const scrollButton = document.getElementById('scrollToTop');
+            if (window.pageYOffset > 500) {
+                if (scrollButton) scrollButton.style.display = 'block';
+            } else {
+                if (scrollButton) scrollButton.style.display = 'none';
+            }
+        });
+
+        // Enhanced search with debounce
+        let searchTimeout;
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    // Auto-search after 500ms of no typing
+                    if (this.value.length >= 3 || this.value.length === 0) {
+                        this.form.submit();
+                    }
+                }, 500);
+            });
+        }
+
+        // Filter form auto-submit
+        document.querySelectorAll('select[name]').forEach(select => {
+            select.addEventListener('change', function() {
+                if (this.value !== '') {
+                    this.form.submit();
+                }
+            });
+        });
+    </script>
+
+    <!-- Add CSRF token for AJAX requests -->
+    {% csrf_token %}
+    <script>
+        // Set CSRF token for all AJAX requests
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        if (csrfToken) {
+            // You can use this token in fetch requests
+            window.csrfToken = csrfToken;
+        }
+    </script>
+
+    <!-- Scroll to top button (hidden by default) -->
+    <button id="scrollToTop" onclick="scrollToTop()"
+            class="fixed bottom-24 right-8 bg-gray-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-gray-700 transition-all duration-300"
+            style="display: none;">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</body>
+</html>

@@ -15,6 +15,8 @@ from .forms import (
 )
 from .models import CitizenProfile, ServiceProviderProfile, ServiceProviderRating
 
+from disasters.models import Disaster, DisasterAlert
+from django.db.models import Count, Q
 
 def register_choice(request):
     return render(request, 'accounts/register_choice.html')
@@ -39,7 +41,7 @@ def register_citizen(request):
 @login_required
 def citizen_dashboard(request):
     """
-    Displays the logged-in citizen's profile information.
+    Displays the logged-in citizen's profile information with disaster reports.
     """
     if request.user.user_type != 'citizen':
         messages.error(request, 'Access denied.')
@@ -51,8 +53,29 @@ def citizen_dashboard(request):
         messages.info(request, 'Please complete your profile.')
         return redirect('citizen_profile_update')
 
+    # Get user's disaster reports
+    user_disasters = Disaster.objects.filter(reporter=request.user).order_by('-created_at')[:5]
+
+    # Get disaster statistics
+    disaster_stats = {
+        'total': user_disasters.count(),
+        'pending': Disaster.objects.filter(reporter=request.user, status='pending').count(),
+        'approved': Disaster.objects.filter(reporter=request.user, status='approved').count(),
+        'alerts_received': DisasterAlert.objects.filter(user=request.user).count(),
+        'unread_alerts': DisasterAlert.objects.filter(user=request.user, is_read=False).count(),
+    }
+
+    # Get nearby disasters (same city)
+    nearby_disasters = Disaster.objects.filter(
+        status='approved',
+        city=profile.city
+    ).exclude(reporter=request.user).order_by('-created_at')[:3]
+
     context = {
         'profile': profile,
+        'user_disasters': user_disasters,
+        'disaster_stats': disaster_stats,
+        'nearby_disasters': nearby_disasters,
     }
     return render(request, 'accounts/citizen_dashboard.html', context)
 
@@ -195,7 +218,7 @@ def service_provider_profile_setup(request):
 
 @login_required
 def service_provider_dashboard(request):
-    """Service Provider Dashboard View"""
+    """Service Provider Dashboard View with disaster integration"""
     if request.user.user_type != 'service_provider':
         messages.error(request, 'Access denied.')
         return redirect('homepage')
@@ -207,24 +230,46 @@ def service_provider_dashboard(request):
             request, 'Profile not found. Please complete your registration.')
         return redirect('service_provider_profile_setup')
 
-    # Get recent emergency responses (you'll implement this when you create the emergency system)
-    recent_responses = profile.emergency_responses.all().order_by(
-        '-created_at')[:5]
+    # Get recent emergency responses
+    recent_responses = profile.emergency_responses.all().order_by('-created_at')[:5]
+
+    # Get disaster-related responses
+    disaster_responses = profile.disaster_responses.select_related('disaster').order_by('-created_at')[:5]
+
+    # Get nearby disasters that need response
+    nearby_disasters = Disaster.objects.filter(
+        status='approved',
+        city=profile.city
+    ).annotate(
+        response_count=Count('responses')
+    ).order_by('response_count', '-created_at')[:5]
 
     # Calculate average rating
-    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))[
-        'avg_rating'] or 0
+    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
     total_ratings = profile.ratings.count()
 
     # Get capacity percentage
     capacity_percentage = profile.get_capacity_percentage()
 
+    # Disaster statistics
+    disaster_stats = {
+        'reported': Disaster.objects.filter(reporter=request.user).count(),
+        'responded_to': disaster_responses.count(),
+        'pending_responses': nearby_disasters.filter(
+            responses__service_provider=profile,
+            responses__response_status__in=['notified', 'responding']
+        ).count()
+    }
+
     context = {
         'profile': profile,
         'recent_responses': recent_responses,
+        'disaster_responses': disaster_responses,
+        'nearby_disasters': nearby_disasters,
         'avg_rating': round(avg_rating, 1),
         'total_ratings': total_ratings,
         'capacity_percentage': capacity_percentage,
+        'disaster_stats': disaster_stats,
         'is_complete': profile.is_profile_complete()
     }
 

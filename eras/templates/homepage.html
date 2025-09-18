@@ -39,15 +39,16 @@
                 <span class="text-xl font-bold text-gray-800">ERAS</span>
             </div>
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
-                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
-                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
-                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
-                {% if user.is_authenticated and user.user_type == 'citizen' %}
-                <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
-                <a href="{% url 'citizen_profile_update' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Edit Profile</a>
-                {% endif %}
-            </div>          
+    <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
+    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
+    <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
+    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
+    {% if user.is_authenticated and user.user_type == 'citizen' %}
+        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
+    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
+    {% endif %}
+</div>
             <div class="flex items-center space-x-4">
                 <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
                 {% if user.is_authenticated %}
@@ -95,44 +96,88 @@
         </section>
 
         <!-- Live Emergency Alerts Section -->
-        <section class="container mx-auto px-6 py-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Live Emergency Alerts</h2>
-                <p class="mt-2 text-gray-600">View real-time, verified emergency alerts in your area.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Alert Card 1 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+       <section class="container mx-auto px-6 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900">Live Emergency Alerts</h2>
+        <p class="mt-2 text-gray-600">View real-time, verified emergency alerts in your area.</p>
+    </div>
+
+    {% load disasters_tags %}
+    {% get_recent_disasters as recent_disasters %}
+
+    {% if recent_disasters %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for disaster in recent_disasters %}
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col hover:shadow-2xl transition-shadow duration-300">
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-lg font-semibold text-custom-red">Fire Alert</span>
-                        <i class="fas fa-fire text-xl text-custom-red"></i>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
+                                <i class="{{ disaster.get_disaster_icon }}"></i>
+                            </div>
+                            <div>
+                                <span class="text-lg font-semibold text-custom-red">{{ disaster.get_disaster_type_display }}</span>
+                                <div class="text-xs text-gray-500">{{ disaster.get_time_since_reported }}</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-bold rounded-full {{ disaster.get_severity_color }}">
+                            {{ disaster.get_severity_display|upper }}
+                        </span>
                     </div>
-                    <p class="text-gray-700 flex-grow">Fire reported at a commercial building in Gulshan-1. Emergency services are on their way. Please avoid the area.</p>
-                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
-                </div>
-                <!-- Alert Card 2 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-lg font-semibold text-custom-red">Medical Emergency</span>
-                        <i class="fas fa-heartbeat text-xl text-custom-red"></i>
+
+                    <div class="flex items-center text-gray-600 mb-3">
+                        <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                        <span class="text-sm">{{ disaster.city }}, {{ disaster.area_sector }}</span>
                     </div>
-                    <p class="text-gray-700 flex-grow">Urgent medical assistance needed at a residence in Banani. Ambulance dispatched. Stay clear of the road.</p>
-                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
-                </div>
-                <!-- Alert Card 3 -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-lg font-semibold text-custom-red">Traffic Accident</span>
-                        <i class="fas fa-car-crash text-xl text-custom-red"></i>
+
+                    <p class="text-gray-700 flex-grow mb-4">{{ disaster.description|truncatechars:100 }}</p>
+
+                    {% if disaster.images.exists %}
+                        <div class="mb-4">
+                            <img src="{{ disaster.images.first.image.url }}" alt="Disaster image"
+                                 class="w-full h-32 object-cover rounded-lg">
+                        </div>
+                    {% endif %}
+
+                    <div class="flex items-center justify-between">
+                        <a href="{% url 'disasters:disaster_detail' disaster.id %}"
+                           class="text-custom-red font-semibold hover:underline flex items-center">
+                            View Details <i class="fas fa-arrow-right ml-1 text-sm"></i>
+                        </a>
+                        <div class="flex items-center space-x-2 text-gray-500 text-sm">
+                            <i class="fas fa-eye"></i>
+                            <span>{{ disaster.view_count }}</span>
+                            {% if disaster.responses.exists %}
+                                <i class="fas fa-ambulance ml-2"></i>
+                                <span>{{ disaster.responses.count }}</span>
+                            {% endif %}
+                        </div>
                     </div>
-                    <p class="text-gray-700 flex-grow">Major traffic accident on Mirpur Road near Science Lab. Expect heavy delays. Use alternative routes if possible.</p>
-                    <a href="#" class="mt-4 text-custom-red font-semibold hover:underline">View Details <i class="fas fa-arrow-right ml-1 text-sm"></i></a>
                 </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="{% url 'disasters:disaster_list' %}"
+               class="bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">
+                View All Alerts
+            </a>
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-shield-alt text-3xl text-green-500"></i>
             </div>
-            <div class="text-center mt-12">
-                <a href="#" class="bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">View All Alerts</a>
-            </div>
-        </section>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">All Clear</h3>
+            <p class="text-gray-500 mb-6">No active emergency alerts in your area at the moment.</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'disasters:create_disaster' %}"
+                   class="bg-custom-red text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">
+                    Report Emergency
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
 
 
         <!-- Role Card 2: Service Provider -->
@@ -142,7 +187,10 @@
     <p class="text-gray-600 text-sm flex-grow">Emergency services, hospitals, fire stations, and police. Manage alerts and coordinate emergency responses.</p>
     
     {% if user.is_authenticated and user.user_type == 'service_provider' %}
-        <a href="{% url 'service_provider_dashboard' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Dashboard</a>
+        <div class="mt-4 space-y-2 w-full">
+            <a href="{% url 'service_provider_dashboard' %}" class="block bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Dashboard</a>
+            <a href="{% url 'disasters:nearby_disasters' %}" class="block bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold text-sm">Nearby Emergencies</a>
+        </div>
     {% else %}
         <a href="{% url 'register_service_provider' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Register Organization</a>
     {% endif %}
