@@ -62,7 +62,7 @@ def create_disaster(request):
                         disaster.status = 'pending'
                         disaster.save()
                         messages.info(request, 'Disaster report submitted for review!')
-                        return redirect('my_disasters')
+                        return redirect('disasters:my_disasters')
 
             except Exception as e:
                 messages.error(request, f'Error creating disaster report: {str(e)}')
