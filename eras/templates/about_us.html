@@ -1,0 +1,341 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ERAS</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for "Inter" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-red': '#dc2626'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-['Inter']">
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-custom-red rounded-lg flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800">ERAS</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+               <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
+    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
+    <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
+    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
+    {% if user.is_authenticated and user.user_type == 'citizen' %}
+        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
+    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
+    {% endif %}
+            </div>
+            <div class="flex items-center space-x-4">
+                      <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
+                {% if user.is_authenticated %}
+        <span class="text-gray-600">Welcome, {{ user.username }}</span>
+                    {% if user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_profile_setup' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Profile</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                    <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 bg-gradient-to-br from-red-50 to-pink-50">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Meet Our Team</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                The dedicated developers behind ERAS - Emergency Response & Alert System.
+                We're committed to building technology that saves lives and strengthens communities.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contributors Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+                <!-- Contributor 1 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-6">
+                            <img src="{% static 'assets/img/Ibrahim.jpeg' %}"
+                                 alt="Ibrahim Hasan"
+                                 class="w-32 h-32 rounded-full object-cover mx-auto border-4 border-custom-red shadow-lg">
+                            <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                                <i class="fas fa-code text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Ibrahim Hasan</h3>
+                        <p class="text-custom-red font-semibold mb-4">Lead Full-Stack Developer</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-laptop-code text-custom-red mr-2"></i>
+                                ERAS Experience
+                            </h4>
+                            <p class="text-gray-600 text-sm">
+                               Working on the ERAS project was a valuable learning experience. I understood how to design system models like Use Case and DFD, which helped me break down complex tasks into simpler parts. Applying MVC and Agile improved my knowledge of modular development and teamwork. Most importantly, this project made me realize how technology can solve real-life problems and inspired me to build impactful solutions for society.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-tools text-custom-red mr-2"></i>
+                                Tech Stack
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Django</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Python</span>
+                                <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Html & CSS</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">AJAX</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <a href="https://github.com/ibrahim-hasan5" target="_blank"
+                           class="flex-1 bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-github"></i>
+                            <span class="font-semibold">GitHub</span>
+                        </a>
+                        <a href="https://www.facebook.com/share/172qEgaaKd/?mibextid=wwXIfr" target="_blank"
+                           class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-facebook-f"></i>
+                            <span class="font-semibold">Facebook</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contributor 2 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-6">
+                            <img src="{% static 'assets/img/orin.png' %}"
+                                 alt="Faizun Nesa"
+                                 class="w-32 h-32 rounded-full object-cover mx-auto border-4 border-custom-red shadow-lg">
+                              <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                                <i class="fas fa-code text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Faizun Nesa</h3>
+                        <p class="text-custom-red font-semibold mb-4">Full-stack Developer</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-laptop-code text-custom-red mr-2"></i>
+                                ERAS Experience
+                            </h4>
+                            <p class="text-gray-600 text-sm">
+                                Contributing to the ERAS project gave me hands-on exposure to the complete software development cycle. I learned how to conduct requirement analysis from real users, which helped me understand practical challenges in system design. Creating models like Use Case, Class Diagram, and DFD strengthened my analytical thinking and problem-solving skills. Building the system using the MVC pattern enhanced my ability to organize code for scalability and maintainability. Agile sprint planning and peer collaboration improved my teamwork and adaptability. Beyond technical growth, this project made me realize how impactful software can be in critical areas like healthcare, inspiring me to focus on solutions that prioritize both innovation and human well-being.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-tools text-custom-red mr-2"></i>
+                                Tech Stack
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Django</span>
+                                <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Python</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Html & CSS</span>
+                                <span class="bg-cyan-100 text-cyan-800 text-xs px-2 py-1 rounded">Tailwind</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <a href="https://github.com/Faizun12" target="_blank"
+                           class="flex-1 bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-github"></i>
+                            <span class="font-semibold">GitHub</span>
+                        </a>
+                        <a href="https://www.facebook.com/share/17CLcZNHBT/?mibextid=wwXIfr" target="_blank"
+                           class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-facebook-f"></i>
+                            <span class="font-semibold">Facebook</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contributor 3 -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-6">
+                            <img src="{% static 'assets/img/mou.jpeg' %}"
+                                 alt="Israt Jahan Mou"
+                                 class="w-32 h-32 rounded-full object-cover mx-auto border-4 border-custom-red shadow-lg">
+                               <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                                <i class="fas fa-code text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Israt Jahan Mou</h3>
+                        <p class="text-custom-red font-semibold mb-4">Full Stack Developer</p>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-laptop-code text-custom-red mr-2"></i>
+                                ERAS Experience
+                            </h4>
+                            <p class="text-gray-600 text-sm">
+                               Working on the ERAS project was a valuable learning experience that enhanced my Django development skills. I learned to create custom User models, complex forms, and handle sensitive data like medical information and emergency contacts. Building the citizen registration and profile system taught me about database relationships and modern frontend techniques with CSS and JavaScript.
+Most importantly, ERAS made me realize how technology can solve real-world problems. Creating features for emergency preparedness showed me how software can genuinely impact community safety and potentially save lives. This project inspired me to build meaningful solutions that address societal challenges and serve people's needs.
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+                                <i class="fas fa-tools text-custom-red mr-2"></i>
+                                Tech Stack
+                            </h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Django</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Python</span>
+                                <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">Html & CSS</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">Nginx</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <a href="https://github.com/IsratMou" target="_blank"
+                           class="flex-1 bg-gray-900 text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-github"></i>
+                            <span class="font-semibold">GitHub</span>
+                        </a>
+                        <a href="https://www.facebook.com/share/1CUNXbSBhT/?mibextid=wwXIfr" target="_blank"
+                           class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fab fa-facebook-f"></i>
+                            <span class="font-semibold">Facebook</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Statement -->
+    <section class="py-16 bg-gradient-to-r from-custom-red to-red-700 text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-8">Our Mission</h2>
+            <p class="text-xl max-w-4xl mx-auto leading-relaxed">
+                We believe that technology can save lives. Our mission with ERAS is to create a robust,
+                reliable emergency response system that connects citizens, service providers, and emergency
+                responders in real-time. Every second counts in an emergency, and we're committed to making
+                those seconds count.
+            </p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">3</div>
+                    <div class="text-gray-300">Dedicated Developers</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">1000+</div>
+                    <div class="text-gray-300">Hours of Development</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">24/7</div>
+                    <div class="text-gray-300">System Monitoring</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">99.9%</div>
+                    <div class="text-gray-300">Uptime Target</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Get In Touch</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Have questions about ERAS or want to contribute to our mission?
+                We'd love to hear from you.
+            </p>
+            <a href="mailto:team@eras.com"
+               class="inline-flex items-center space-x-2 bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">
+                <i class="fas fa-envelope"></i>
+                <span>Contact Our Team</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">ERAS</h3>
+                <p class="text-sm">Providing real-time emergency alerts and vital community services to keep you safe.</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Quick Links</h3>
+                <ul class="text-sm space-y-2">
+                    <li><a href="#" class="hover:text-white transition duration-300">Home</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Services</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Support</h3>
+                <ul class="text-sm space-y-2">
+                    <li><a href="#" class="hover:text-white transition duration-300">FAQ</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Help Center</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-300"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-8 border-t border-gray-700 pt-6 text-sm">
+            &copy; 2025 Emergency Response & Alert System. All Rights Reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

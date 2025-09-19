@@ -23,6 +23,7 @@ from .import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.homepage,name='homepage'),
+    path('about_us/',views.about_us,name='about_us'),
     path('accounts/', include('accounts.urls')),
     path('disasters/', include('disasters.urls')),
 ]
