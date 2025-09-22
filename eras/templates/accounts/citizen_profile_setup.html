@@ -267,8 +267,9 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="form-field">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+            <div class="form-field relative">
+              <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              {{ form.first_name }}
               <div class="relative">
                 <input type="text" name="full_name" value="{{ user.get_full_name|default:user.username }}"  class=" w-full h-14 px-4 rounded-xl border-2 border-gray-200 focus:border-gray-300 transition-all pl-12">
                 <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
