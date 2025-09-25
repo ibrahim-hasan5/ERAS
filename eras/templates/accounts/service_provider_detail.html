@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ provider.organization_name }} - ERAS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .detail-bg {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #10b981;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+        }
+
+        .rating-bar {
+            background: #f3f4f6;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            background: linear-gradient(90deg, #10b981, #059669);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-inactive { background: #fee2e2; color: #991b1b; }
+        .status-maintenance { background: #fef3c7; color: #92400e; }
+
+        .verification-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .contact-button {
+            transition: all 0.3s ease;
+        }
+
+        .contact-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="detail-bg font-inter text-gray-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-hospital text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold text-gray-800">ERAS</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-green-500 transition duration-300">Home</a>
+                <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-green-500 transition duration-300">Directory</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="bg-red-500 text-white py-2 px-4 rounded-full hover:bg-red-600 transition duration-300">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-green-500 transition duration-300">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+
+        <!-- Breadcrumb -->
+        <nav class="mb-8">
+            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                <a href="{% url 'homepage' %}" class="hover:text-green-500 transition-colors">Home</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a href="{% url 'service_provider_directory' %}" class="hover:text-green-500 transition-colors">Directory</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <a href="{% url 'service_provider_directory' %}?service_type={{ provider.service_type }}" class="hover:text-green-500 transition-colors">{{ provider.get_service_type_display }}</a>
+                <i class="fas fa-chevron-right text-xs"></i>
+                <span class="text-gray-800 font-medium">{{ provider.organization_name }}</span>
+            </div>
+        </nav>
+
+        <!-- Provider Header -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <div class="flex flex-col lg:flex-row items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center mb-4">
+                        <h1 class="text-3xl font-bold text-gray-800 mr-4">{{ provider.organization_name }}</h1>
+                        {% if provider.is_verified %}
+                            <span class="verification-badge">
+                                <i class="fas fa-shield-alt mr-1"></i> Verified
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4 mb-6">
+                        <span class="px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">
+                            {{ provider.get_service_display_name }}
+                        </span>
+
+                        <div class="flex items-center">
+                            <div class="flex items-center rating-stars mr-2">
+                                {% for i in "12345" %}
+                                    {% if avg_rating >= forloop.counter %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="text-gray-600 font-medium">{{ avg_rating }} ({{ total_ratings }} reviews)</span>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full mr-2
+                                {% if provider.current_status == 'active' %}bg-green-500
+                                {% elif provider.current_status == 'inactive' %}bg-red-500
+                                {% else %}bg-yellow-500{% endif %}"></div>
+                            <span class="text-sm font-medium
+                                {% if provider.current_status == 'active' %}text-green-600
+                                {% elif provider.current_status == 'inactive' %}text-red-600
+                                {% else %}text-yellow-600{% endif %}">
+                                {{ provider.get_current_status_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center text-gray-600 mb-4">
+                        <i class="fas fa-map-marker-alt mr-3 text-red-500"></i>
+                        <span>{{ provider.street_address }}, {{ provider.area_sector }}, {{ provider.city }} {{ provider.postal_code }}</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-col space-y-3 mt-6 lg:mt-0">
+                    {% if provider.emergency_hotline %}
+                    <a href="tel:{{ provider.emergency_hotline }}"
+                       class="contact-button bg-red-500 text-white py-3 px-6 rounded-lg font-semibold text-center hover:bg-red-600">
+                        <i class="fas fa-phone mr-2"></i> Emergency Call
+                    </a>
+                    {% endif %}
+
+                    {% if provider.contact_number %}
+                    <a href="tel:{{ provider.contact_number }}"
+                       class="contact-button bg-blue-500 text-white py-2 px-6 rounded-lg font-medium text-center hover:bg-blue-600">
+                        <i class="fas fa-phone mr-2"></i> General Contact
+                    </a>
+                    {% endif %}
+
+                    {% if provider.email %}
+                    <a href="mailto:{{ provider.email }}"
+                       class="contact-button bg-green-500 text-white py-2 px-6 rounded-lg font-medium text-center hover:bg-green-600">
+                        <i class="fas fa-envelope mr-2"></i> Send Email
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Main Information -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- Service Information -->
+                <div class="info-card rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-blue-500"></i>
+                        Service Information
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% if provider.specialized_services %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Specialized Services</h3>
+                            <p class="text-gray-600">{{ provider.specialized_services }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if provider.equipment_available %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Equipment Available</h3>
+                            <p class="text-gray-600">{{ provider.equipment_available }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if provider.average_response_time %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Average Response Time</h3>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                <span class="text-gray-800 font-medium">{{ provider.average_response_time }} minutes</span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Operating Hours</h3>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-green-500 mr-2"></i>
+                                <span class="text-gray-800 font-medium">{{ provider.operating_hours|default:"24/7" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity Information -->
+                {% if provider.maximum_capacity or provider.current_capacity or provider.staff_count %}
+                <div class="info-card rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-chart-bar mr-3 text-purple-500"></i>
+                        Capacity & Resources
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% if provider.staff_count %}
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <i class="fas fa-users text-2xl text-blue-500 mb-2"></i>
+                            <div class="text-2xl font-bold text-blue-600">{{ provider.staff_count }}</div>
+                            <div class="text-sm text-blue-600">Staff Members</div>
+                        </div>
+                        {% endif %}
+
+                        {% if provider.maximum_capacity %}
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <i class="fas fa-hospital text-2xl text-green-500 mb-2"></i>
+                            <div class="text-2xl font-bold text-green-600">{{ provider.maximum_capacity }}</div>
+                            <div class="text-sm text-green-600">Max Capacity</div>
+                        </div>
+                        {% endif %}
+
+                        {% if provider.current_capacity is not None %}
+                        <div class="text-center p-4 bg-orange-50 rounded-lg">
+                            <i class="fas fa-bed text-2xl text-orange-500 mb-2"></i>
+                            <div class="text-2xl font-bold text-orange-600">{{ provider.current_capacity }}</div>
+                            <div class="text-sm text-orange-600">Current Available</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if capacity_percentage %}
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Capacity Utilization</span>
+                            <span class="text-sm font-medium text-gray-700">{{ capacity_percentage }}%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: {{ capacity_percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Contact Information -->
+                <div class="info-card rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-address-book mr-3 text-green-500"></i>
+                        Contact Information
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {% if provider.primary_contact_person %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Primary Contact</h3>
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-user text-gray-500 mr-2"></i>
+                                <span class="text-gray-800">{{ provider.primary_contact_person }}</span>
+                            </div>
+                            {% if provider.contact_person_designation %}
+                            <div class="flex items-center">
+                                <i class="fas fa-id-badge text-gray-500 mr-2"></i>
+                                <span class="text-gray-600 text-sm">{{ provider.contact_person_designation }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Contact Numbers</h3>
+                            {% if provider.emergency_hotline %}
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                <span class="text-gray-800 font-medium">{{ provider.emergency_hotline }}</span>
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full ml-2">Emergency</span>
+                            </div>
+                            {% endif %}
+                            {% if provider.contact_number %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-blue-500 mr-2"></i>
+                                <span class="text-gray-800">{{ provider.contact_number }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if provider.email or provider.emergency_email %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Email Addresses</h3>
+                            {% if provider.email %}
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-envelope text-blue-500 mr-2"></i>
+                                <a href="mailto:{{ provider.email }}" class="text-blue-600 hover:underline">{{ provider.email }}</a>
+                            </div>
+                            {% endif %}
+                            {% if provider.emergency_email %}
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                <a href="mailto:{{ provider.emergency_email }}" class="text-red-600 hover:underline">{{ provider.emergency_email }}</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if provider.registration_number %}
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-2">Registration</h3>
+                            <div class="flex items-center">
+                                <i class="fas fa-certificate text-purple-500 mr-2"></i>
+                                <span class="text-gray-800">{{ provider.registration_number }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="info-card rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-star mr-3 text-yellow-500"></i>
+                        Reviews & Ratings
+                    </h2>
+
+                    <!-- Rating Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="text-center">
+                            <div class="text-5xl font-bold text-gray-800 mb-2">{{ avg_rating }}</div>
+                            <div class="flex justify-center items-center rating-stars mb-2">
+                                {% for i in "12345" %}
+                                    {% if avg_rating >= forloop.counter %}
+                                        <i class="fas fa-star text-lg"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-lg"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="text-gray-600">Based on {{ total_ratings }} reviews</div>
+                        </div>
+
+                        <div class="space-y-2">
+                            {% for rating, count in rating_counts.items %}
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 w-12">{{ rating }} star{{ rating|pluralize }}</span>
+                                <div class="flex-1 mx-3 rating-bar">
+                                    <div class="rating-fill" style="width:{% widthratio count total_ratings 100 %}%"></div>
+
+                                </div>
+                                <span class="text-sm text-gray-600 w-8">{{ count }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add Review Form -->
+                    {% if user.is_authenticated and not user_rating %}
+                    <div class="border-t pt-6 mb-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Leave a Review</h3>
+                        <form method="POST" class="space-y-4">
+                            {% csrf_token %}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Review (Optional)</label>
+                                {{ rating_form.review }}
+                            </div>
+                            <button type="submit" class="bg-green-500 text-white py-2 px-6 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                                <i class="fas fa-star mr-2"></i> Submit Review
+                            </button>
+                        </form>
+                    </div>
+                    {% elif user.is_authenticated and user_rating %}
+                    <div class="border-t pt-6 mb-6">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-green-700 font-medium">You have already reviewed this service provider</span>
+                            </div>
+                            <div class="mt-2 flex items-center">
+                                <span class="text-sm text-green-600 mr-2">Your rating:</span>
+                                <div class="flex rating-stars">
+                                    {% for i in "12345" %}
+                                        {% if user_rating.rating >= forloop.counter %}
+                                            <i class="fas fa-star text-sm"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-sm"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Recent Reviews -->
+                    {% if ratings %}
+                    <div class="border-t pt-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Recent Reviews</h3>
+                        <div class="space-y-6">
+                            {% for review in ratings %}
+                            <div class="border-b border-gray-100 pb-6 last:border-b-0">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                            {{ review.user.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-800">{{ review.user.username }}</div>
+                                            <div class="flex items-center mt-1">
+                                                <div class="flex rating-stars mr-2">
+                                                    {% for i in "12345" %}
+                                                        {% if review.rating >= forloop.counter %}
+                                                            <i class="fas fa-star text-sm"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star text-sm"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <span class="text-xs text-gray-500">{{ review.created_at|date:"M d, Y" }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if review.review %}
+                                <p class="text-gray-600 ml-13">{{ review.review }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+
+                <!-- Quick Stats -->
+                <div class="info-card rounded-2xl p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Quick Stats</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Service Type</span>
+                            <span class="font-medium text-gray-800">{{ provider.get_service_display_name }}</span>
+                        </div>
+
+                        {% if provider.average_response_time %}
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Response Time</span>
+                            <span class="font-medium text-gray-800">{{ provider.average_response_time }} min</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Status</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium status-{{ provider.current_status }}">
+                                {{ provider.get_current_status_display }}
+                            </span>
+                        </div>
+
+                        {% if provider.is_verified %}
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Verification</span>
+                            <span class="text-green-600 font-medium">
+                                <i class="fas fa-shield-alt mr-1"></i> Verified
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Rating</span>
+                            <div class="flex items-center">
+                                <div class="flex rating-stars mr-1">
+                                    {% for i in "12345" %}
+                                        {% if avg_rating >= forloop.counter %}
+                                            <i class="fas fa-star text-sm"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-sm"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="font-medium text-gray-800">{{ avg_rating }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Actions -->
+                <div class="info-card rounded-2xl p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                        Emergency Actions
+                    </h3>
+                    <div class="space-y-3">
+                        {% if provider.emergency_hotline %}
+                        <a href="tel:{{ provider.emergency_hotline }}"
+                           class="block w-full bg-red-500 text-white text-center py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors">
+                            <i class="fas fa-phone mr-2"></i> Call Emergency Line
+                        </a>
+                        {% endif %}
+
+                        {% if provider.emergency_email %}
+                        <a href="mailto:{{ provider.emergency_email }}"
+                           class="block w-full bg-orange-500 text-white text-center py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors">
+                            <i class="fas fa-envelope mr-2"></i> Emergency Email
+                        </a>
+                        {% endif %}
+
+                        <button onclick="shareProvider()"
+                                class="block w-full bg-blue-500 text-white text-center py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-share mr-2"></i> Share Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Location Map Placeholder -->
+                <div class="info-card rounded-2xl p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                        Location
+                    </h3>
+                    <div class="bg-gray-100 rounded-lg h-48 flex items-center justify-center">
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-map text-2xl mb-2"></i>
+                            <div class="text-sm">Interactive map</div>
+                            <div class="text-xs">{{ provider.street_address }}</div>
+                            <div class="text-xs">{{ provider.area_sector }}, {{ provider.city }}</div>
+                        </div>
+                    </div>
+                    <button class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                        <i class="fas fa-directions mr-2"></i> Get Directions
+                    </button>
+                </div>
+
+                <!-- Related Services -->
+                <div class="info-card rounded-2xl p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Related Services</h3>
+                    <div class="space-y-3">
+                        <a href="{% url 'service_provider_directory' %}?service_type={{ provider.service_type }}&city={{ provider.city }}"
+                           class="block text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-arrow-right mr-2"></i> More {{ provider.get_service_type_display }} in {{ provider.city }}
+                        </a>
+                        <a href="{% url 'service_provider_directory' %}?city={{ provider.city }}"
+                           class="block text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-arrow-right mr-2"></i> All Services in {{ provider.city }}
+                        </a>
+                        <a href="{% url 'service_provider_directory' %}?service_type={{ provider.service_type }}"
+                           class="block text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-arrow-right mr-2"></i> All {{ provider.get_service_type_display }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Directory -->
+        <div class="mt-12 text-center">
+            <a href="{% url 'service_provider_directory' %}?service_type={{ provider.service_type }}"
+               class="inline-flex items-center bg-gray-100 text-gray-700 py-2 px-6 rounded-lg font-medium hover:bg-gray-200 transition-colors mr-4">
+                <i class="fas fa-arrow-left mr-2"></i> Back to {{ provider.get_service_type_display }}
+            </a>
+            <a href="{% url 'service_provider_directory' %}"
+               class="inline-flex items-center bg-green-500 text-white py-2 px-6 rounded-lg font-medium hover:bg-green-600 transition-colors">
+                <i class="fas fa-list mr-2"></i> Browse All Providers
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center mr-3">
+                    <i class="fas fa-hospital text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold">ERAS</span>
+            </div>
+            <p class="text-sm mb-4">Connecting communities with emergency services when they need them most.</p>
+            <div class="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500">
+                &copy; 2025 Emergency Response & Alert System. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function shareProvider() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ provider.organization_name }} - Emergency Service Provider',
+                    text: 'Check out {{ provider.organization_name }} - {{ provider.get_service_display_name }} in {{ provider.city }}',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    alert('Link copied to clipboard!');
+                });
+            }
+        }
+
+        // Add loading states for action buttons
+        document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(function(link) {
+            link.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connecting...';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
