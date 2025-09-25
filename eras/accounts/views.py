@@ -18,6 +18,7 @@ from .models import CitizenProfile, ServiceProviderProfile, ServiceProviderRatin
 from disasters.models import Disaster, DisasterAlert
 from django.db.models import Count, Q
 
+
 def register_choice(request):
     return render(request, 'accounts/register_choice.html')
 
@@ -54,7 +55,8 @@ def citizen_dashboard(request):
         return redirect('citizen_profile_update')
 
     # Get user's disaster reports
-    user_disasters = Disaster.objects.filter(reporter=request.user).order_by('-created_at')[:5]
+    user_disasters = Disaster.objects.filter(
+        reporter=request.user).order_by('-created_at')[:5]
 
     # Get disaster statistics
     disaster_stats = {
@@ -82,19 +84,16 @@ def citizen_dashboard(request):
 
 @login_required
 def citizen_profile_update(request):
-    """
-    Handles both initial setup and updating of the Citizen Profile.
-    """
     if request.user.user_type != 'citizen':
         messages.error(request, 'Access denied.')
         return redirect('homepage')
 
     try:
         profile = request.user.citizen_profile
-        is_setup = False  # This is an update, not initial setup
+        is_setup = False
     except CitizenProfile.DoesNotExist:
         profile = CitizenProfile(user=request.user)
-        is_setup = True  # This is initial setup
+        is_setup = True
 
     if request.method == 'POST':
         form = CitizenProfileForm(request.POST, instance=profile)
@@ -117,6 +116,7 @@ def citizen_profile_update(request):
 
     context = {
         'form': form,
+        'profile': profile,  # Make sure this is always passed
         'is_setup': is_setup,
     }
     return render(request, 'accounts/citizen_profile_setup.html', context)
@@ -231,10 +231,12 @@ def service_provider_dashboard(request):
         return redirect('service_provider_profile_setup')
 
     # Get recent emergency responses
-    recent_responses = profile.emergency_responses.all().order_by('-created_at')[:5]
+    recent_responses = profile.emergency_responses.all().order_by(
+        '-created_at')[:5]
 
     # Get disaster-related responses
-    disaster_responses = profile.disaster_responses.select_related('disaster').order_by('-created_at')[:5]
+    disaster_responses = profile.disaster_responses.select_related(
+        'disaster').order_by('-created_at')[:5]
 
     # Get nearby disasters that need response
     nearby_disasters = Disaster.objects.filter(
@@ -245,7 +247,8 @@ def service_provider_dashboard(request):
     ).order_by('response_count', '-created_at')[:5]
 
     # Calculate average rating
-    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+    avg_rating = profile.ratings.aggregate(avg_rating=Avg('rating'))[
+        'avg_rating'] or 0
     total_ratings = profile.ratings.count()
 
     # Get capacity percentage
