@@ -198,50 +198,122 @@
     {% endif %}
 </div>
 
-<!-- Add this new section after the Role-Based Emergency Access Section -->
+    
+    <!-- Replace the existing Emergency Services Directory section in homepage.html -->
 <!-- Emergency Services Directory Section -->
 <section class="container mx-auto px-6 py-16">
     <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900">Emergency Services Directory</h2>
         <p class="mt-2 text-gray-600">Find verified emergency service providers in your area instantly.</p>
     </div>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Service Type 1 -->
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
-            <i class="fas fa-hospital text-4xl text-red-500 mb-4"></i>
-            <h3 class="text-lg font-semibold">Hospitals</h3>
-            <p class="text-gray-600 mt-2">Find nearby hospitals and medical facilities for emergency medical care.</p>
-        </div>
-        
-        <!-- Service Type 2 -->
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
-            <i class="fas fa-fire-extinguisher text-4xl text-orange-500 mb-4"></i>
-            <h3 class="text-lg font-semibold">Fire Stations</h3>
-            <p class="text-gray-600 mt-2">Connect with fire departments and emergency response units in your area.</p>
-        </div>
-        
-        <!-- Service Type 3 -->
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
-            <i class="fas fa-shield-alt text-4xl text-blue-500 mb-4"></i>
-            <h3 class="text-lg font-semibold">Police Stations</h3>
-            <p class="text-gray-600 mt-2">Locate police stations and law enforcement agencies near you.</p>
-        </div>
-        
-        <!-- Service Type 4 -->
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center">
-            <i class="fas fa-ambulance text-4xl text-green-500 mb-4"></i>
-            <h3 class="text-lg font-semibold">Ambulance Services</h3>
-            <p class="text-gray-600 mt-2">Find ambulance services and emergency medical transportation.</p>
-        </div>
+        <!-- Service Type 1: Hospital -->
+        <a href="{% url 'service_provider_directory' %}?service_type=hospital" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-hospital text-4xl text-red-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-red-500 transition-colors duration-300">Hospitals</h3>
+                <p class="text-gray-600 mt-2 text-sm">Find nearby hospitals and medical facilities for emergency medical care.</p>
+                <div class="mt-4 bg-red-100 text-red-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 2: Ambulance -->
+        <a href="{% url 'service_provider_directory' %}?service_type=ambulance" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-ambulance text-4xl text-green-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-green-500 transition-colors duration-300">Ambulance Services</h3>
+                <p class="text-gray-600 mt-2 text-sm">Find ambulance services and emergency medical transportation near you.</p>
+                <div class="mt-4 bg-green-100 text-green-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 3: Fire Station -->
+        <a href="{% url 'service_provider_directory' %}?service_type=fire_station" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-fire-extinguisher text-4xl text-orange-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-orange-500 transition-colors duration-300">Fire Stations</h3>
+                <p class="text-gray-600 mt-2 text-sm">Connect with fire departments and emergency response units in your area.</p>
+                <div class="mt-4 bg-orange-100 text-orange-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 4: Police Station -->
+        <a href="{% url 'service_provider_directory' %}?service_type=police_station" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-shield-alt text-4xl text-blue-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-blue-500 transition-colors duration-300">Police Stations</h3>
+                <p class="text-gray-600 mt-2 text-sm">Locate police stations and law enforcement agencies near you.</p>
+                <div class="mt-4 bg-blue-100 text-blue-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 5: Military Camp -->
+        <a href="{% url 'service_provider_directory' %}?service_type=military_camp" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-campground text-4xl text-gray-700 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-gray-700 transition-colors duration-300">Military Camps</h3>
+                <p class="text-gray-600 mt-2 text-sm">Access military facilities and defense services in emergency situations.</p>
+                <div class="mt-4 bg-gray-100 text-gray-700 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 6: Forces Headquarters -->
+        <a href="{% url 'service_provider_directory' %}?service_type=forces_hq" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-building text-4xl text-purple-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-purple-500 transition-colors duration-300">Forces Headquarters</h3>
+                <p class="text-gray-600 mt-2 text-sm">Connect with central command and coordination centers.</p>
+                <div class="mt-4 bg-purple-100 text-purple-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 7: Emergency Response Unit -->
+        <a href="{% url 'service_provider_directory' %}?service_type=emergency_response" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-yellow-500 transition-colors duration-300">Emergency Response Units</h3>
+                <p class="text-gray-600 mt-2 text-sm">Specialized emergency response teams and disaster management units.</p>
+                <div class="mt-4 bg-yellow-100 text-yellow-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
+
+        <!-- Service Type 8: Others -->
+        <a href="{% url 'service_provider_directory' %}?service_type=others" class="group">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+                <i class="fas fa-ellipsis-h text-4xl text-indigo-500 mb-4 group-hover:scale-110 transition-transform duration-300"></i>
+                <h3 class="text-lg font-semibold group-hover:text-indigo-500 transition-colors duration-300">Other Services</h3>
+                <p class="text-gray-600 mt-2 text-sm">Additional emergency and support services in your area.</p>
+                <div class="mt-4 bg-indigo-100 text-indigo-600 py-1 px-3 rounded-full text-xs font-medium inline-block">
+                    <i class="fas fa-search mr-1"></i> Find Now
+                </div>
+            </div>
+        </a>
     </div>
-    
+
     <div class="text-center">
         <a href="{% url 'service_provider_directory' %}" class="bg-custom-red text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">
             <i class="fas fa-search mr-2"></i> Browse All Providers
         </a>
     </div>
 </section>
+
+    
+
         <!-- Role-Based Emergency Access Section - Added -->
         <section class="container mx-auto px-6 py-16">
             <div class="text-center mb-12">
