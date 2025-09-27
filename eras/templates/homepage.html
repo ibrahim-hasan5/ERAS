@@ -70,6 +70,18 @@
     <main>
         <!-- Hero Section -->
         <section class="hero-section text-center flex flex-col items-center justify-center p-8 mt-16">
+            <video 
+                autoplay 
+                muted 
+                loop 
+                playsinline
+                class="absolute top-0 left-0 w-full h-full object-cover"
+            >
+                <source src="{% static 'assets/videos/emergency-hero-bg.mp4' %}" type="video/mp4">
+                <source src="{% static 'assets/videos/emergency-hero-bg.webm' %}" type="video/webm">
+                <!-- Fallback for browsers that don't support video -->
+                Your browser does not support the video tag.
+            </video>            
             <div class="z-10">
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">Instant Alerts That Save Lives</h1>
                 <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">Get notified, act fast, stay safe. For every fire, flood, and crisis – we’re ready.</p>
