@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Network - ERAS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-red': '#dc2626',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .blood-network-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero-section {
+            text-align: center;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .quick-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-stats span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .request-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+        
+        .request-section h2 {
+            color: #dc2626;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .blood-request-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .btn-post {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+        
+        .login-hint {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            color: #6b7280;
+        }
+        
+        .login-hint a {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-hint a:hover {
+            text-decoration: underline;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .error-message {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .coming-soon {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f9fafb;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px dashed #d1d5db;
+        }
+        
+        .coming-soon h3 {
+            color: #6b7280;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .coming-soon p {
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Navigation Header -->
+<header class="bg-white shadow-md">
+    <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <span class="text-xl font-bold text-gray-800">🩸 ERAS Blood Network</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/" class="text-gray-600 hover:text-custom-red transition duration-300">← Back to Home</a>
+            {% if user.is_authenticated %}
+                <span class="text-gray-600">Welcome, {{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700 transition duration-300">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                <a href="{% url 'register_choice' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700 transition duration-300">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>
+
+<!-- Main Content -->
+<main class="blood-network-page">
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>🩸 Emergency Blood Network</h1>
+        <p>Public blood donation network - No registration required</p>
+        <div class="quick-stats">
+            <span>Sprint 1: Basic Request Form</span>
+            <span>🚀 Live & Working</span>
+        </div>
+    </div>
+    
+    <!-- Display Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Main Form Section -->
+    <div class="request-section">
+        <h2>🩸 Need Blood? Post Request</h2>
+        
+        <form method="POST" class="blood-request-form">
+            {% csrf_token %}
+            
+            <!-- Row 1: Requester & Patient -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="requester_name">Your Name *</label>
+                    <input type="text" 
+                           id="requester_name"
+                           name="requester_name" 
+                           class="form-control"
+                           value="{{ auto_fill.name|default:'' }}" 
+                           placeholder="Enter your full name" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patient_name">Patient Name *</label>
+                    <input type="text" 
+                           id="patient_name"
+                           name="patient_name" 
+                           class="form-control"
+                           placeholder="Patient who needs blood" 
+                           required>
+                </div>
+            </div>
+            
+            <!-- Row 2: Blood Type & Urgency -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="blood_type_needed">Blood Type Needed *</label>
+                    <select id="blood_type_needed" 
+                            name="blood_type_needed" 
+                            class="form-control" 
+                            required>
+                        <option value="">Select Blood Type</option>
+                        {% for value, label in blood_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="urgency">Urgency Level *</label>
+                    <select id="urgency" 
+                            name="urgency" 
+                            class="form-control" 
+                            required>
+                        <option value="urgent">🚨 Urgent - Immediate Need</option>
+                        <option value="normal" selected>📋 Normal - Planned Need</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Row 3: Location & Phone -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Hospital/Location *</label>
+                    <input type="text" 
+                           id="location"
+                           name="location" 
+                           class="form-control"
+                           value="{{ auto_fill.city|default:'' }}" 
+                           placeholder="Hospital name or address" 
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact_phone">Contact Phone *</label>
+                    <input type="tel" 
+                           id="contact_phone"
+                           name="contact_phone" 
+                           class="form-control"
+                           value="{{ auto_fill.phone|default:'' }}" 
+                           placeholder="+880XXXXXXXXX" 
+                           required>
+                </div>
+            </div>
+            
+            <!-- Row 4: Date Needed -->
+            <div class="form-group">
+                <label for="needed_by_date">Needed By Date *</label>
+                <input type="date" 
+                       id="needed_by_date"
+                       name="needed_by_date" 
+                       class="form-control"
+                       min="{{ today|date:'Y-m-d' }}"
+                       required>
+            </div>
+            
+            <!-- Additional Notes -->
+            <div class="form-group">
+                <label for="additional_notes">Additional Information (Optional)</label>
+                <textarea id="additional_notes"
+                          name="additional_notes" 
+                          class="form-control"
+                          rows="4"
+                          placeholder="Any additional information that might help donors..."></textarea>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="btn-post">
+                🩸 Post Blood Request
+            </button>
+            
+            {% if not user.is_authenticated %}
+                <p class="login-hint">
+                    💡 <a href="{% url 'login' %}">Login</a> to auto-fill your information and track your requests in dashboard
+                </p>
+            {% endif %}
+        </form>
+    </div>
+    
+    <!-- Coming Soon Section -->
+    <div class="coming-soon">
+        <h3>🔄 Next Sprint: Donor Search</h3>
+        <p>Search for blood donors, view active requests, and connect with donors directly</p>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date to today
+    const dateInput = document.getElementById('needed_by_date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+    
+    // Set default date to tomorrow for better UX
+    if (!dateInput.value) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+    }
+    
+    // Add visual feedback for urgency selection
+    const urgencySelect = document.getElementById('urgency');
+    urgencySelect.addEventListener('change', function() {
+        if (this.value === 'urgent') {
+            this.style.background = 'linear-gradient(45deg, #fef2f2, #fee2e2)';
+            this.style.borderColor = '#ef4444';
+        } else {
+            this.style.background = 'linear-gradient(45deg, #fef2f2, #ffffff)';
+            this.style.borderColor = '#e5e7eb';
+        }
+    });
+    
+    // Phone number formatting
+    const phoneInput = document.getElementById('contact_phone');
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.startsWith('880')) {
+            value = '+' + value;
+        } else if (value.startsWith('01') && value.length === 11) {
+            value = '+880' + value.substring(1);
+        }
+        this.value = value;
+    });
+});
+</script>
+
+</body>
+</html>

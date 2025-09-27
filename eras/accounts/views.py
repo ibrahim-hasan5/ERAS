@@ -13,7 +13,7 @@ from .forms import (
     CitizenProfileForm, ServiceProviderProfileForm, QuickUpdateForm,
     ServiceProviderRatingForm
 )
-from .models import CitizenProfile, ServiceProviderProfile, ServiceProviderRating
+from .models import CitizenProfile, ServiceProviderProfile, ServiceProviderRating, BloodRequest
 
 from disasters.models import Disaster, DisasterAlert
 from django.db.models import Count, Q
@@ -435,3 +435,60 @@ def service_provider_settings(request):
     }
 
     return render(request, 'accounts/service_provider_settings.html', context)
+
+
+def blood_network(request):
+    """
+    PUBLIC blood network - Sprint 1: Basic blood request posting
+    No login required, but tracks activity if logged in
+    """
+
+    # Handle blood request posting (public)
+    if request.method == 'POST':
+        try:
+            # Create blood request with form data
+            blood_request = BloodRequest.objects.create(
+                requester_name=request.POST['requester_name'].strip(),
+                patient_name=request.POST['patient_name'].strip(),
+                blood_type_needed=request.POST['blood_type_needed'],
+                location=request.POST['location'].strip(),
+                contact_phone=request.POST['contact_phone'].strip(),
+                urgency=request.POST['urgency'],
+                needed_by_date=request.POST['needed_by_date'],
+                additional_notes=request.POST.get(
+                    'additional_notes', '').strip(),
+
+                # Optional tracking (only if logged in)
+                created_by=request.user if request.user.is_authenticated else None,
+                requester_city=request.user.citizen_profile.city if request.user.is_authenticated and hasattr(
+                    request.user, 'citizen_profile') else ''
+            )
+
+            messages.success(
+                request, f'🩸 Blood request posted successfully! Request ID: #{blood_request.id}')
+            return redirect('blood_network')
+
+        except Exception as e:
+            messages.error(request, f'❌ Error posting blood request: {str(e)}')
+
+    # Auto-fill data for logged-in users
+    auto_fill = {}
+    if request.user.is_authenticated:
+        try:
+            if hasattr(request.user, 'citizen_profile'):
+                profile = request.user.citizen_profile
+                auto_fill = {
+                    'name': request.user.get_full_name() or request.user.username,
+                    'phone': profile.phone_number or request.user.phone_number,
+                    'city': profile.city or '',
+                }
+        except:
+            pass
+
+    context = {
+        'auto_fill': auto_fill,
+        'blood_types': BloodRequest.BLOOD_TYPE_CHOICES,
+        'today': date.today(),  # Add today's date for template
+    }
+
+    return render(request, 'accounts/blood_network.html', context)

@@ -57,6 +57,10 @@ class CitizenProfile(models.Model):
         blank=True
     )
 
+    # NEW: Emergency donor flag for quick filtering
+    emergency_donor = models.BooleanField(
+        default=False, help_text="Available for emergency blood donation")
+
     # Additional emergency information
     medical_conditions = models.TextField(blank=True)
     allergies = models.TextField(blank=True)
@@ -72,6 +76,73 @@ class CitizenProfile(models.Model):
             self.house_road_no, self.area_sector, self.city, self.postal_code
         ]
         return all(required_fields)
+
+
+# NEW: Blood Request Model for Sprint 1
+class BloodRequest(models.Model):
+    BLOOD_TYPE_CHOICES = [
+        ('A+', 'A+'),
+        ('A-', 'A-'),
+        ('B+', 'B+'),
+        ('B-', 'B-'),
+        ('AB+', 'AB+'),
+        ('AB-', 'AB-'),
+        ('O+', 'O+'),
+        ('O-', 'O-'),
+    ]
+
+    URGENCY_CHOICES = [
+        ('urgent', 'Urgent'),
+        ('normal', 'Normal'),
+    ]
+
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('fulfilled', 'Fulfilled'),
+    ]
+
+    # Public fields (always required)
+    requester_name = models.CharField(
+        max_length=100, help_text="Person making the request")
+    patient_name = models.CharField(
+        max_length=100, help_text="Patient who needs blood")
+    blood_type_needed = models.CharField(
+        max_length=3, choices=BLOOD_TYPE_CHOICES)
+    location = models.CharField(
+        max_length=200, help_text="Hospital/location where blood is needed")
+    contact_phone = models.CharField(max_length=15)
+    urgency = models.CharField(
+        max_length=10, choices=URGENCY_CHOICES, default='normal')
+    needed_by_date = models.DateField(help_text="When is the blood needed by")
+    additional_notes = models.TextField(
+        blank=True, help_text="Any additional information")
+
+    # Optional tracking (only if logged in)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE,
+                                   help_text="User who created this request (if logged in)")
+    requester_city = models.CharField(max_length=100, blank=True,
+                                      help_text="City for filtering purposes")
+
+    # Status and timestamps
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='open')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['blood_type_needed']),
+            models.Index(fields=['requester_city']),
+            models.Index(fields=['status']),
+            models.Index(fields=['urgency']),
+        ]
+
+    def __str__(self):
+        return f"{self.blood_type_needed} needed for {self.patient_name} - {self.get_urgency_display()}"
+
+    def is_urgent(self):
+        return self.urgency == 'urgent'
 
 
 class ServiceProviderProfile(models.Model):
@@ -94,65 +165,68 @@ class ServiceProviderProfile(models.Model):
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='service_provider_profile')
-    
+
     # Basic Organization Details
     organization_name = models.CharField(max_length=200)
-    service_type = models.CharField(max_length=20, choices=SERVICE_TYPE_CHOICES)
-    service_type_other = models.CharField(max_length=100, blank=True, 
-                                         help_text="Specify if 'Others' is selected")
+    service_type = models.CharField(
+        max_length=20, choices=SERVICE_TYPE_CHOICES)
+    service_type_other = models.CharField(max_length=100, blank=True,
+                                          help_text="Specify if 'Others' is selected")
     email = models.EmailField()
     contact_number = models.CharField(max_length=15)
-    
+
     # Extended Profile Fields
     registration_number = models.CharField(max_length=100, blank=True,
-                                         help_text="Official registration/license number")
-    
+                                           help_text="Official registration/license number")
+
     # Location Information
     street_address = models.CharField(max_length=300, blank=True)
     area_sector = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=10, blank=True)
-    
+
     # Service Capabilities
     specialized_services = models.TextField(blank=True,
-                                           help_text="List specialized services offered")
+                                            help_text="List specialized services offered")
     equipment_available = models.TextField(blank=True,
-                                          help_text="List major equipment/resources")
+                                           help_text="List major equipment/resources")
     staff_count = models.PositiveIntegerField(null=True, blank=True)
     maximum_capacity = models.PositiveIntegerField(null=True, blank=True)
     average_response_time = models.PositiveIntegerField(null=True, blank=True,
-                                                       help_text="Average response time in minutes")
-    
+                                                        help_text="Average response time in minutes")
+
     # Contact Information
     primary_contact_person = models.CharField(max_length=100, blank=True)
     contact_person_designation = models.CharField(max_length=100, blank=True)
     emergency_hotline = models.CharField(max_length=15, blank=True)
     emergency_email = models.EmailField(blank=True)
-    
+
     # Status and Operational Info
-    current_status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='active')
+    current_status = models.CharField(
+        max_length=15, choices=STATUS_CHOICES, default='active')
     current_capacity = models.PositiveIntegerField(null=True, blank=True,
-                                                  help_text="Current available capacity")
-    operating_hours = models.CharField(max_length=200, blank=True, default="24/7")
-    
+                                                   help_text="Current available capacity")
+    operating_hours = models.CharField(
+        max_length=200, blank=True, default="24/7")
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     profile_completed_at = models.DateTimeField(null=True, blank=True)
-    
+
     # Verification
     is_verified = models.BooleanField(default=False)
     verified_at = models.DateTimeField(null=True, blank=True)
-    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, 
-                                   null=True, blank=True, related_name='verified_providers')
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL,
+                                    null=True, blank=True, related_name='verified_providers')
 
     def __str__(self):
         return f"{self.organization_name} - {self.get_service_type_display()}"
 
     def is_profile_complete(self):
         required_fields = [
-            self.organization_name, self.service_type, self.email, 
-            self.contact_number, self.street_address, self.area_sector, 
+            self.organization_name, self.service_type, self.email,
+            self.contact_number, self.street_address, self.area_sector,
             self.city, self.postal_code, self.primary_contact_person,
             self.emergency_hotline
         ]
@@ -170,10 +244,11 @@ class ServiceProviderProfile(models.Model):
 
 
 class ServiceProviderRating(models.Model):
-    service_provider = models.ForeignKey(ServiceProviderProfile, on_delete=models.CASCADE, 
-                                       related_name='ratings')
+    service_provider = models.ForeignKey(ServiceProviderProfile, on_delete=models.CASCADE,
+                                         related_name='ratings')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)])  # 1-5 stars
+    rating = models.PositiveIntegerField(
+        choices=[(i, i) for i in range(1, 6)])  # 1-5 stars
     review = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -194,9 +269,10 @@ class EmergencyResponse(models.Model):
     ]
 
     service_provider = models.ForeignKey(ServiceProviderProfile, on_delete=models.CASCADE,
-                                       related_name='emergency_responses')
+                                         related_name='emergency_responses')
     incident_id = models.CharField(max_length=50, unique=True)
-    response_time = models.PositiveIntegerField(help_text="Response time in minutes")
+    response_time = models.PositiveIntegerField(
+        help_text="Response time in minutes")
     status = models.CharField(max_length=15, choices=RESPONSE_STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)

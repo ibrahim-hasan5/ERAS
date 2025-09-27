@@ -33,4 +33,7 @@ urlpatterns = [
          name='service_provider_directory'),
     path('directory/service-provider/<int:provider_id>/',
          views.service_provider_detail, name='service_provider_detail'),
+
+    # NEW: Blood Network URL (Sprint 1)
+    path('blood-network/', views.blood_network, name='blood_network'),
 ]
