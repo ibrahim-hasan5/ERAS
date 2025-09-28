@@ -56,7 +56,10 @@ class Disaster(models.Model):
     disaster_type = models.CharField(max_length=30, choices=DISASTER_TYPE_CHOICES)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
     severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES)
-    description = models.TextField(help_text="Minimum 50 characters required")
+    description = models.TextField(
+        max_length=50,  # Add max_length constraint
+        help_text="Maximum 50 characters required"  # Update help text
+    )
 
     # Location Information
     city = models.CharField(max_length=100)

@@ -126,25 +126,20 @@
                 </p>
             </div>
 
-            <!-- Progress Indicator -->
-            <div class="mb-8">
-                <div class="flex items-center space-x-4 text-sm">
-                    <div class="flex items-center text-red-600">
-                        <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">1</div>
-                        Report Details
-                    </div>
-                    <div class="flex-1 h-0.5 bg-gray-200"></div>
-                    <div class="flex items-center text-gray-400">
-                        <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-bold mr-2">2</div>
-                        Admin Review
-                    </div>
-                    <div class="flex-1 h-0.5 bg-gray-200"></div>
-                    <div class="flex items-center text-gray-400">
-                        <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-bold mr-2">3</div>
-                        Public Alert
-                    </div>
-                </div>
-            </div>
+           <!-- Update the Progress Indicator section -->
+<div class="mb-8">
+    <div class="flex items-center space-x-4 text-sm">
+        <div class="flex items-center text-red-600">
+            <div class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">1</div>
+            Report Details
+        </div>
+        <div class="flex-1 h-0.5 bg-gray-200"></div>
+        <div class="flex items-center text-green-600">
+            <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">2</div>
+            Published Live
+        </div>
+    </div>
+</div>
 
             <!-- Form -->
             <form method="post" enctype="multipart/form-data" id="disasterForm" class="space-y-8">
@@ -268,17 +263,17 @@
                         <h2 class="text-2xl font-bold text-gray-800">Description</h2>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Description *</label>
-                        {{ form.description }}
-                        <div class="flex justify-between items-center mt-2">
-                            <p class="text-xs text-gray-500">Provide as much detail as possible to help emergency responders</p>
-                            <div class="char-counter" id="charCounter">0/50 minimum</div>
-                        </div>
-                        {% if form.description.errors %}
-                            <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
-                        {% endif %}
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Description *</label>
+                      {{ form.description }}
+                     <div class="flex justify-between items-center mt-2">
+                        <p class="text-xs text-gray-500">Provide brief details about the disaster (maximum 50 characters)</p>
+                     <div class="char-counter" id="charCounter">0/50 maximum</div>
                     </div>
+                     {% if form.description.errors %}
+                     <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                       {% endif %}
+                   </div>
                 </div>
 
                 <!-- Images Section -->
@@ -414,19 +409,23 @@
 
     <script>
         // Character counter for description
-        function updateCharCount(textarea) {
-            const counter = document.getElementById('charCounter');
-            const length = textarea.value.length;
+    function updateCharCount(textarea) {
+        const counter = document.getElementById('charCounter');
+        const length = textarea.value.length;
 
-            counter.textContent = `${length}/50 minimum`;
-            counter.className = 'char-counter';
+        counter.textContent = `${length}/50 maximum`;
+        counter.className = 'char-counter';
 
-            if (length < 50) {
-                counter.classList.add('error');
-            } else if (length < 100) {
-                counter.classList.add('warning');
-            }
+        if (length > 50) {
+            counter.classList.add('error');
+            textarea.classList.add('border-red-500');
+        } else if (length > 40) {
+            counter.classList.add('warning');
+            textarea.classList.remove('border-red-500');
+        } else {
+            textarea.classList.remove('border-red-500');
         }
+    }
 
         // Initialize character counter
         const descriptionField = document.querySelector('[name="description"]');
@@ -574,23 +573,22 @@
             });
 
             // Validate description length
-            const description = document.querySelector('[name="description"]');
-            if (description && description.value.trim().length < 50) {
-                isValid = false;
-                errors.push('Description must be at least 50 characters');
-                description.classList.add('border-red-500');
-            }
+           const description = document.querySelector('[name="description"]');
 
-            if (!isValid) {
-                e.preventDefault();
-                alert('Please fix the following errors:\n\n' + errors.join('\n'));
-                // Scroll to first error
-                const firstError = document.querySelector('.border-red-500');
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        });
+        if (description && description.value.trim().length > 50) {
+            e.preventDefault();
+            alert('Description must be 50 characters or less.');
+            description.focus();
+            return false;
+        }
+
+        if (description && description.value.trim().length < 10) {
+            e.preventDefault();
+            alert('Description must be at least 10 characters.');
+            description.focus();
+            return false;
+        }
+    });
 
         // Auto-save draft functionality (optional)
         let autoSaveTimeout;

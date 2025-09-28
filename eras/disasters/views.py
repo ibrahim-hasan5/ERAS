@@ -53,15 +53,22 @@ def create_disaster(request):
                         notes=f"Disaster report created: {disaster.title}"
                     )
 
-                    messages.success(request, 'Disaster report created successfully!')
-
-                    # Redirect based on action
+                    # CHANGE: Set status to 'approved' instead of 'pending'
                     if 'save_draft' in request.POST:
-                        return redirect('disaster_detail', disaster_id=disaster.id)
-                    else:
-                        disaster.status = 'pending'
+                        disaster.status = 'draft'
                         disaster.save()
-                        messages.info(request, 'Disaster report submitted for review!')
+                        messages.success(request, 'Disaster report saved as draft!')
+                        return redirect('disasters:disaster_detail', disaster_id=disaster.id)
+                    else:
+                        disaster.status = 'approved'  # Changed from 'pending'
+                        disaster.approved_by = request.user  # Auto-approve
+                        disaster.approved_at = timezone.now()
+                        disaster.save()
+
+                        # Send alerts immediately
+                        send_disaster_alerts(disaster)
+
+                        messages.success(request, 'Disaster report published successfully!')
                         return redirect('disasters:my_disasters')
 
             except Exception as e:
@@ -325,7 +332,7 @@ def add_response(request, disaster_id):
     """Service provider response to disaster"""
     if request.user.user_type != 'service_provider':
         messages.error(request, 'Only service providers can respond to disasters.')
-        return redirect('disaster_detail', disaster_id=disaster_id)
+        return redirect('disasters:disaster_detail', disaster_id=disaster_id)
 
     disaster = get_object_or_404(Disaster, id=disaster_id, status='approved')
     service_provider = request.user.service_provider_profile
@@ -357,7 +364,7 @@ def add_response(request, disaster_id):
             )
 
             messages.success(request, 'Response updated successfully!')
-            return redirect('disaster_detail', disaster_id=disaster.id)
+            return redirect('disasters:disaster_detail', disaster_id=disaster.id)
     else:
         if existing_response:
             form = DisasterResponseForm(instance=existing_response)
@@ -426,7 +433,7 @@ def report_disaster(request, disaster_id):
 
     if existing_report:
         messages.warning(request, 'You have already reported this disaster.')
-        return redirect('disaster_detail', disaster_id=disaster.id)
+        return redirect('disasters:disaster_detail', disaster_id=disaster.id)
 
     if request.method == 'POST':
         form = DisasterReportForm(request.POST)
@@ -437,7 +444,7 @@ def report_disaster(request, disaster_id):
             report.save()
 
             messages.success(request, 'Report submitted successfully. We will review it shortly.')
-            return redirect('disaster_detail', disaster_id=disaster.id)
+            return redirect('disasters:disaster_detail', disaster_id=disaster.id)
     else:
         form = DisasterReportForm()
 

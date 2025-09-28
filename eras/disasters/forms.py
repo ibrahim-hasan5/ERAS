@@ -114,8 +114,11 @@ class DisasterForm(forms.ModelForm):
 
     def clean_description(self):
         description = self.cleaned_data.get('description', '')
-        if len(description.strip()) < 50:
-            raise ValidationError("Description must be at least 50 characters long.")
+        # CHANGE: Maximum 50 characters instead of minimum
+        if len(description.strip()) > 50:
+            raise ValidationError("Description must be 50 characters or less.")
+        if len(description.strip()) < 10:  # Optional: Keep minimum 10 characters
+            raise ValidationError("Description must be at least 10 characters.")
         return description.strip()
 
     def clean_emergency_contact(self):

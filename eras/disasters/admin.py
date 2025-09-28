@@ -43,7 +43,7 @@ class DisasterUpdateInline(admin.TabularInline):
 class DisasterAdmin(admin.ModelAdmin):
     list_display = (
         'title', 'disaster_type', 'category', 'severity', 'status',
-        'reporter', 'city', 'area_sector', 'created_at', 'view_count'
+        'reporter', 'city', 'area_sector', 'created_at', 'auto_approved'
     )
     list_filter = (
         'status', 'disaster_type', 'category', 'severity', 'city',
@@ -98,16 +98,11 @@ class DisasterAdmin(admin.ModelAdmin):
 
     disaster_preview.short_description = "Public View"
 
-    def approve_disasters(self, request, queryset):
-        from django.utils import timezone
-        updated = queryset.filter(status='pending').update(
-            status='approved',
-            approved_by=request.user,
-            approved_at=timezone.now()
-        )
-        self.message_user(request, f'{updated} disasters approved.')
+    def auto_approved(self, obj):
+        return obj.approved_by == obj.reporter
+    auto_approved.boolean = True
+    auto_approved.short_description = 'Auto-approved'
 
-    approve_disasters.short_description = "Approve selected disasters"
 
     def reject_disasters(self, request, queryset):
         updated = queryset.filter(status='pending').update(status='rejected')
