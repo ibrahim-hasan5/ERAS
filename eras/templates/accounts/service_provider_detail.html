@@ -388,6 +388,10 @@
                         <form method="POST" class="space-y-4">
                             {% csrf_token %}
                             <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                                {{ rating_form.rating }}
+                            </div>
+                            <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Review (Optional)</label>
                                 {{ rating_form.review }}
                             </div>
