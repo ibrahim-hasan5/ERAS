@@ -1,410 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Network - ERAS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'custom-red': '#dc2626',
-                    }
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Network - ERAS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'custom-red': '#dc2626',
+          }
         }
-    </script>
-    <style>
-        .blood-network-page {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .hero-section {
-            text-align: center;
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            padding: 40px 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
-        }
-        
-        .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .hero-section p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-        
-        .quick-stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .quick-stats span {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .request-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.1);
-        }
-        
-        .request-section h2 {
-            color: #dc2626;
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        
-        .blood-request-form {
-            display: grid;
-            gap: 20px;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-group label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 5px;
-        }
-        
-        .form-control {
-            padding: 12px 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #dc2626;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-        
-        .btn-post {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        }
-        
-        .btn-post:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
-        }
-        
-        .login-hint {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            color: #6b7280;
-        }
-        
-        .login-hint a {
-            color: #dc2626;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .login-hint a:hover {
-            text-decoration: underline;
-        }
-        
-        .success-message {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        
-        .error-message {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-        
-        .coming-soon {
-            text-align: center;
-            padding: 40px 20px;
-            background: #f9fafb;
-            border-radius: 15px;
-            margin-top: 30px;
-            border: 2px dashed #d1d5db;
-        }
-        
-        .coming-soon h3 {
-            color: #6b7280;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .coming-soon p {
-            color: #9ca3af;
-            font-size: 1.1rem;
-        }
-    </style>
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    .blood-network-page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero-section {
+      text-align: center;
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+      padding: 40px 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+    }
+
+    .hero-section h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .hero-section p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .quick-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .quick-stats span {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 18px;
+      border-radius: 25px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Tabs */
+    .tab-btn {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 10px 20px;
+      margin: 0 5px;
+      border-radius: 9999px;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    .tab-btn:hover {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+      box-shadow: 0 4px 10px rgba(220,38,38,0.3);
+    }
+    .tab-content.hidden { display: none; }
+
+    .section-title {
+      color: #dc2626;
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-control {
+      padding: 12px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .btn-red {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    }
+    .btn-red:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-call {
+      background: #059669;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .btn-call:hover { 
+      background: #047857; 
+      text-decoration: none;
+      color: white;
+    }
+
+    .donor-card, .request-card, .my-request-card {
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .donor-card { 
+      background: #f8fafc; 
+      border: 1px solid #e2e8f0; 
+      transition: all 0.3s ease;
+    }
+    .donor-card:hover { border-color: #dc2626; background: #fef2f2; }
+
+    .request-card { background: #fef2f2; border-left: 4px solid #dc2626; }
+    .my-request-card { background: #f0f9ff; border: 1px solid #bae6fd; }
+
+    .blood-type {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+      background: #dc2626;
+      margin-right: 5px;
+    }
+    .urgency.urgent { 
+      background: #dc2626; 
+      color: white; 
+      padding: 4px 10px; 
+      border-radius: 12px; 
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .urgency.normal { 
+      background: #6b7280; 
+      color: white; 
+      padding: 4px 10px; 
+      border-radius: 12px; 
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .success-message {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .error-message {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .login-hint {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+    
+    .login-hint a {
+      color: #dc2626;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .login-hint a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
 
 <!-- Navigation Header -->
 <header class="bg-white shadow-md">
-    <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold text-gray-800">🩸 ERAS Blood Network</span>
-        </div>
-        <div class="flex items-center space-x-4">
-            <a href="/" class="text-gray-600 hover:text-custom-red transition duration-300">← Back to Home</a>
-            {% if user.is_authenticated %}
-                <span class="text-gray-600">Welcome, {{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700 transition duration-300">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
-                <a href="{% url 'register_choice' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700 transition duration-300">Register</a>
-            {% endif %}
-        </div>
-    </nav>
+  <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <span class="text-xl font-bold text-gray-800">🩸 ERAS Blood Network</span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <a href="/" class="text-gray-600 hover:text-custom-red transition">← Back to Home</a>
+      {% if user.is_authenticated %}
+        <span class="text-gray-600">Welcome, {{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red">Login</a>
+        <a href="{% url 'register_choice' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700">Register</a>
+      {% endif %}
+    </div>
+  </nav>
 </header>
 
 <!-- Main Content -->
 <main class="blood-network-page">
-    
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <h1>🩸 Emergency Blood Network</h1>
-        <p>Public blood donation network - No registration required</p>
-        <div class="quick-stats">
-            <span>Sprint 1: Basic Request Form</span>
-            <span>🚀 Live & Working</span>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <h1>🩸 Emergency Blood Network</h1>
+    <p>Connecting patients with donors instantly</p>
+    <div class="quick-stats">
+      <span>{{ active_requests.count }} Active Requests</span>
+      <span>{{ donors.count }} Available Donors</span>
+    </div>
+  </div>
+
+  <!-- Display Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Tabs -->
+  <div class="flex justify-center mb-6 flex-wrap gap-2">
+    <button class="tab-btn active" data-tab="request">🩸 Post Request</button>
+    <button class="tab-btn" data-tab="search">🔍 Search Donors</button>
+    <button class="tab-btn" data-tab="feed">🚨 Requests Feed</button>
+  </div>
+
+  <!-- Request Tab -->
+  <div id="request" class="tab-content">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <h2 class="section-title">🩸 Need Blood? Post Request</h2>
+      <form method="POST" class="grid gap-4">
+        {% csrf_token %}
+        <div class="grid md:grid-cols-2 gap-4">
+          <input type="text" 
+                 name="requester_name" 
+                 value="{{ auto_fill.name|default:'' }}"
+                 placeholder="Your Name *" 
+                 class="form-control" 
+                 required>
+          <input type="text" 
+                 name="patient_name" 
+                 placeholder="Patient Name *" 
+                 class="form-control" 
+                 required>
         </div>
-    </div>
-    
-    <!-- Display Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-    
-    <!-- Main Form Section -->
-    <div class="request-section">
-        <h2>🩸 Need Blood? Post Request</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <select name="blood_type_needed" class="form-control" required>
+            <option value="">Select Blood Type</option>
+            {% for value, label in blood_types %}
+              <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+          <select name="urgency" class="form-control" required>
+            <option value="urgent">🚨 Urgent</option>
+            <option value="normal" selected>📋 Normal</option>
+          </select>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <input type="text" 
+                 name="location" 
+                 value="{{ auto_fill.city|default:'' }}"
+                 placeholder="Hospital/Location *" 
+                 class="form-control" 
+                 required>
+          <input type="tel" 
+                 name="contact_phone" 
+                 value="{{ auto_fill.phone|default:'' }}"
+                 placeholder="+880XXXXXXXXX" 
+                 class="form-control" 
+                 required>
+        </div>
+        <input type="date" 
+               name="needed_by_date" 
+               class="form-control" 
+               min="{{ today|date:'Y-m-d' }}"
+               required>
+        <textarea name="additional_notes" 
+                  rows="3" 
+                  placeholder="Additional Information (Optional)" 
+                  class="form-control"></textarea>
+        <button type="submit" class="btn-red">🩸 Post Blood Request</button>
         
-        <form method="POST" class="blood-request-form">
-            {% csrf_token %}
-            
-            <!-- Row 1: Requester & Patient -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="requester_name">Your Name *</label>
-                    <input type="text" 
-                           id="requester_name"
-                           name="requester_name" 
-                           class="form-control"
-                           value="{{ auto_fill.name|default:'' }}" 
-                           placeholder="Enter your full name" 
-                           required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="patient_name">Patient Name *</label>
-                    <input type="text" 
-                           id="patient_name"
-                           name="patient_name" 
-                           class="form-control"
-                           placeholder="Patient who needs blood" 
-                           required>
-                </div>
+        {% if not user.is_authenticated %}
+          <p class="login-hint">
+            💡 <a href="{% url 'login' %}">Login</a> to auto-fill your information and track your requests
+          </p>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <!-- Search Tab -->
+  <div id="search" class="tab-content hidden">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <h2 class="section-title">🔍 Find Blood Donors</h2>
+      <form method="GET" action="{% url 'blood_network' %}" class="grid gap-4 mb-4">
+        <div class="grid md:grid-cols-2 gap-4">
+          <select name="blood_type" class="form-control">
+            <option value="">All Blood Types</option>
+            {% for value, label in blood_types %}
+              <option value="{{ value }}" {% if current_filters.blood_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <select name="city" class="form-control">
+            <option value="">All Cities</option>
+            {% for city in cities %}
+              <option value="{{ city }}" {% if current_filters.city == city %}selected{% endif %}>{{ city }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" 
+                 name="emergency_only" 
+                 value="true"
+                 {% if current_filters.emergency_only %}checked{% endif %}> 
+          ⚡ Emergency Donors Only
+        </label>
+        <button type="submit" class="btn-red">🔍 Search</button>
+      </form>
+      
+      <div>
+        {% if donors %}
+          {% for donor in donors %}
+            <div class="donor-card flex justify-between items-center">
+              <div>
+                <h4 class="font-bold">{{ donor.user.first_name }} {{ donor.user.last_name|first }}.</h4>
+                <span class="blood-type">{{ donor.blood_group }}</span>
+                <span class="text-sm text-gray-600">📍 {{ donor.city }}, {{ donor.area_sector }}</span>
+                {% if donor.emergency_donor %}
+                  <span class="ml-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs">⚡ Emergency</span>
+                {% endif %}
+              </div>
+              <a href="tel:{{ donor.phone_number }}" class="btn-call">📞 {{ donor.phone_number }}</a>
             </div>
-            
-            <!-- Row 2: Blood Type & Urgency -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="blood_type_needed">Blood Type Needed *</label>
-                    <select id="blood_type_needed" 
-                            name="blood_type_needed" 
-                            class="form-control" 
-                            required>
-                        <option value="">Select Blood Type</option>
-                        {% for value, label in blood_types %}
-                            <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="urgency">Urgency Level *</label>
-                    <select id="urgency" 
-                            name="urgency" 
-                            class="form-control" 
-                            required>
-                        <option value="urgent">🚨 Urgent - Immediate Need</option>
-                        <option value="normal" selected>📋 Normal - Planned Need</option>
-                    </select>
-                </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-center text-gray-500 py-4">No donors found. Try adjusting filters.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed Tab -->
+  <div id="feed" class="tab-content hidden">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <h2 class="section-title">🚨 Recent Requests</h2>
+      {% if active_requests %}
+        {% for request in active_requests %}
+          <div class="request-card">
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
+              <span class="blood-type">{{ request.blood_type_needed }}</span>
+              <span class="urgency {{ request.urgency }}">{{ request.get_urgency_display }}</span>
+              <span class="text-sm text-gray-500">{{ request.created_at|timesince }} ago</span>
             </div>
-            
-            <!-- Row 3: Location & Phone -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="location">Hospital/Location *</label>
-                    <input type="text" 
-                           id="location"
-                           name="location" 
-                           class="form-control"
-                           value="{{ auto_fill.city|default:'' }}" 
-                           placeholder="Hospital name or address" 
-                           required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact_phone">Contact Phone *</label>
-                    <input type="tel" 
-                           id="contact_phone"
-                           name="contact_phone" 
-                           class="form-control"
-                           value="{{ auto_fill.phone|default:'' }}" 
-                           placeholder="+880XXXXXXXXX" 
-                           required>
-                </div>
-            </div>
-            
-            <!-- Row 4: Date Needed -->
-            <div class="form-group">
-                <label for="needed_by_date">Needed By Date *</label>
-                <input type="date" 
-                       id="needed_by_date"
-                       name="needed_by_date" 
-                       class="form-control"
-                       min="{{ today|date:'Y-m-d' }}"
-                       required>
-            </div>
-            
-            <!-- Additional Notes -->
-            <div class="form-group">
-                <label for="additional_notes">Additional Information (Optional)</label>
-                <textarea id="additional_notes"
-                          name="additional_notes" 
-                          class="form-control"
-                          rows="4"
-                          placeholder="Any additional information that might help donors..."></textarea>
-            </div>
-            
-            <!-- Submit Button -->
-            <button type="submit" class="btn-post">
-                🩸 Post Blood Request
-            </button>
-            
-            {% if not user.is_authenticated %}
-                <p class="login-hint">
-                    💡 <a href="{% url 'login' %}">Login</a> to auto-fill your information and track your requests in dashboard
-                </p>
+            <p><strong>{{ request.patient_name }}</strong></p>
+            <p>📍 {{ request.location }}</p>
+            <p>📞 <a href="tel:{{ request.contact_phone }}" class="text-green-600 hover:text-green-700">{{ request.contact_phone }}</a></p>
+            <p>⏰ Needed: {{ request.needed_by_date|date:"M d, Y" }}</p>
+            {% if request.additional_notes %}
+              <p>💬 {{ request.additional_notes }}</p>
             {% endif %}
-        </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center text-gray-500 py-4">No active requests right now.</p>
+      {% endif %}
     </div>
-    
-    <!-- Coming Soon Section -->
-    <div class="coming-soon">
-        <h3>🔄 Next Sprint: Donor Search</h3>
-        <p>Search for blood donors, view active requests, and connect with donors directly</p>
+  </div>
+
+  <!-- User History -->
+  {% if user.is_authenticated and user_requests %}
+    <div class="bg-white p-6 rounded-xl shadow mt-6">
+      <h3 class="font-bold text-lg mb-3">📋 My Requests</h3>
+      {% for request in user_requests %}
+        <div class="my-request-card flex justify-between items-center">
+          <div>
+            <span class="blood-type">{{ request.blood_type_needed }}</span> 
+            {{ request.patient_name }}
+          </div>
+          <span class="text-gray-500">{{ request.created_at|date:"M d" }}</span>
+        </div>
+      {% endfor %}
     </div>
+  {% endif %}
+
 </main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Set minimum date to today
-    const dateInput = document.getElementById('needed_by_date');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
+  // Tab functionality
+  const tabs = document.querySelectorAll(".tab-btn");
+  const contents = document.querySelectorAll(".tab-content");
+  
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      contents.forEach(c => c.classList.add("hidden"));
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.remove("hidden");
+    });
+  });
+
+  // Check if there are search parameters to show search tab
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('blood_type') || urlParams.has('city') || urlParams.has('emergency_only')) {
+    // Switch to search tab
+    tabs.forEach(t => t.classList.remove("active"));
+    contents.forEach(c => c.classList.add("hidden"));
+    document.querySelector('.tab-btn[data-tab="search"]').classList.add("active");
+    document.getElementById("search").classList.remove("hidden");
+  }
+
+  // Default date field setup
+  const dateInput = document.querySelector("input[name='needed_by_date']");
+  if (dateInput) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    dateInput.min = today.toISOString().split('T')[0];
     
-    // Set default date to tomorrow for better UX
+    // Set default to tomorrow if no value
     if (!dateInput.value) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        dateInput.value = tomorrow.toISOString().split('T')[0];
+      dateInput.value = tomorrow.toISOString().split('T')[0];
     }
-    
-    // Add visual feedback for urgency selection
-    const urgencySelect = document.getElementById('urgency');
-    urgencySelect.addEventListener('change', function() {
-        if (this.value === 'urgent') {
-            this.style.background = 'linear-gradient(45deg, #fef2f2, #fee2e2)';
-            this.style.borderColor = '#ef4444';
-        } else {
-            this.style.background = 'linear-gradient(45deg, #fef2f2, #ffffff)';
-            this.style.borderColor = '#e5e7eb';
-        }
-    });
-    
-    // Phone number formatting
-    const phoneInput = document.getElementById('contact_phone');
+  }
+
+  // Phone number formatting
+  const phoneInput = document.querySelector("input[name='contact_phone']");
+  if (phoneInput) {
     phoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.startsWith('880')) {
-            value = '+' + value;
-        } else if (value.startsWith('01') && value.length === 11) {
-            value = '+880' + value.substring(1);
-        }
-        this.value = value;
+      let value = this.value.replace(/\D/g, '');
+      if (value.startsWith('880')) {
+        value = '+' + value;
+      } else if (value.startsWith('01') && value.length === 11) {
+        value = '+880' + value.substring(1);
+      }
+      this.value = value;
     });
+  }
+
+  // Urgency visual feedback
+  const urgencySelect = document.querySelector("select[name='urgency']");
+  if (urgencySelect) {
+    urgencySelect.addEventListener('change', function() {
+      if (this.value === 'urgent') {
+        this.style.background = 'linear-gradient(45deg, #fef2f2, #fee2e2)';
+        this.style.borderColor = '#ef4444';
+      } else {
+        this.style.background = '';
+        this.style.borderColor = '#e5e7eb';
+      }
+    });
+  }
 });
 </script>
 

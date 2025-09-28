@@ -471,6 +471,39 @@ def blood_network(request):
         except Exception as e:
             messages.error(request, f'❌ Error posting blood request: {str(e)}')
 
+    # SPRINT 2: Add donor search functionality
+    # Get search parameters from GET request
+    blood_type_filter = request.GET.get('blood_type', '')
+    city_filter = request.GET.get('city', '')
+    emergency_only = request.GET.get('emergency_only', '') == 'true'
+
+    # Get available donors (public data)
+    donors = CitizenProfile.objects.filter(
+        available_to_donate='yes'
+    ).select_related('user').exclude(
+        blood_group__in=['', None]  # Exclude donors without blood group
+    )
+
+    # Apply filters
+    if blood_type_filter:
+        donors = donors.filter(blood_group=blood_type_filter)
+
+    if city_filter:
+        donors = donors.filter(city__icontains=city_filter)
+
+    if emergency_only:
+        donors = donors.filter(emergency_donor=True)
+
+    # Get active blood requests (public) - for Sprint 3
+    active_requests = BloodRequest.objects.filter(
+        status='open'
+    ).order_by('-urgency', '-created_at')[:10]  # Latest 10
+
+    # Get cities for filter dropdown (public)
+    cities = CitizenProfile.objects.filter(
+        available_to_donate='yes'
+    ).exclude(city__in=['', None]).values_list('city', flat=True).distinct()
+
     # Auto-fill data for logged-in users
     auto_fill = {}
     if request.user.is_authenticated:
@@ -485,10 +518,28 @@ def blood_network(request):
         except:
             pass
 
+    # User's blood request history (only if logged in)
+    user_requests = []
+    if request.user.is_authenticated:
+        user_requests = BloodRequest.objects.filter(
+            created_by=request.user
+        ).order_by('-created_at')[:5]  # Latest 5
+
     context = {
+        'donors': donors[:20],  # Limit to 20 donors for performance
+        'active_requests': active_requests,
+        'user_requests': user_requests,
+        'cities': sorted(set(cities)),
         'auto_fill': auto_fill,
         'blood_types': BloodRequest.BLOOD_TYPE_CHOICES,
-        'today': date.today(),  # Add today's date for template
+        'today': date.today(),
+
+        # Current filter values for form persistence
+        'current_filters': {
+            'blood_type': blood_type_filter,
+            'city': city_filter,
+            'emergency_only': emergency_only
+        }
     }
 
     return render(request, 'accounts/blood_network.html', context)
