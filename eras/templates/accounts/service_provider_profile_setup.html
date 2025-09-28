@@ -105,10 +105,103 @@
     .service-provider-bg {
       background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%);
     }
+
+    /* Mobile sidebar styles */
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar-overlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    /* Form field icons positioning fix */
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      padding-left: 3rem;
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 0.75rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-field .icon-left {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .form-field textarea + .icon-left {
+      top: 1rem;
+      transform: none;
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        z-index: 50;
+        width: 280px;
+      }
+
+      .sidebar.open {
+        transform: translateX(100%);
+      }
+
+      .main-content {
+        width: 100%;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+
+      .profile-stats {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section-card {
+        padding: 1.5rem;
+      }
+
+      .form-grid-mobile {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen service-provider-bg font-inter text-gray-800 overflow-x-hidden">
-  
+
+  <!-- Mobile Menu Overlay -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden opacity-0 pointer-events-none sidebar-overlay"></div>
+
+  <!-- Mobile Menu Button -->
+  <button id="mobile-menu-btn" class="fixed top-4 left-4 z-60 md:hidden bg-white rounded-lg p-3 shadow-lg">
+    <i class="fas fa-bars text-gray-700"></i>
+  </button>
+
   <!-- Animated Background Elements -->
   <div class="fixed inset-0 overflow-hidden pointer-events-none">
     <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-green-400 to-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
@@ -117,9 +210,9 @@
   </div>
 
   <div class="flex min-h-screen relative z-10">
-    
+
     <!-- Enhanced Sidebar -->
-    <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+    <aside id="sidebar" class="sidebar w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20 md:relative md:translate-x-0">
       <div>
         <!-- Logo Section -->
         <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
@@ -132,6 +225,10 @@
             <span class="font-bold text-2xl bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">ERAS</span>
             <div class="text-xs text-gray-500">Service Provider Portal</div>
           </div>
+          <!-- Close button for mobile -->
+          <button id="close-sidebar" class="md:hidden ml-auto p-2 hover:bg-gray-100 rounded-lg">
+            <i class="fas fa-times text-gray-500"></i>
+          </button>
         </div>
 
         <!-- Progress Indicator -->
@@ -149,7 +246,7 @@
         <!-- Navigation -->
         <nav class="px-4 py-6 space-y-2">
           <a href="{% url 'homepage' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
-            <i class="fas fa-home mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
+            <i class="fas fa-home mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i>
             <span class="font-medium">Home</span>
           </a>
           <div class="sidebar-item flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 text-white font-medium">
@@ -157,149 +254,127 @@
             <span class="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full">Required</span>
           </div>
           <a href="{% url 'service_provider_dashboard' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
-            <i class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
+            <i class="fas fa-tachometer-alt mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i>
             <span class="font-medium">Dashboard</span>
           </a>
-          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group opacity-50 cursor-not-allowed">
-            <i class="fas fa-bell mr-4 text-gray-400"></i> 
-            <span class="font-medium">Emergency Alerts</span>
-            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
-          </a>
-          <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group opacity-50 cursor-not-allowed">
-            <i class="fas fa-users mr-4 text-gray-400"></i> 
-            <span class="font-medium">Network</span>
-            <i class="fas fa-lock ml-auto text-xs text-gray-400"></i>
-          </a>
-          <a href="{% url 'service_provider_settings' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-green-50 text-gray-700 group">
-            <i class="fas fa-cog mr-4 text-gray-400 group-hover:text-green-500 transition-colors"></i> 
-            <span class="font-medium">Settings</span>
-          </a>
+
         </nav>
       </div>
 
       <!-- Logout Section -->
       <div class="p-4 border-t border-gray-100/50">
-        <a href="{% url 'logout' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
-          <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
+        <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
+          <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
           <span class="font-medium">Log Out</span>
         </a>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-y-auto">
-      
+    <main class="main-content flex-1 p-4 md:p-8 overflow-y-auto">
+
       <!-- Enhanced Profile Header -->
-      <div class="section-card rounded-2xl p-8 mb-8">
-        <div class="flex items-center space-x-6">
+      <div class="section-card rounded-2xl p-4 md:p-8 mb-8">
+        <div class="profile-header flex items-center space-x-6">
           <div class="relative group">
-            <div class="w-24 h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-green-400 to-teal-500 p-1">
+            <div class="w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-green-400 to-teal-500 p-1">
               <div class="w-full h-full rounded-xl bg-white flex items-center justify-center">
-                <i class="fas fa-hospital text-3xl text-green-500"></i>
+                <i class="fas fa-hospital text-xl md:text-3xl text-green-500"></i>
               </div>
             </div>
             <button class="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
               <i class="fas fa-camera text-xs"></i>
             </button>
           </div>
-          <div class="flex-1">
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-              {{ profile.organization_name }}
+          <div class="flex-1 min-w-0">
+            <h2 class="text-xl md:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent truncate">
+              dhanmondi_hospital
             </h2>
-            <p class="text-gray-500 mb-2">{{ profile.get_service_display_name }}</p>
-            <div class="flex items-center space-x-4">
+            <p class="text-gray-500 mb-2 text-sm md:text-base">Hospital</p>
+            <div class="flex flex-wrap items-center gap-2 md:gap-4">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                <span class="text-sm text-yellow-600 font-medium">Profile Incomplete</span>
+                <span class="text-xs md:text-sm text-yellow-600 font-medium">Profile Incomplete</span>
               </div>
-              {% if profile.is_verified %}
               <div class="flex items-center space-x-2">
-                <i class="fas fa-shield-alt text-green-500"></i>
-                <span class="text-sm text-green-600 font-medium">Verified Organization</span>
+                <i class="fas fa-shield-alt text-green-500 text-sm"></i>
+                <span class="text-xs md:text-sm text-green-600 font-medium">Verified Organization</span>
               </div>
-              {% else %}
-              <div class="flex items-center space-x-2">
-                <i class="fas fa-clock text-orange-500"></i>
-                <span class="text-sm text-orange-600 font-medium">Pending Verification</span>
-              </div>
-              {% endif %}
             </div>
           </div>
-          <div class="text-right">
-            <div class="text-2xl font-bold text-green-600" id="header-completion">30%</div>
-            <div class="text-sm text-gray-500">Complete</div>
+          <div class="profile-stats text-right flex-shrink-0">
+            <div class="text-xl md:text-2xl font-bold text-green-600" id="header-completion">30%</div>
+            <div class="text-xs md:text-sm text-gray-500">Complete</div>
             <div class="text-xs text-green-600 font-medium mt-1">Profile Required</div>
           </div>
         </div>
       </div>
 
       <form method="post" class="space-y-8">
-        {% csrf_token %}
-        
+
         <!-- Organization Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-4 md:p-8">
+          <div class="flex items-center justify-between mb-6 md:mb-8">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-building text-white"></i>
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-building text-white text-sm md:text-base"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Organization Information</h2>
-                <p class="text-gray-500 text-sm">Basic details about your organization</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Organization Information</h2>
+                <p class="text-gray-500 text-xs md:text-sm">Basic details about your organization</p>
               </div>
             </div>
             <div class="completion-status status-registered">
               <i class="fas fa-check-circle"></i>
-              <span>Registered</span>
+              <span class="hidden sm:inline">Registered</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 form-grid-mobile">
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Organization Name *</label>
               <div class="relative">
-                {{ form.organization_name }}
-                <i class="fas fa-building absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="organization_name" value="dhanmondi_hospital" class="w-full" required>
+                <i class="fas fa-building icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Service Type *</label>
               <div class="relative">
-                {{ form.service_type }}
-                <i class="fas fa-tags absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <select name="service_type" class="w-full" required>
+                  <option value="">Select Service Type</option>
+                  <option value="hospital" selected>Hospital</option>
+                  <option value="fire_service">Fire Service</option>
+                  <option value="police">Police Station</option>
+                  <option value="ambulance">Ambulance Service</option>
+                  <option value="others">Others</option>
+                </select>
+                <i class="fas fa-tags icon-left"></i>
               </div>
             </div>
-            
-            <div class="form-field" id="other-service-field" style="display: none;">
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Specify Service Type *</label>
-              <div class="relative">
-                {{ form.service_type_other }}
-                <i class="fas fa-edit absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              </div>
-            </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
               <div class="relative">
-                {{ form.email }}
-                <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="email" name="email" value="dhanmondi_hospital@gmail.com" class="w-full" required>
+                <i class="fas fa-envelope icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number *</label>
               <div class="relative">
-                {{ form.contact_number }}
-                <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="tel" name="contact_number" value="01712220114" class="w-full" required>
+                <i class="fas fa-phone icon-left"></i>
               </div>
             </div>
-            
-            <div class="form-field">
+
+            <div class="form-field md:col-span-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Registration Number</label>
               <div class="relative">
-                {{ form.registration_number }}
-                <i class="fas fa-certificate absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="registration_number" placeholder="Official registration number" class="w-full">
+                <i class="fas fa-certificate icon-left"></i>
               </div>
               <p class="text-xs text-gray-500 mt-1">Official license or registration number</p>
             </div>
@@ -307,183 +382,183 @@
         </div>
 
         <!-- Location Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-4 md:p-8">
+          <div class="flex items-center justify-between mb-6 md:mb-8">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-map-marker-alt text-white"></i>
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-map-marker-alt text-white text-sm md:text-base"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Location Information</h2>
-                <p class="text-gray-500 text-sm">Where your organization is located</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Location Information</h2>
+                <p class="text-gray-500 text-xs md:text-sm">Where your organization is located</p>
               </div>
             </div>
             <div class="completion-status status-incomplete">
               <i class="fas fa-exclamation-circle"></i>
-              <span>Required</span>
+              <span class="hidden sm:inline">Required</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 form-grid-mobile">
             <div class="form-field md:col-span-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
               <div class="relative">
-                {{ form.street_address }}
-                <i class="fas fa-road absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="street_address" value="Dhanmondi 32" class="w-full" required>
+                <i class="fas fa-road icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Area/Sector *</label>
               <div class="relative">
-                {{ form.area_sector }}
-                <i class="fas fa-map absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="area_sector" value="Dhanmondi 9/A" class="w-full" required>
+                <i class="fas fa-map icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
               <div class="relative">
-                {{ form.city }}
-                <i class="fas fa-city absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="city" value="Dhaka" class="w-full" required>
+                <i class="fas fa-city icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Postal Code *</label>
               <div class="relative">
-                {{ form.postal_code }}
-                <i class="fas fa-mail-bulk absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="postal_code" value="1205" class="w-full" required>
+                <i class="fas fa-mail-bulk icon-left"></i>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Service Capabilities Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-4 md:p-8">
+          <div class="flex items-center justify-between mb-6 md:mb-8">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-cogs text-white"></i>
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-cogs text-white text-sm md:text-base"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Service Capabilities</h2>
-                <p class="text-gray-500 text-sm">Your organization's capacity and capabilities</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Service Capabilities</h2>
+                <p class="text-gray-500 text-xs md:text-sm">Your organization's capacity and capabilities</p>
               </div>
             </div>
             <div class="completion-status status-incomplete">
               <i class="fas fa-info-circle"></i>
-              <span>Optional</span>
+              <span class="hidden sm:inline">Optional</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 form-grid-mobile">
             <div class="form-field md:col-span-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Specialized Services</label>
               <div class="relative">
-                {{ form.specialized_services }}
-                <i class="fas fa-list absolute left-4 top-4 text-gray-400"></i>
+                <textarea name="specialized_services" rows="3" placeholder="List your specialized services..." class="w-full resize-none"></textarea>
+                <i class="fas fa-list icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field md:col-span-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Equipment Available</label>
               <div class="relative">
-                {{ form.equipment_available }}
-                <i class="fas fa-tools absolute left-4 top-4 text-gray-400"></i>
+                <textarea name="equipment_available" rows="3" placeholder="List available equipment..." class="w-full resize-none"></textarea>
+                <i class="fas fa-tools icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Staff Count</label>
               <div class="relative">
-                {{ form.staff_count }}
-                <i class="fas fa-users absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="number" name="staff_count" placeholder="Number of staff" class="w-full" min="0">
+                <i class="fas fa-users icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Maximum Capacity</label>
               <div class="relative">
-                {{ form.maximum_capacity }}
-                <i class="fas fa-expand-arrows-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="number" name="maximum_capacity" placeholder="Maximum capacity" class="w-full" min="0">
+                <i class="fas fa-expand-arrows-alt icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Average Response Time (minutes)</label>
               <div class="relative">
-                {{ form.average_response_time }}
-                <i class="fas fa-clock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="number" name="average_response_time" placeholder="Response time in minutes" class="w-full" min="0">
+                <i class="fas fa-clock icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Current Available Capacity</label>
               <div class="relative">
-                {{ form.current_capacity }}
-                <i class="fas fa-battery-three-quarters absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="number" name="current_capacity" placeholder="Current capacity" class="w-full" min="0">
+                <i class="fas fa-battery-three-quarters icon-left"></i>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Contact Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-4 md:p-8">
+          <div class="flex items-center justify-between mb-6 md:mb-8">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <i class="fas fa-phone-alt text-white"></i>
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-phone-alt text-white text-sm md:text-base"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Contact Information</h2>
-                <p class="text-gray-500 text-sm">Emergency contact details</p>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800">Contact Information</h2>
+                <p class="text-gray-500 text-xs md:text-sm">Emergency contact details</p>
               </div>
             </div>
             <div class="completion-status status-incomplete">
               <i class="fas fa-exclamation-circle"></i>
-              <span>Required</span>
+              <span class="hidden sm:inline">Required</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 form-grid-mobile">
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Primary Contact Person *</label>
               <div class="relative">
-                {{ form.primary_contact_person }}
-                <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="primary_contact_person" placeholder="Contact person name" class="w-full" required>
+                <i class="fas fa-user icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Designation/Title</label>
               <div class="relative">
-                {{ form.contact_person_designation }}
-                <i class="fas fa-id-badge absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="contact_person_designation" placeholder="Job title or designation" class="w-full">
+                <i class="fas fa-id-badge icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Hotline *</label>
               <div class="relative">
-                {{ form.emergency_hotline }}
-                <i class="fas fa-phone-volume absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="tel" name="emergency_hotline" placeholder="Emergency contact number" class="w-full" required>
+                <i class="fas fa-phone-volume icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Emergency Email</label>
               <div class="relative">
-                {{ form.emergency_email }}
-                <i class="fas fa-at absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="email" name="emergency_email" placeholder="Emergency email address" class="w-full">
+                <i class="fas fa-at icon-left"></i>
               </div>
             </div>
-            
+
             <div class="form-field md:col-span-2">
               <label class="block text-sm font-semibold text-gray-700 mb-2">Operating Hours</label>
               <div class="relative">
-                {{ form.operating_hours }}
-                <i class="fas fa-business-time absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="operating_hours" placeholder='e.g., "24/7" or "8:00 AM - 6:00 PM"' class="w-full">
+                <i class="fas fa-business-time icon-left"></i>
               </div>
               <p class="text-xs text-gray-500 mt-1">e.g., "24/7" or "8:00 AM - 6:00 PM"</p>
             </div>
@@ -491,15 +566,15 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-between items-center mt-8">
-          <a href="{% url 'service_provider_dashboard' %}" class="px-8 py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+          <a href="#" class="order-2 sm:order-1 px-6 py-3 md:px-8 md:py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors text-center w-full sm:w-auto">
             <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
           </a>
-          <div class="flex space-x-4">
-            <button type="submit" name="save_draft" class="px-8 py-4 bg-gray-500 text-white rounded-xl font-medium hover:bg-gray-600 transition-colors">
+          <div class="order-1 sm:order-2 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+            <button type="submit" name="save_draft" class="px-6 py-3 md:px-8 md:py-4 bg-gray-500 text-white rounded-xl font-medium hover:bg-gray-600 transition-colors w-full sm:w-auto">
               <i class="fas fa-save mr-2"></i> Save Draft
             </button>
-            <button type="submit" class="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+            <button type="submit" class="px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-medium hover:shadow-lg transition-all w-full sm:w-auto">
               Save Profile <i class="fas fa-check ml-2"></i>
             </button>
           </div>
@@ -510,19 +585,66 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const closeSidebar = document.getElementById('close-sidebar');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      sidebarOverlay.classList.add('opacity-100');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebarMenu() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+      sidebarOverlay.classList.remove('opacity-100');
+      document.body.style.overflow = 'auto';
+    }
+
+    mobileMenuBtn.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSidebarMenu);
+    sidebarOverlay.addEventListener('click', closeSidebarMenu);
+
+    // Close sidebar when clicking on nav links (mobile)
+    const navLinks = sidebar.querySelectorAll('a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          closeSidebarMenu();
+        }
+      });
+    });
+
+    // Close sidebar on window resize if desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        closeSidebarMenu();
+      }
+    });
+
     // Service type conditional field
     const serviceTypeSelect = document.querySelector('select[name="service_type"]');
     const otherField = document.getElementById('other-service-field');
     const otherInput = document.querySelector('input[name="service_type_other"]');
 
     function toggleOtherField() {
-      if (serviceTypeSelect.value === 'others') {
-        otherField.style.display = 'block';
-        otherInput.required = true;
+      if (serviceTypeSelect && serviceTypeSelect.value === 'others') {
+        if (otherField) {
+          otherField.style.display = 'block';
+          if (otherInput) otherInput.required = true;
+        }
       } else {
-        otherField.style.display = 'none';
-        otherInput.required = false;
-        otherInput.value = '';
+        if (otherField) {
+          otherField.style.display = 'none';
+          if (otherInput) {
+            otherInput.required = false;
+            otherInput.value = '';
+          }
+        }
       }
     }
 
@@ -538,7 +660,7 @@
         'street_address', 'area_sector', 'city', 'postal_code',
         'primary_contact_person', 'emergency_hotline'
       ];
-      
+
       let filledCount = 0;
       requiredFields.forEach(field => {
         const element = document.querySelector(`[name="${field}"]`);
@@ -546,12 +668,16 @@
           filledCount++;
         }
       });
-      
+
       const completionPercentage = Math.round((filledCount / requiredFields.length) * 100);
-      
-      document.getElementById('completion-bar').style.width = `${completionPercentage}%`;
-      document.getElementById('completion-percentage').textContent = `${completionPercentage}%`;
-      document.getElementById('header-completion').textContent = `${completionPercentage}%`;
+
+      const completionBar = document.getElementById('completion-bar');
+      const completionPercentageEl = document.getElementById('completion-percentage');
+      const headerCompletion = document.getElementById('header-completion');
+
+      if (completionBar) completionBar.style.width = `${completionPercentage}%`;
+      if (completionPercentageEl) completionPercentageEl.textContent = `${completionPercentage}%`;
+      if (headerCompletion) headerCompletion.textContent = `${completionPercentage}%`;
     }
 
     // Add event listeners to required fields
@@ -562,6 +688,50 @@
     });
 
     updateCompletion(); // Initial calculation
+
+    // Form field animations
+    const formFields = document.querySelectorAll('.form-field input, .form-field select, .form-field textarea');
+    formFields.forEach(field => {
+      field.addEventListener('focus', function() {
+        this.parentElement.parentElement.style.transform = 'translateY(-2px)';
+        this.parentElement.parentElement.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+      });
+
+      field.addEventListener('blur', function() {
+        this.parentElement.parentElement.style.transform = 'translateY(0)';
+        this.parentElement.parentElement.style.boxShadow = 'none';
+      });
+    });
+
+    // Auto-calculate completion percentage based on filled required fields
+    function calculateRealTimeCompletion() {
+      const allRequiredInputs = document.querySelectorAll('input[required], select[required]');
+      let filledRequired = 0;
+
+      allRequiredInputs.forEach(input => {
+        if (input.value && input.value.trim() !== '') {
+          filledRequired++;
+        }
+      });
+
+      const percentage = Math.round((filledRequired / allRequiredInputs.length) * 100);
+      return percentage;
+    }
+
+    // Update completion on real-time input
+    const allInputs = document.querySelectorAll('input, select, textarea');
+    allInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        const newPercentage = calculateRealTimeCompletion();
+        const completionBar = document.getElementById('completion-bar');
+        const completionPercentageEl = document.getElementById('completion-percentage');
+        const headerCompletion = document.getElementById('header-completion');
+
+        if (completionBar) completionBar.style.width = `${newPercentage}%`;
+        if (completionPercentageEl) completionPercentageEl.textContent = `${newPercentage}%`;
+        if (headerCompletion) headerCompletion.textContent = `${newPercentage}%`;
+      });
+    });
   });
 </script>
 
