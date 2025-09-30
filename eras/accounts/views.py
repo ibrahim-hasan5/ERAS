@@ -467,6 +467,7 @@ def blood_network(request):
                 requester_name=request.POST['requester_name'].strip(),
                 patient_name=request.POST['patient_name'].strip(),
                 blood_type_needed=request.POST['blood_type_needed'],
+                bags_needed=int(request.POST.get('bags_needed', 1)),
                 location=request.POST['location'].strip(),
                 contact_phone=request.POST['contact_phone'].strip(),
                 urgency=request.POST['urgency'],
@@ -559,32 +560,3 @@ def blood_network(request):
     }
 
     return render(request, 'accounts/blood_network.html', context)
-
-
-# Add this to your accounts/views.py file
-
-def homepage(request):
-    """
-    Homepage view with blood network data for Sprint 5
-    """
-    from .models import BloodRequest, CitizenProfile
-    
-    # Get recent blood requests (2 most recent open requests)
-    recent_blood_requests = BloodRequest.objects.filter(
-        status='open'
-    ).order_by('-created_at')[:2]
-    
-    # Get active donors (2 most recent active donors with blood group)
-    active_donors = CitizenProfile.objects.filter(
-        available_to_donate='yes'
-    ).exclude(
-        blood_group__in=['', None]  # Exclude donors without blood group
-    ).select_related('user').order_by('-id')[:2]  # Using id as proxy for recent
-    
-    context = {
-        'recent_blood_requests': recent_blood_requests,
-        'active_donors': active_donors,
-        
-    }
-    
-    return render(request, 'homepage.html', context)

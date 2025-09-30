@@ -108,6 +108,13 @@ class BloodRequest(models.Model):
         max_length=100, help_text="Patient who needs blood")
     blood_type_needed = models.CharField(
         max_length=3, choices=BLOOD_TYPE_CHOICES)
+
+    # NEW FIELD - Add after blood_type_needed
+    bags_needed = models.PositiveIntegerField(
+        default=1,
+        help_text="Number of blood bags needed"
+    )
+
     location = models.CharField(
         max_length=200, help_text="Hospital/location where blood is needed")
     contact_phone = models.CharField(max_length=15)
@@ -139,7 +146,7 @@ class BloodRequest(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.blood_type_needed} needed for {self.patient_name} - {self.get_urgency_display()}"
+        return f"{self.bags_needed} bag(s) of {self.blood_type_needed} needed for {self.patient_name} - {self.get_urgency_display()}"
 
     def is_urgent(self):
         return self.urgency == 'urgent'

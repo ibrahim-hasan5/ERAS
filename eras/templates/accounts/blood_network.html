@@ -5,336 +5,438 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blood Network - ERAS</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            'custom-red': '#dc2626',
-          }
+            'custom-red': '#dc2626', // Primary Action Red
+            'red-darker': '#a50000', // Deep shadow/hover Red
+            'red-light-bg': '#fff5f5', // Very light red background/accent
+            'green-primary': '#059669', // Call button color
+            'green-dark': '#047857',
+          },
+          boxShadow: {
+            'card-pop': '0 8px 18px rgba(0, 0, 0, 0.1)',
+            'red-glow-lg': '0 0 0 6px rgba(220, 38, 38, 0.25)', // Brighter focus ring
+          },
         }
       }
     }
   </script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { 
+        font-family: 'Inter', sans-serif; 
+        background-color: #f7f7f9; /* Off-white background */
+    }
 
     .blood-network-page {
-      max-width: 1000px;
+      max-width: 1100px; 
       margin: 0 auto;
       padding: 20px;
     }
 
+    /* --- NAVIGATION BAR STYLES (Colorful/Popping) --- */
+    .header-nav {
+        /* Vibrant Red Gradient */
+        background: linear-gradient(90deg, #a50000, #dc2626, #ff6666); 
+        box-shadow: 0 6px 20px rgba(165, 0, 0, 0.6); /* Prominent red shadow */
+    }
+    
+    .nav-title {
+        color: white;
+        font-weight: 900;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Shadow for definition */
+    }
+    
+    .nav-link {
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        color: white; /* White text for contrast */
+    }
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white hover */
+        transform: translateY(-1px);
+    }
+    
+    .nav-register-btn {
+        background-color: white; /* White button pops on red gradient */
+        color: #a50000; /* Deep red text */
+        padding: 8px 18px; 
+        border-radius: 9999px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    .nav-register-btn:hover {
+        transform: translateY(-2px);
+        background-color: #fef2f2; /* Light red/white hover */
+        color: #dc2626;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+    /* --- END NAV BAR STYLES --- */
+
+
+    /* Hero - Strongest pop effect */
     .hero-section {
       text-align: center;
-      background: linear-gradient(135deg, #dc2626, #ef4444);
+      /* Stronger, richer gradient */
+      background: linear-gradient(135deg, #a50000, #dc2626, #ef4444); 
       color: white;
-      padding: 40px 20px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+      padding: 55px 20px; 
+      border-radius: 20px; 
+      margin-bottom: 35px;
+      /* Very noticeable shadow to lift it */
+      box-shadow: 0 15px 50px rgba(165, 0, 0, 0.5); 
     }
-
-    .hero-section h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .hero-section p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin-bottom: 20px;
-    }
-
-    .quick-stats {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
+    
     .quick-stats span {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 8px 18px;
-      border-radius: 25px;
-      font-weight: 600;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.4); 
+      padding: 10px 25px; 
+      border-radius: 30px;
+      font-weight: 800; /* Bolder text for impact */
+      backdrop-filter: blur(8px); 
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
 
-    /* Tabs */
+    /* Tabs - Clean and Responsive */
     .tab-btn {
-      background: #f3f4f6;
-      color: #374151;
-      padding: 10px 20px;
-      margin: 0 5px;
+      background: #e5e7eb;
+      color: #374151; 
+      padding: 12px 25px; 
+      margin: 0 4px;
       border-radius: 9999px;
-      font-weight: 600;
+      font-weight: 700;
       transition: all 0.3s;
       border: none;
       cursor: pointer;
     }
     .tab-btn:hover {
-      background: #fee2e2;
+      background: #fee2e2; 
       color: #dc2626;
+      transform: translateY(-1px);
     }
     .tab-btn.active {
-      background: linear-gradient(135deg, #dc2626, #ef4444);
+      /* Intense button gradient */
+      background: linear-gradient(45deg, #dc2626, #a50000);
       color: white;
-      box-shadow: 0 4px 10px rgba(220,38,38,0.3);
+      box-shadow: 0 6px 18px rgba(220,38,38,0.5); 
+      transform: translateY(-3px);
     }
     .tab-content.hidden { display: none; }
 
     .section-title {
-      color: #dc2626;
-      font-size: 1.6rem;
-      font-weight: bold;
-      margin-bottom: 20px;
+      color: #a50000; /* Deeper red for headings */
+      font-size: 1.9rem; 
+      font-weight: 800;
+      margin-bottom: 30px;
       text-align: center;
     }
 
+    /* Form Controls - High Contrast */
     .form-control {
-      padding: 12px 15px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
+      padding: 14px 18px; 
+      border: 1px solid #d1d5db; 
+      border-radius: 10px; 
       font-size: 16px;
       transition: all 0.3s ease;
       width: 100%;
+      background-color: white;
     }
     .form-control:focus {
       outline: none;
-      border-color: #dc2626;
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+      border-color: #a50000;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.3); 
     }
-
+    
+    /* Red Button - Metallic Pop */
     .btn-red {
-      background: linear-gradient(135deg, #dc2626, #ef4444);
+      background: linear-gradient(135deg, #ef4444, #dc2626); /* Brighter gradient */
       color: white;
       border: none;
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
+      padding: 15px 35px; 
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
     }
     .btn-red:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+      transform: translateY(-3px); /* More pronounced lift */
+      box-shadow: 0 10px 30px rgba(220, 38, 38, 0.7);
+      background: linear-gradient(135deg, #dc2626, #a50000); /* Darker hover state */
     }
-
+    
+    /* Call Button */
     .btn-call {
-      background: #059669;
+      background: #059669; /* Green color */
       color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      text-decoration: none;
+      padding: 10px 18px; 
+      border-radius: 8px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       transition: all 0.3s ease;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
     }
     .btn-call:hover { 
       background: #047857; 
-      text-decoration: none;
-      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(5, 150, 105, 0.5);
     }
-
+    
+    /* Card Styles - Sharp & Defined */
     .donor-card, .request-card, .my-request-card {
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .donor-card { 
-      background: #f8fafc; 
-      border: 1px solid #e2e8f0; 
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      background: white; /* All cards start white for contrast */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
       transition: all 0.3s ease;
+      border: 1px solid #e5e7eb;
     }
-    .donor-card:hover { border-color: #dc2626; background: #fef2f2; }
+    .donor-card:hover { 
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transform: translateY(-4px); /* Stronger lift */
+      border-color: #059669; 
+    }
 
-    .request-card { background: #fef2f2; border-left: 4px solid #dc2626; }
-    .my-request-card { background: #f0f9ff; border: 1px solid #bae6fd; }
+    .request-card { 
+      /* Red accent on request cards */
+      background: #fff5f5; 
+      border-left: 6px solid #dc2626; 
+    }
+    .request-card:hover {
+        border-color: #a50000;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+    }
+    
+    .my-request-card { 
+      background: #f0f9ff; 
+      border-left: 6px solid #3b82f6; 
+    }
 
+    /* Blood Type Badge - Primary Pop */
     .blood-type {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      padding: 6px 15px; 
+      border-radius: 25px;
+      font-weight: 800;
+      font-size: 0.95rem;
       color: white;
-      background: #dc2626;
-      margin-right: 5px;
+      /* Intense, flat primary color */
+      background-color: #dc2626; 
+      margin-right: 8px;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5); /* Strong shadow */
+      text-transform: uppercase;
+    }
+    
+    /* Urgency Badge */
+    .urgency { 
+      padding: 5px 12px; 
+      border-radius: 15px; 
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
     }
     .urgency.urgent { 
-      background: #dc2626; 
+      background: #a50000; /* Deeper red for urgent */
       color: white; 
-      padding: 4px 10px; 
-      border-radius: 12px; 
-      font-size: 0.8rem;
-      font-weight: 600;
     }
     .urgency.normal { 
-      background: #6b7280; 
-      color: white; 
-      padding: 4px 10px; 
-      border-radius: 12px; 
-      font-size: 0.8rem;
-      font-weight: 600;
+      background: #e5e7eb; 
+      color: #4b5563; 
     }
-
+    
+    /* Success/Error Messages */
     .success-message {
       background: linear-gradient(135deg, #10b981, #059669);
       color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      padding: 18px 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
       text-align: center;
-      font-weight: 600;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
     }
     
     .error-message {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background: linear-gradient(135deg, #ef4444, #a50000);
       color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      padding: 18px 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
       text-align: center;
-      font-weight: 600;
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-    }
-
-    .login-hint {
-      text-align: center;
-      margin-top: 15px;
-      padding: 12px;
-      background: #f3f4f6;
-      border-radius: 8px;
-      color: #6b7280;
-      font-size: 0.9rem;
-    }
-    
-    .login-hint a {
-      color: #dc2626;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    
-    .login-hint a:hover {
-      text-decoration: underline;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
     }
   </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
-<!-- Navigation Header -->
-<header class="bg-white shadow-md">
+<header class="bg-white shadow-xl sticky top-0 z-10 border-b border-red-light-bg">
   <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-2">
-      <span class="text-xl font-bold text-gray-800">🩸 ERAS Blood Network</span>
+      <span class="text-2xl font-extrabold text-red-darker">🩸 ERAS Blood Network</span>
     </div>
     <div class="flex items-center space-x-4">
-      <a href="/" class="text-gray-600 hover:text-custom-red transition">← Back to Home</a>
+      <a href="/" class="text-gray-600 hover:text-custom-red transition font-medium">
+          <i class="fas fa-home mr-1"></i> Back to Home
+      </a>
       {% if user.is_authenticated %}
-        <span class="text-gray-600">Welcome, {{ user.username }}</span>
-        <a href="{% url 'logout' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700">Logout</a>
+        <span class="text-gray-600 hidden md:inline">Welcome, <span class="font-semibold">{{ user.username }}</span></span>
+        <a href="{% url 'logout' %}" class="bg-red-darker text-white px-4 py-2 rounded-full shadow hover:bg-custom-red transition font-semibold">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       {% else %}
-        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red">Login</a>
-        <a href="{% url 'register_choice' %}" class="bg-custom-red text-white px-4 py-2 rounded-full shadow hover:bg-red-700">Register</a>
+        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red font-medium">Login</a>
+        <a href="{% url 'register_choice' %}" class="btn-red text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg transition font-semibold">
+            <i class="fas fa-user-plus"></i> Register
+        </a>
       {% endif %}
     </div>
   </nav>
 </header>
 
-<!-- Main Content -->
 <main class="blood-network-page">
 
-  <!-- Hero -->
   <div class="hero-section">
-    <h1>🩸 Emergency Blood Network</h1>
-    <p>Connecting patients with donors instantly</p>
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 tracking-wide">🩸 Emergency Blood Network</h1>
+    <p class="text-xl opacity-95 mb-8 font-medium">Connecting patients with donors instantly for life-saving help.</p>
     <div class="quick-stats">
-      <span>{{ active_requests.count }} Active Requests</span>
-      <span>{{ donors.count }} Available Donors</span>
+      <span><i class="fas fa-heartbeat mr-2"></i> {{ active_requests.count }} Active Requests</span>
+      <span><i class="fas fa-user-check mr-2"></i> {{ donors.count }} Available Donors</span>
     </div>
   </div>
 
-  <!-- Display Messages -->
   {% if messages %}
     {% for message in messages %}
       <div class="{% if message.tags == 'success' %}success-message{% else %}error-message{% endif %}">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %} mr-2"></i>
         {{ message }}
       </div>
     {% endfor %}
   {% endif %}
 
-  <!-- Tabs -->
-  <div class="flex justify-center mb-6 flex-wrap gap-2">
-    <button class="tab-btn active" data-tab="request">🩸 Post Request</button>
-    <button class="tab-btn" data-tab="search">🔍 Search Donors</button>
-    <button class="tab-btn" data-tab="feed">🚨 Requests Feed</button>
+  <div class="flex justify-center mb-8 flex-wrap gap-3">
+    <button class="tab-btn active" data-tab="request"><i class="fas fa-hand-holding-water mr-2"></i> Post Request</button>
+    <button class="tab-btn" data-tab="search"><i class="fas fa-search mr-2"></i> Search Donors</button>
+    <button class="tab-btn" data-tab="feed"><i class="fas fa-list-alt mr-2"></i> Requests Feed</button>
   </div>
 
-  <!-- Request Tab -->
   <div id="request" class="tab-content">
-    <div class="bg-white p-6 rounded-xl shadow">
-      <h2 class="section-title">🩸 Need Blood? Post Request</h2>
-      <form method="POST" class="grid gap-4">
+    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
+      <h2 class="section-title">🩸 Need Blood? Post a Request</h2>
+      <form method="POST" class="grid gap-6">
         {% csrf_token %}
         <div class="grid md:grid-cols-2 gap-4">
-          <input type="text" 
+          <div>
+            <label for="requester_name" class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+            <input type="text" 
+                  id="requester_name"
                  name="requester_name" 
                  value="{{ auto_fill.name|default:'' }}"
-                 placeholder="Your Name *" 
+                 placeholder="e.g., Jane Doe" 
                  class="form-control" 
                  required>
-          <input type="text" 
+          </div>
+          <div>
+            <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-1">Patient Name *</label>
+            <input type="text" 
+                  id="patient_name"
                  name="patient_name" 
-                 placeholder="Patient Name *" 
+                 placeholder="e.g., John Doe" 
                  class="form-control" 
                  required>
+          </div>
         </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <select name="blood_type_needed" class="form-control" required>
-            <option value="">Select Blood Type</option>
-            {% for value, label in blood_types %}
-              <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
-          </select>
-          <select name="urgency" class="form-control" required>
-            <option value="urgent">🚨 Urgent</option>
-            <option value="normal" selected>📋 Normal</option>
-          </select>
+        
+        <div class="grid md:grid-cols-4 gap-4">
+          <div>
+            <label for="blood_type_needed" class="block text-sm font-medium text-gray-700 mb-1">Blood Type Needed *</label>
+            <select id="blood_type_needed" name="blood_type_needed" class="form-control" required>
+              <option value="">Select Type</option>
+              {% for value, label in blood_types %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+  
+          <div>
+            <label for="bags_needed" class="block text-sm font-medium text-gray-700 mb-1">Number of Bags *</label>
+            <input type="number" 
+                  id="bags_needed"
+                  name="bags_needed" 
+                  value="1"
+                  min="1" 
+                  max="10"
+                  class="form-control" 
+                  required>
+          </div>
+  
+          <div>
+            <label for="urgency" class="block text-sm font-medium text-gray-700 mb-1">Urgency Level *</label>
+            <select id="urgency" name="urgency" class="form-control" required>
+              <option value="urgent">🚨 Urgent</option>
+              <option value="normal" selected>📋 Normal</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="needed_by_date" class="block text-sm font-medium text-gray-700 mb-1">Needed By Date *</label>
+            <input type="date" 
+                   id="needed_by_date"
+                   name="needed_by_date" 
+                   class="form-control" 
+                   min="{{ today|date:'Y-m-d' }}"
+                   required>
+          </div>
         </div>
+        
         <div class="grid md:grid-cols-2 gap-4">
-          <input type="text" 
+          <div>
+            <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Hospital/Location *</label>
+            <input type="text" 
+                  id="location"
                  name="location" 
                  value="{{ auto_fill.city|default:'' }}"
-                 placeholder="Hospital/Location *" 
+                 placeholder="e.g., Apollo Hospital, Dhaka" 
                  class="form-control" 
                  required>
-          <input type="tel" 
+          </div>
+          <div>
+            <label for="contact_phone" class="block text-sm font-medium text-gray-700 mb-1">Contact Phone *</label>
+            <input type="tel" 
+                  id="contact_phone"
                  name="contact_phone" 
                  value="{{ auto_fill.phone|default:'' }}"
                  placeholder="+880XXXXXXXXX" 
                  class="form-control" 
                  required>
+          </div>
         </div>
-        <input type="date" 
-               name="needed_by_date" 
-               class="form-control" 
-               min="{{ today|date:'Y-m-d' }}"
-               required>
-        <textarea name="additional_notes" 
-                  rows="3" 
-                  placeholder="Additional Information (Optional)" 
-                  class="form-control"></textarea>
-        <button type="submit" class="btn-red">🩸 Post Blood Request</button>
+        
+        <div>
+          <label for="additional_notes" class="block text-sm font-medium text-gray-700 mb-1">Additional Information (Optional)</label>
+          <textarea id="additional_notes" name="additional_notes" 
+                    rows="3" 
+                    placeholder="E.g., Specific time for donation, patient condition details." 
+                    class="form-control"></textarea>
+        </div>
+        
+        <button type="submit" class="btn-red mt-2">
+            <i class="fas fa-plus-circle mr-2"></i> Post Blood Request
+        </button>
         
         {% if not user.is_authenticated %}
           <p class="login-hint">
@@ -345,97 +447,143 @@
     </div>
   </div>
 
-  <!-- Search Tab -->
   <div id="search" class="tab-content hidden">
-    <div class="bg-white p-6 rounded-xl shadow">
+    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
       <h2 class="section-title">🔍 Find Blood Donors</h2>
-      <form method="GET" action="{% url 'blood_network' %}" class="grid gap-4 mb-4">
-        <div class="grid md:grid-cols-2 gap-4">
-          <select name="blood_type" class="form-control">
-            <option value="">All Blood Types</option>
-            {% for value, label in blood_types %}
-              <option value="{{ value }}" {% if current_filters.blood_type == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-          <select name="city" class="form-control">
-            <option value="">All Cities</option>
-            {% for city in cities %}
-              <option value="{{ city }}" {% if current_filters.city == city %}selected{% endif %}>{{ city }}</option>
-            {% endfor %}
-          </select>
+      <form method="GET" action="{% url 'blood_network' %}" class="grid md:grid-cols-5 gap-4 items-end mb-6">
+        <div class="md:col-span-2">
+            <label for="search_blood_type" class="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
+            <select id="search_blood_type" name="blood_type" class="form-control">
+              <option value="">All Types</option>
+              {% for value, label in blood_types %}
+                <option value="{{ value }}" {% if current_filters.blood_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
         </div>
-        <label class="flex items-center gap-2">
+        <div class="md:col-span-2">
+            <label for="search_city" class="block text-sm font-medium text-gray-700 mb-1">City/Location</label>
+            <select id="search_city" name="city" class="form-control">
+              <option value="">All Cities</option>
+              {% for city in cities %}
+                <option value="{{ city }}" {% if current_filters.city == city %}selected{% endif %}>{{ city }}</option>
+              {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn-red md:col-span-1 h-full flex items-center justify-center">
+            <i class="fas fa-search"></i> Search
+        </button>
+        
+        <label class="flex items-center gap-2 md:col-span-5">
           <input type="checkbox" 
                  name="emergency_only" 
                  value="true"
+                 class="w-4 h-4 text-custom-red border-gray-300 rounded focus:ring-custom-red"
                  {% if current_filters.emergency_only %}checked{% endif %}> 
-          ⚡ Emergency Donors Only
+          <span class="text-gray-700 font-medium">⚡ Only Emergency Donors</span>
         </label>
-        <button type="submit" class="btn-red">🔍 Search</button>
       </form>
       
-      <div>
+      <div class="mt-8">
         {% if donors %}
-          {% for donor in donors %}
-            <div class="donor-card flex justify-between items-center">
-              <div>
-                <h4 class="font-bold">{{ donor.user.first_name }} {{ donor.user.last_name|first }}.</h4>
-                <span class="blood-type">{{ donor.blood_group }}</span>
-                <span class="text-sm text-gray-600">📍 {{ donor.city }}, {{ donor.area_sector }}</span>
-                {% if donor.emergency_donor %}
-                  <span class="ml-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs">⚡ Emergency</span>
-                {% endif %}
+          <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2 border-gray-200">Donors Available ({{ donors|length }})</h3>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for donor in donors %}
+              <div class="donor-card flex flex-col justify-between border-l-4 border-green-primary">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                      <span class="blood-type">{{ donor.blood_group }}</span>
+                      {% if donor.emergency_donor %}
+                          <span class="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">⚡ EMERGENCY</span>
+                      {% endif %}
+                  </div>
+                  <h4 class="text-lg font-bold text-gray-900">{{ donor.user.first_name }} {{ donor.user.last_name|first }}.</h4>
+                  <p class="text-sm text-gray-600 mt-1">
+                      <i class="fas fa-map-marker-alt mr-1 text-custom-red"></i> 
+                      {{ donor.city }}, {{ donor.area_sector }}
+                  </p>
+                </div>
+                <div class="mt-4">
+                    <a href="tel:{{ donor.phone_number }}" class="btn-call">
+                        <i class="fas fa-phone-alt"></i> Call Now
+                    </a>
+                </div>
               </div>
-              <a href="tel:{{ donor.phone_number }}" class="btn-call">📞 {{ donor.phone_number }}</a>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         {% else %}
-          <p class="text-center text-gray-500 py-4">No donors found. Try adjusting filters.</p>
+          <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl">
+              <i class="fas fa-user-times mr-2 text-custom-red"></i> No donors found matching your criteria. Try adjusting filters.
+          </p>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- Feed Tab -->
   <div id="feed" class="tab-content hidden">
-    <div class="bg-white p-6 rounded-xl shadow">
-      <h2 class="section-title">🚨 Recent Requests</h2>
+    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
+      <h2 class="section-title">🚨 Active Blood Requests Feed</h2>
       {% if active_requests %}
+        <div class="grid md:grid-cols-2 gap-6">
         {% for request in active_requests %}
-          <div class="request-card">
-            <div class="flex items-center gap-2 mb-2 flex-wrap">
-              <span class="blood-type">{{ request.blood_type_needed }}</span>
-              <span class="urgency {{ request.urgency }}">{{ request.get_urgency_display }}</span>
-              <span class="text-sm text-gray-500">{{ request.created_at|timesince }} ago</span>
+          <div class="request-card flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-3 flex-wrap">
+                  <span class="blood-type">{{ request.blood_type_needed }}</span>
+                  <span class="text-sm font-semibold text-gray-700 bg-gray-200 px-3 py-1 rounded-full">
+                    <i class="fas fa-tint mr-1"></i> {{ request.bags_needed }} Bag{{ request.bags_needed|pluralize }}
+                  </span>
+                  <span class="urgency {{ request.urgency }}">{{ request.get_urgency_display }}</span>
+                </div>
+                
+                <h4 class="text-lg font-bold text-gray-900 mb-1">{{ request.patient_name }}</h4>
+                <p class="text-sm text-gray-600">
+                    <i class="fas fa-map-marked-alt mr-1 text-custom-red"></i> Location: {{ request.location }}
+                </p>
+                <p class="text-sm text-gray-600">
+                    <i class="fas fa-calendar-alt mr-1 text-custom-red"></i> Needed By: {{ request.needed_by_date|date:"M d, Y" }}
+                </p>
+                
+                {% if request.additional_notes %}
+                  <p class="mt-3 text-gray-700 italic border-l-4 pl-3 border-custom-red text-sm">
+                      <i class="fas fa-comment-dots mr-1"></i> {{ request.additional_notes|truncatechars:100 }}
+                  </p>
+                {% endif %}
             </div>
-            <p><strong>{{ request.patient_name }}</strong></p>
-            <p>📍 {{ request.location }}</p>
-            <p>📞 <a href="tel:{{ request.contact_phone }}" class="text-green-600 hover:text-green-700">{{ request.contact_phone }}</a></p>
-            <p>⏰ Needed: {{ request.needed_by_date|date:"M d, Y" }}</p>
-            {% if request.additional_notes %}
-              <p>💬 {{ request.additional_notes }}</p>
-            {% endif %}
+            
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+                <span class="text-xs text-gray-500">Posted {{ request.created_at|timesince }} ago</span>
+                <a href="tel:{{ request.contact_phone }}" class="btn-call">
+                    <i class="fas fa-phone-alt"></i> Call Contact
+                </a>
+            </div>
           </div>
         {% endfor %}
+        </div>
       {% else %}
-        <p class="text-center text-gray-500 py-4">No active requests right now.</p>
+        <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl">
+            <i class="fas fa-box-open mr-2 text-custom-red"></i> No active requests right now. Be the first to post!
+        </p>
       {% endif %}
     </div>
   </div>
 
-  <!-- User History -->
   {% if user.is_authenticated and user_requests %}
-    <div class="bg-white p-6 rounded-xl shadow mt-6">
-      <h3 class="font-bold text-lg mb-3">📋 My Requests</h3>
-      {% for request in user_requests %}
-        <div class="my-request-card flex justify-between items-center">
-          <div>
+    <div class="bg-white p-8 rounded-2xl shadow-card-pop mt-8 border border-red-light-bg">
+      <h3 class="font-bold text-xl mb-4 text-gray-800">📋 My Recent Requests</h3>
+      <div class="grid sm:grid-cols-2 gap-4">
+      {% for request in user_requests|slice:":5" %} 
+        <div class="my-request-card flex justify-between items-center p-4 hover:shadow-lg transition">
+          <div class="flex items-center gap-3">
             <span class="blood-type">{{ request.blood_type_needed }}</span> 
-            {{ request.patient_name }}
+            <span class="font-semibold text-gray-800">{{ request.patient_name }}</span>
           </div>
-          <span class="text-gray-500">{{ request.created_at|date:"M d" }}</span>
+          <span class="text-sm text-gray-500">
+              <i class="fas fa-clock mr-1"></i> {{ request.created_at|date:"M d" }}
+          </span>
         </div>
       {% endfor %}
+      </div>
     </div>
   {% endif %}
 
@@ -447,41 +595,51 @@ document.addEventListener('DOMContentLoaded', function() {
   const tabs = document.querySelectorAll(".tab-btn");
   const contents = document.querySelectorAll(".tab-content");
   
+  function activateTab(tabId) {
+    tabs.forEach(t => t.classList.remove("active"));
+    contents.forEach(c => c.classList.add("hidden"));
+    
+    const targetTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (targetTab) {
+      targetTab.classList.add("active");
+      document.getElementById(tabId).classList.remove("hidden");
+      window.history.pushState(null, null, `#${tabId}`);
+    }
+  }
+
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.add("hidden"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.remove("hidden");
+      activateTab(tab.dataset.tab);
     });
   });
 
-  // Check if there are search parameters to show search tab
+  // Check URL hash/params on page load
+  const hash = window.location.hash.substring(1);
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('blood_type') || urlParams.has('city') || urlParams.has('emergency_only')) {
-    // Switch to search tab
-    tabs.forEach(t => t.classList.remove("active"));
-    contents.forEach(c => c.classList.add("hidden"));
-    document.querySelector('.tab-btn[data-tab="search"]').classList.add("active");
-    document.getElementById("search").classList.remove("hidden");
+  
+  if (hash && ['request', 'search', 'feed'].includes(hash)) {
+    activateTab(hash);
+  } else if (urlParams.has('blood_type') || urlParams.has('city') || urlParams.has('emergency_only')) {
+    activateTab('search');
+  } else {
+    activateTab('request');
   }
 
-  // Default date field setup
-  const dateInput = document.querySelector("input[name='needed_by_date']");
+  // Default date field setup 
+  const dateInput = document.getElementById("needed_by_date");
   if (dateInput) {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     dateInput.min = today.toISOString().split('T')[0];
-    
-    // Set default to tomorrow if no value
+
     if (!dateInput.value) {
       dateInput.value = tomorrow.toISOString().split('T')[0];
     }
   }
 
-  // Phone number formatting
-  const phoneInput = document.querySelector("input[name='contact_phone']");
+  // Phone number formatting 
+  const phoneInput = document.getElementById("contact_phone");
   if (phoneInput) {
     phoneInput.addEventListener('input', function() {
       let value = this.value.replace(/\D/g, '');
@@ -494,17 +652,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Urgency visual feedback
-  const urgencySelect = document.querySelector("select[name='urgency']");
+  // Urgency visual feedback 
+  const urgencySelect = document.getElementById("urgency");
   if (urgencySelect) {
+    // Initial check
+    if (urgencySelect.value === 'urgent') {
+        urgencySelect.style.borderColor = '#a50000';
+    }
     urgencySelect.addEventListener('change', function() {
-      if (this.value === 'urgent') {
-        this.style.background = 'linear-gradient(45deg, #fef2f2, #fee2e2)';
-        this.style.borderColor = '#ef4444';
-      } else {
-        this.style.background = '';
-        this.style.borderColor = '#e5e7eb';
-      }
+      // Simple visual cue on the select border
+      this.style.borderColor = (this.value === 'urgent') ? '#a50000' : '#d1d5db';
     });
   }
 });
