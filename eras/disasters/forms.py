@@ -35,7 +35,8 @@ class DisasterForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent',
-                'placeholder': 'Auto-generated if left blank'
+                'placeholder': 'Auto-generated if left blank',
+                'required': False
             }),
             'disaster_type': forms.Select(attrs={
                 'class': 'w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent',
@@ -75,6 +76,8 @@ class DisasterForm(forms.ModelForm):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+
+        self.fields['title'].required = False
 
         # Set default incident date/time to now
         if not self.instance.pk:

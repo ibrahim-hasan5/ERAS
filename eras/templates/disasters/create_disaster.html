@@ -172,12 +172,14 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Title (Optional)</label>
-                            {{ form.title }}
-                            <p class="text-xs text-gray-500 mt-1">Leave blank for auto-generated title</p>
-                            {% if form.title.errors %}
-                                <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
-                            {% endif %}
+                             <label class="block text-sm font-medium text-gray-700 mb-2">
+                               Title <span class="text-gray-400">(Optional)</span>
+                             </label>
+                             {{ form.title }}
+                             <p class="text-xs text-gray-500 mt-1">Leave blank for auto-generated title</p>
+                               {% if form.title.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                             {% endif %}
                         </div>
                     </div>
                 </div>
@@ -388,7 +390,7 @@
                     <button type="submit" name="submit"
                             class="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white py-4 px-8 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center">
                         <i class="fas fa-paper-plane mr-2"></i>
-                        {% if is_create %}Submit for Review{% else %}Update Report{% endif %}
+                        {% if is_create %}Submit{% else %}Update Report{% endif %}
                     </button>
 
                     <button type="submit" name="save_draft"
@@ -408,7 +410,7 @@
     </div>
 
     <script>
-        // Character counter for description
+    // Character counter for description
     function updateCharCount(textarea) {
         const counter = document.getElementById('charCounter');
         const length = textarea.value.length;
@@ -427,183 +429,237 @@
         }
     }
 
-        // Initialize character counter
-        const descriptionField = document.querySelector('[name="description"]');
-        if (descriptionField) {
-            descriptionField.addEventListener('input', function() {
-                updateCharCount(this);
+    // Initialize character counter
+    const descriptionField = document.querySelector('[name="description"]');
+    if (descriptionField) {
+        descriptionField.addEventListener('input', function() {
+            updateCharCount(this);
+        });
+        updateCharCount(descriptionField);
+    }
+
+    // Dynamic area/sector loading
+    async function updateAreaOptions(city) {
+        const areaSelect = document.querySelector('[name="area_sector"]');
+        if (!city || !areaSelect) return;
+
+        try {
+            const response = await fetch(`{% url 'disasters:get_areas_by_city' %}?city=${encodeURIComponent(city)}`);
+            const data = await response.json();
+
+            // Clear existing options
+            areaSelect.innerHTML = '<option value="">Select Area/Sector</option>';
+
+            // Add new options
+            data.areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area.value;
+                option.textContent = area.label;
+                areaSelect.appendChild(option);
             });
-            updateCharCount(descriptionField);
+        } catch (error) {
+            console.error('Error loading areas:', error);
+        }
+    }
+
+    // City change handler
+    const citySelect = document.querySelector('[name="city"]');
+    if (citySelect) {
+        citySelect.addEventListener('change', function() {
+            updateAreaOptions(this.value);
+        });
+    }
+
+    // ===== FIX: Add Another Image Button =====
+    let formCount = parseInt(document.querySelector('[name="form-TOTAL_FORMS"]').value);
+    const maxForms = 5;
+
+    document.getElementById('addImageBtn').addEventListener('click', function() {
+        if (formCount >= maxForms) {
+            alert('You can only upload a maximum of 5 images.');
+            return;
         }
 
-        // Dynamic area/sector loading
-        async function updateAreaOptions(city) {
-            const areaSelect = document.querySelector('[name="area_sector"]');
-            if (!city || !areaSelect) return;
+        const formsetContainer = document.getElementById('imageFormset');
+        const lastForm = document.querySelector('.image-form-row:last-of-type');
 
-            try {
-                const response = await fetch(`{% url 'disasters:get_areas_by_city' %}?city=${encodeURIComponent(city)}`);
-                const data = await response.json();
+        // Clone the last form
+        const newForm = lastForm.cloneNode(true);
 
-                // Clear existing options
-                areaSelect.innerHTML = '<option value="">Select Area/Sector</option>';
+        // Update form count
+        formCount++;
 
-                // Add new options
-                data.areas.forEach(area => {
-                    const option = document.createElement('option');
-                    option.value = area.value;
-                    option.textContent = area.label;
-                    areaSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading areas:', error);
+        // Update the form index in all fields
+        const formRegex = new RegExp(`form-(\\d+)-`, 'g');
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount - 1}-`);
+
+        // Clear the input values
+        newForm.querySelectorAll('input[type="file"]').forEach(input => {
+            input.value = '';
+        });
+        newForm.querySelectorAll('input[type="text"]').forEach(input => {
+            input.value = '';
+        });
+        newForm.querySelectorAll('input[type="checkbox"]').forEach(input => {
+            input.checked = false;
+        });
+
+        // Hide image preview
+        const previewContainer = newForm.querySelector('.image-preview-container');
+        if (previewContainer) {
+            previewContainer.style.display = 'none';
+        }
+
+        // Insert before the add button
+        this.parentElement.insertBefore(newForm, this);
+
+        // Update total forms count
+        document.querySelector('[name="form-TOTAL_FORMS"]').value = formCount;
+    });
+
+    // Image preview functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Attach event listeners to image inputs
+        attachImagePreviewListeners();
+    });
+
+    function attachImagePreviewListeners() {
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            // Remove existing listeners to avoid duplicates
+            input.removeEventListener('change', handleImageChange);
+            input.addEventListener('change', handleImageChange);
+        });
+    }
+
+    function handleImageChange(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size cannot exceed 5MB.');
+                e.target.value = '';
+                return;
             }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Only JPEG, PNG, and WebP images are allowed.');
+                e.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            const previewContainer = this.closest('.image-form-row').querySelector('.image-preview-container');
+            const previewImg = previewContainer.querySelector('.preview-img');
+
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+
+            reader.readAsDataURL(file);
         }
+    }
 
-        // City change handler
-        const citySelect = document.querySelector('[name="city"]');
-        if (citySelect) {
-            citySelect.addEventListener('change', function() {
-                updateAreaOptions(this.value);
-            });
+    // Remove image preview
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.remove-preview-btn') || e.target.closest('.remove-preview-btn')) {
+            const row = e.target.closest('.image-form-row');
+            const input = row.querySelector('input[type="file"]');
+            const previewContainer = row.querySelector('.image-preview-container');
+
+            input.value = '';
+            previewContainer.style.display = 'none';
         }
+    });
 
-        // Disaster category display
-        function updateDisasterCategory(disasterType) {
-            const naturalTypes = [
-                'earthquake', 'flood', 'cyclone_storm', 'wildfire',
-                'landslide', 'drought', 'tsunami', 'natural_other'
-            ];
+    // Remove image form row
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.remove-image-btn') || e.target.closest('.remove-image-btn')) {
+            const row = e.target.closest('.image-form-row');
+            const deleteField = row.querySelector('input[name$="-DELETE"]');
 
-            const categoryBadge = document.getElementById('categoryBadge');
-            if (!categoryBadge) return;
-
-            if (naturalTypes.includes(disasterType)) {
-                categoryBadge.textContent = 'Natural Disaster';
-                categoryBadge.className = 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
-            } else if (disasterType) {
-                categoryBadge.textContent = 'Man-Made Disaster';
-                categoryBadge.className = 'inline-block px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800';
+            if (deleteField) {
+                deleteField.checked = true;
+                row.style.display = 'none';
             } else {
-                categoryBadge.textContent = '';
-                categoryBadge.className = '';
+                // If no delete field, just remove the row
+                row.remove();
+                formCount--;
+                document.querySelector('[name="form-TOTAL_FORMS"]').value = formCount;
             }
         }
+    });
 
-        // Image preview functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const imageInputs = document.querySelectorAll('input[type="file"]');
-
-            imageInputs.forEach(input => {
-                input.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        const previewContainer = this.closest('.image-form-row').querySelector('.image-preview-container');
-                        const previewImg = previewContainer.querySelector('.preview-img');
-
-                        reader.onload = function(e) {
-                            previewImg.src = e.target.result;
-                            previewContainer.style.display = 'block';
-                        };
-
-                        reader.readAsDataURL(file);
+    // Primary image selection (only one allowed)
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('input[name$="-is_primary"]')) {
+            if (e.target.checked) {
+                // Uncheck all other primary checkboxes
+                document.querySelectorAll('input[name$="-is_primary"]').forEach(checkbox => {
+                    if (checkbox !== e.target) {
+                        checkbox.checked = false;
                     }
                 });
-            });
+            }
+        }
+    });
 
-            // Remove image preview
-            document.addEventListener('click', function(e) {
-                if (e.target.matches('.remove-preview-btn') || e.target.closest('.remove-preview-btn')) {
-                    const row = e.target.closest('.image-form-row');
-                    const input = row.querySelector('input[type="file"]');
-                    const previewContainer = row.querySelector('.image-preview-container');
+    // Form validation
+    document.getElementById('disasterForm').addEventListener('submit', function(e) {
+        const requiredFields = [
+            'disaster_type', 'severity', 'city', 'area_sector',
+            'description', 'incident_date', 'incident_time'
+        ];
 
-                    input.value = '';
-                    previewContainer.style.display = 'none';
-                }
-            });
+        let isValid = true;
+        const errors = [];
 
-            // Remove image form row
-            document.addEventListener('click', function(e) {
-                if (e.target.matches('.remove-image-btn') || e.target.closest('.remove-image-btn')) {
-                    const row = e.target.closest('.image-form-row');
-                    const deleteField = row.querySelector('input[name$="-DELETE"]');
-                    if (deleteField) {
-                        deleteField.checked = true;
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        });
-
-        // Primary image selection (only one allowed)
-        document.addEventListener('change', function(e) {
-            if (e.target.matches('input[name$="-is_primary"]')) {
-                if (e.target.checked) {
-                    // Uncheck all other primary checkboxes
-                    document.querySelectorAll('input[name$="-is_primary"]').forEach(checkbox => {
-                        if (checkbox !== e.target) {
-                            checkbox.checked = false;
-                        }
-                    });
-                }
+        requiredFields.forEach(fieldName => {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            if (field && !field.value.trim()) {
+                isValid = false;
+                errors.push(`${fieldName.replace('_', ' ').toUpperCase()} is required`);
+                field.classList.add('border-red-500');
+            } else if (field) {
+                field.classList.remove('border-red-500');
             }
         });
 
-        // Form validation
-        document.getElementById('disasterForm').addEventListener('submit', function(e) {
-            const requiredFields = [
-                'disaster_type', 'severity', 'city', 'area_sector',
-                'description', 'incident_date', 'incident_time'
-            ];
-
-            let isValid = true;
-            const errors = [];
-
-            requiredFields.forEach(fieldName => {
-                const field = document.querySelector(`[name="${fieldName}"]`);
-                if (field && !field.value.trim()) {
-                    isValid = false;
-                    errors.push(`${fieldName.replace('_', ' ').toUpperCase()} is required`);
-                    field.classList.add('border-red-500');
-                } else if (field) {
-                    field.classList.remove('border-red-500');
-                }
-            });
-
-            // Validate description length
-           const description = document.querySelector('[name="description"]');
-
+        // Validate description length
+        const description = document.querySelector('[name="description"]');
         if (description && description.value.trim().length > 50) {
-            e.preventDefault();
+            isValid = false;
+            errors.push('Description must be 50 characters or less');
+            description.classList.add('border-red-500');
             alert('Description must be 50 characters or less.');
             description.focus();
+            e.preventDefault();
             return false;
         }
 
         if (description && description.value.trim().length < 10) {
-            e.preventDefault();
+            isValid = false;
+            errors.push('Description must be at least 10 characters');
+            description.classList.add('border-red-500');
             alert('Description must be at least 10 characters.');
             description.focus();
+            e.preventDefault();
+            return false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fix the following errors:\n\n' + errors.join('\n'));
+            // Scroll to first error
+            const firstError = document.querySelector('.border-red-500');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return false;
         }
     });
-
-        // Auto-save draft functionality (optional)
-        let autoSaveTimeout;
-        function autoSaveDraft() {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(() => {
-                // Implementation for auto-saving draft
-                console.log('Auto-saving draft...');
-            }, 5000); // Auto-save every 5 seconds of inactivity
-        }
-
-        // Attach auto-save to form inputs
-        document.querySelectorAll('input, textarea, select').forEach(field => {
-            field.addEventListener('change', autoSaveDraft);
-        });
-    </script>
+</script>
 </body>
 </html>

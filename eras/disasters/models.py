@@ -52,7 +52,7 @@ class Disaster(models.Model):
     ]
 
     # Basic Information
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True)
     disaster_type = models.CharField(max_length=30, choices=DISASTER_TYPE_CHOICES)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
     severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES)

@@ -418,6 +418,53 @@ def nearby_disasters(request):
     return render(request, 'disasters/nearby_disasters.html', context)
 
 
+@login_required
+def citizen_nearby_disasters(request):
+    """
+    View for citizens to see disasters in their city/area
+    """
+    try:
+        profile = request.user.citizen_profile
+    except:
+        # Redirect to profile setup if profile doesn't exist
+        from django.shortcuts import redirect
+        return redirect('citizen_profile_setup')
+
+    # Get user's location from their profile
+    user_city = profile.city
+    user_area = profile.area_sector
+
+    # Filter disasters by user's location
+    # Show approved disasters that are active
+    disasters = Disaster.objects.filter(
+        status='approved',
+        is_active=True
+    ).filter(
+        Q(city__iexact=user_city) |
+        Q(area_sector__iexact=user_area)
+    ).select_related('reporter').prefetch_related('images', 'responses').order_by('-created_at')
+
+    # Add a flag to indicate if disaster is in the exact same area
+    for disaster in disasters:
+        disaster.is_same_area = (
+                disaster.city.lower() == user_city.lower() and
+                disaster.area_sector.lower() == user_area.lower()
+        )
+        disaster.is_same_city_only = (
+                disaster.city.lower() == user_city.lower() and
+                disaster.area_sector.lower() != user_area.lower()
+        )
+
+    context = {
+        'profile': profile,
+        'disasters': disasters,
+        'user_city': user_city,
+        'user_area': user_area,
+    }
+
+    return render(request, 'disasters/citizen_nearby_disasters.html', context)
+
+
 # ===== REPORTING & MODERATION =====
 
 @login_required

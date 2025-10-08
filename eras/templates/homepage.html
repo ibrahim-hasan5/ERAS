@@ -627,7 +627,12 @@
             </div>
         </section>
     </main>
-
+        <!-- Alert Notifications (if user is logged in) -->
+    {% if user.is_authenticated %}
+        <div id="alertNotifications" class="fixed top-20 right-4 space-y-2 z-50" style="display: none;">
+            <!-- Alerts will be populated via JavaScript -->
+        </div>
+    {% endif %}
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 py-12">
         <div class="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -667,6 +672,99 @@
             &copy; 2025 Emergency Response & Alert System. All Rights Reserved.
         </div>
     </footer>
+<script>
+    {% if user.is_authenticated %}
+        // Notification system
+        async function checkForAlerts() {
+            try {
+                const response = await fetch('{% url "disasters:user_alerts" %}');
+                const data = await response.json();
 
+                if (data.alerts && data.alerts.length > 0) {
+                    showAlertNotifications(data.alerts);
+                }
+            } catch (error) {
+                console.error('Error checking alerts:', error);
+            }
+        }
+
+        function showAlertNotifications(alerts) {
+            const container = document.getElementById('alertNotifications');
+            container.innerHTML = '';
+
+            alerts.slice(0, 3).forEach(alert => { // Show max 3 alerts
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'bg-red-500 text-white p-4 rounded-lg shadow-lg max-w-sm transform translate-x-full transition-transform duration-300';
+                alertDiv.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="font-bold text-sm mb-1">${alert.disaster_type} - ${alert.severity.toUpperCase()}</div>
+                            <div class="text-xs mb-2">${alert.location}</div>
+                            <div class="text-xs opacity-90">${alert.description}</div>
+                        </div>
+                        <button onclick="dismissAlert(this, ${alert.id})" class="ml-2 text-white hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-3 flex justify-between items-center">
+                        <span class="text-xs opacity-75">${alert.time_reported}</span>
+                        <a href="{% url 'disasters:disaster_detail' 0 %}".replace('0', alert.disaster_id)
+                           class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
+                            View
+                        </a>
+                    </div>
+                `;
+
+                container.appendChild(alertDiv);
+                container.style.display = 'block';
+
+                // Animate in
+                setTimeout(() => {
+                    alertDiv.classList.remove('translate-x-full');
+                }, 100);
+
+                // Auto-dismiss after 10 seconds
+                setTimeout(() => {
+                    dismissAlert(alertDiv, alert.id);
+                }, 10000);
+            });
+        }
+
+        async function dismissAlert(element, alertId) {
+            const alertDiv = element.closest ? element.closest('div') : element;
+
+            // Mark as read
+            try {
+                await fetch(`{% url 'disasters:mark_alert_read' 0 %}`.replace('0', alertId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                        'Content-Type': 'application/json',
+                    }
+                });
+            } catch (error) {
+                console.error('Error marking alert as read:', error);
+            }
+
+            // Animate out
+            alertDiv.classList.add('translate-x-full');
+            setTimeout(() => {
+                alertDiv.remove();
+
+                // Hide container if no more alerts
+                const container = document.getElementById('alertNotifications');
+                if (container.children.length === 0) {
+                    container.style.display = 'none';
+                }
+            }, 300);
+        }
+    // Check for alerts when page loads and every minute
+        document.addEventListener('DOMContentLoaded', () => {
+            checkForAlerts();
+            setInterval(checkForAlerts, 60000); // Check every minute
+        });
+        {% endif %}
+
+</script>
 </body>
 </html>

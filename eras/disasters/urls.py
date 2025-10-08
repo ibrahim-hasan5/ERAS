@@ -13,6 +13,7 @@ urlpatterns = [
     path('<int:disaster_id>/edit/', views.edit_disaster, name='edit_disaster'),
     path('<int:disaster_id>/delete/', views.delete_disaster, name='delete_disaster'),
     path('my-disasters/', views.my_disasters, name='my_disasters'),
+path('citizen/nearby/', views.citizen_nearby_disasters, name='citizen_nearby_disasters'),
 
     # Service provider responses
     path('<int:disaster_id>/respond/', views.add_response, name='add_response'),
