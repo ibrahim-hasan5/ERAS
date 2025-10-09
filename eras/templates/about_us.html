@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,40 +25,133 @@
             }
         }
     </script>
+
+    <style>
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            max-height: 500px;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #374151;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+    </style>
+
 </head>
-<body class="bg-gray-50 text-gray-800 font-['Inter']">
+
+<body class="bg-gray-100 text-gray-800">
+    {% if user.is_authenticated and user.user_type == 'citizen' and not user.citizen_profile.blood_group %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 fixed top-16 left-0 right-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <p class="font-bold">Complete Your Profile</p>
+            <a href="{% url 'citizen_profile_setup' %}" class="bg-custom-red text-white py-1 px-3 rounded text-sm hover:bg-red-700">Complete Now</a>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-custom-red rounded-lg flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+        <nav class="container mx-auto px-6 py-4">
+            <!-- Top Row: Logo and Mobile Menu Button -->
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo" class="w-8 h-8">
+                    <span class="text-xl font-bold text-gray-800">ERAS</span>
                 </div>
-                <span class="text-xl font-bold text-gray-800">ERAS</span>
-            </div>
-            <div class="hidden md:flex items-center space-x-6">
-               <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
-    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
-    <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
-    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
-    {% if user.is_authenticated and user.user_type == 'citizen' %}
-        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
-    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
-        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
-    {% endif %}
-            </div>
-            <div class="flex items-center space-x-4">
-                      <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
-                {% if user.is_authenticated %}
-        <span class="text-gray-600">Welcome, {{ user.username }}</span>
-                    {% if user.user_type == 'citizen' %}
-                        <a href="{% url 'citizen_profile_setup' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Profile</a>
+
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🏠Home</a>
+                    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🚨Alert</a>
+                    <a href="{% url 'blood_network' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🩸Blood Network</a>
+                    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🛠️Services</a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">📊Dashboard</a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">📊Dashboard</a>
                     {% endif %}
-                    <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
-                    <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
-                {% endif %}
+                </div>
+
+                <!-- Desktop Auth Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-600">Welcome, {{ user.username }}</span>
+                        <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                        <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden hamburger" id="mobileMenuBtn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu md:hidden" id="mobileMenu">
+                <div class="pt-4 pb-3 space-y-1">
+                    <a href="{% url 'homepage' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-home w-5 mr-2"></i>Home
+                    </a>
+                    <a href="{% url 'disasters:disaster_list' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-exclamation-triangle w-5 mr-2"></i>Alerts
+                    </a>
+                    <a href="{% url 'blood_network' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-tint w-5 mr-2"></i>Blood Network
+                    </a>
+                    <a href="{% url 'service_provider_directory' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-hospital w-5 mr-2"></i>Services
+                    </a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_dashboard' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-tachometer-alt w-5 mr-2"></i>Dashboard
+                        </a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'service_provider_dashboard' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-tachometer-alt w-5 mr-2"></i>Dashboard
+                        </a>
+                    {% endif %}
+
+                    <div class="border-t border-gray-200 my-2"></div>
+
+                    {% if user.is_authenticated %}
+                        <div class="px-3 py-2 text-gray-600">
+                            <i class="fas fa-user w-5 mr-2"></i>Welcome, {{ user.username }}
+                        </div>
+                        <a href="{% url 'logout' %}" class="block mx-3 my-2 bg-custom-red text-white text-center py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-sign-in-alt w-5 mr-2"></i>Login
+                        </a>
+                        <a href="{% url 'register_choice' %}" class="block mx-3 my-2 bg-custom-red text-white text-center py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">
+                            <i class="fas fa-user-plus mr-2"></i>Register
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
     </header>
@@ -266,7 +360,7 @@ Most importantly, ERAS made me realize how technology can solve real-world probl
                     <div class="text-gray-300">Dedicated Developers</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-custom-red mb-2">1000+</div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">100+</div>
                     <div class="text-gray-300">Hours of Development</div>
                 </div>
                 <div>
@@ -274,7 +368,7 @@ Most importantly, ERAS made me realize how technology can solve real-world probl
                     <div class="text-gray-300">System Monitoring</div>
                 </div>
                 <div>
-                    <div class="text-4xl font-bold text-custom-red mb-2">99.9%</div>
+                    <div class="text-4xl font-bold text-custom-red mb-2">95%</div>
                     <div class="text-gray-300">Uptime Target</div>
                 </div>
             </div>
@@ -307,7 +401,7 @@ Most importantly, ERAS made me realize how technology can solve real-world probl
             <div>
                 <h3 class="text-lg font-bold text-white mb-4">Quick Links</h3>
                 <ul class="text-sm space-y-2">
-                    <li><a href="#" class="hover:text-white transition duration-300">Home</a></li>
+                    <li><a href="{%url 'homepage'%}" class="hover:text-white transition duration-300">Home</a></li>
                     <li><a href="#" class="hover:text-white transition duration-300">About Us</a></li>
                     <li><a href="#" class="hover:text-white transition duration-300">Services</a></li>
                     <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
@@ -336,6 +430,34 @@ Most importantly, ERAS made me realize how technology can solve real-world probl
             &copy; 2025 Emergency Response & Alert System. All Rights Reserved.
         </div>
     </footer>
+
+<script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInsideNav = event.target.closest('nav');
+            if (!isClickInsideNav && mobileMenu.classList.contains('active')) {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Close mobile menu when window is resized to desktop size
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768 && mobileMenu.classList.contains('active')) {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+    </script>
 
 </body>
 </html>

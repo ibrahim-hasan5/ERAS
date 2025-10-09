@@ -16,12 +16,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-
    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <style>
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .mobile-menu.active {
+            max-height: 500px;
+        }
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #374151;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+    </style>
 
 </head>
+
 <body class="bg-gray-100 text-gray-800">
     {% if user.is_authenticated and user.user_type == 'citizen' and not user.citizen_profile.blood_group %}
     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 fixed top-16 left-0 right-0 z-50">
@@ -34,46 +60,101 @@
 
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md fixed w-full top-0 left-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo" class="w-8 h-8">
-                <span class="text-xl font-bold text-gray-800">ERAS</span>
+        <nav class="container mx-auto px-6 py-4">
+            <!-- Top Row: Logo and Mobile Menu Button -->
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo" class="w-8 h-8">
+                    <span class="text-xl font-bold text-gray-800">ERAS</span>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🏠Home</a>
+                    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🚨Alert</a>
+                    <a href="{% url 'blood_network' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🩸Blood Network</a>
+                    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🛠️Services</a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">📊Dashboard</a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">📊Dashboard</a>
+                    {% endif %}
+                </div>
+
+                <!-- Desktop Auth Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <span class="text-gray-600">Welcome, {{ user.username }}</span>
+                        <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
+                        <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden hamburger" id="mobileMenuBtn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
-            <div class="hidden md:flex items-center space-x-6">
-    <a href="{% url 'homepage' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Home</a>
-    <a href="{% url 'disasters:disaster_list' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Alerts</a>
-    <a href="{% url 'blood_network' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Blood Network</a>
-    <a href="{% url 'service_provider_directory' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Services</a>
-    {% if user.is_authenticated and user.user_type == 'citizen' %}
-        <a href="{% url 'citizen_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
-    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
-        <a href="{% url 'service_provider_dashboard' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Dashboard</a>
-    {% endif %}
-</div>
-            <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-600 hover:text-custom-red transition duration-300">EN</a>
-                {% if user.is_authenticated %}
-        <span class="text-gray-600">Welcome, {{ user.username }}</span>
-<!--
-                    {% if user.user_type == 'citizen' %}
-                        <a href="{% url 'citizen_profile_setup' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Profile</a>
-                    {% endif %}-->
-                    <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
-                    <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
-                {% endif %}
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu md:hidden" id="mobileMenu">
+                <div class="pt-4 pb-3 space-y-1">
+                    <a href="{% url 'homepage' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-home w-5 mr-2"></i>Home
+                    </a>
+                    <a href="{% url 'disasters:disaster_list' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-exclamation-triangle w-5 mr-2"></i>Alerts
+                    </a>
+                    <a href="{% url 'blood_network' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-tint w-5 mr-2"></i>Blood Network
+                    </a>
+                    <a href="{% url 'service_provider_directory' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                        <i class="fas fa-hospital w-5 mr-2"></i>Services
+                    </a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'citizen_dashboard' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-tachometer-alt w-5 mr-2"></i>Dashboard
+                        </a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'service_provider_dashboard' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-tachometer-alt w-5 mr-2"></i>Dashboard
+                        </a>
+                    {% endif %}
+
+                    <div class="border-t border-gray-200 my-2"></div>
+
+                    {% if user.is_authenticated %}
+                        <div class="px-3 py-2 text-gray-600">
+                            <i class="fas fa-user w-5 mr-2"></i>Welcome, {{ user.username }}
+                        </div>
+                        <a href="{% url 'logout' %}" class="block mx-3 my-2 bg-custom-red text-white text-center py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
+                            <i class="fas fa-sign-in-alt w-5 mr-2"></i>Login
+                        </a>
+                        <a href="{% url 'register_choice' %}" class="block mx-3 my-2 bg-custom-red text-white text-center py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">
+                            <i class="fas fa-user-plus mr-2"></i>Register
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
     </header>
 
     <main>
-        <!-- Hero Section -->
+        <!-- jump in Section -->
         <section class="hero-section text-center flex flex-col items-center justify-center p-8 mt-16">
-            <video 
-                autoplay 
-                muted 
-                loop 
+            <video
+                autoplay
+                muted
+                loop
                 playsinline
                 class="absolute top-0 left-0 w-full h-full object-cover"
             >
@@ -81,17 +162,10 @@
                 <source src="{% static 'assets/videos/emergency-hero-bg.webm' %}" type="video/webm">
                 <!-- Fallback for browsers that don't support video -->
                 Your browser does not support the video tag.
-            </video>            
+            </video>
             <div class="z-10">
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">Instant Alerts That Save Lives</h1>
                 <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">Get notified, act fast, stay safe. For every fire, flood, and crisis – we’re ready.</p>
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <button class="bg-white text-custom-red font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-200 transition duration-300 flex items-center space-x-2">
-                        <i class="fas fa-bell"></i>
-                        <span>Enable Emergency Alerts</span>
-                    </button>
-                    <input type="text" placeholder="Search for alerts..." class="py-3 px-6 rounded-full border border-gray-300 focus:outline-none focus:ring-2 ring-custom-red w-full sm:w-auto" />
-                </div>
                 <div class="mt-12 flex flex-col sm:flex-row items-center justify-center space-y-8 sm:space-y-0 sm:space-x-12">
                     <div class="flex flex-col items-center">
                         <span class="text-4xl font-bold">24/7</span>
@@ -102,7 +176,7 @@
                         <span class="text-sm">Citizens Protected</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="text-4xl font-bold">&lt;30s</span>
+                        <span class="text-4xl font-bold">&lt;5min</span>
                         <span class="text-sm">Alert Response Time</span>
                     </div>
                 </div>
@@ -193,24 +267,188 @@
     {% endif %}
 </section>
 
+        <!-- SPRINT 5: Blood Donor Emergency Network -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Blood Donor Emergency Network</h2>
+                <p class="mt-2 text-gray-600">Find and connect with blood donors in your area instantly.</p>
+            </div>
 
-        <!-- Role Card 2: Service Provider -->
-<div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-    <i class="fas fa-hospital text-4xl text-green-500 mb-4"></i>
-    <h3 class="text-xl font-semibold text-gray-800 mb-2">Service Provider</h3>
-    <p class="text-gray-600 text-sm flex-grow">Emergency services, hospitals, fire stations, and police. Manage alerts and coordinate emergency responses.</p>
-    
-    {% if user.is_authenticated and user.user_type == 'service_provider' %}
-        <div class="mt-4 space-y-2 w-full">
-            <a href="{% url 'service_provider_dashboard' %}" class="block bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Dashboard</a>
-            <a href="{% url 'disasters:nearby_disasters' %}" class="block bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold text-sm">Nearby Emergencies</a>
-        </div>
-    {% else %}
-        <a href="{% url 'register_service_provider' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Register Organization</a>
-    {% endif %}
-</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-    
+                <!-- Left Card: Recent Blood Requests -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                            Recent Blood Requests
+                        </h3>
+                        <a href="{% url 'blood_network' %}#feed" class="text-red-500 hover:text-red-700 font-medium text-sm">
+                        View All →
+                        </a>
+                    </div>
+
+                    {% if recent_blood_requests %}
+                        <div class="space-y-4">
+                            {% for request in recent_blood_requests %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-3 mb-2">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                                    {{ request.blood_type_needed }}
+                                                </span>
+                                                {% if request.urgency == 'urgent' %}
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-800">
+                                                        🚨 URGENT
+                                                    </span>
+                                                {% endif %}
+                                                <span class="text-xs text-gray-500">
+                                                    {{ request.created_at|timesince }} ago
+                                                </span>
+                                            </div>
+
+                                            <h4 class="font-semibold text-gray-900 mb-1">
+                                            {{ request.bags_needed }} bag{{ request.bags_needed|pluralize }} of {{ request.blood_type_needed }} needed for {{ request.patient_name }}
+                                            </h4>
+
+                                            <div class="flex items-center text-sm text-gray-600 mb-2">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                {{ request.location }}
+                                            </div>
+
+                                            <div class="flex items-center text-sm text-gray-600 mb-3">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                Needed by: {{ request.needed_by_date|date:"M d, Y" }}
+                                            </div>
+
+                                            <div class="flex items-center space-x-3">
+                                                <a href="tel:{{ request.contact_phone }}"
+                                                class="inline-flex items-center px-3 py-1 bg-red-500 text-white text-sm rounded-full hover:bg-red-600 transition-colors duration-200">
+                                                    <i class="fas fa-phone mr-1"></i>
+                                                    Call Now
+                                                </a>
+                                                <span class="text-sm text-gray-500">
+                                                    {{ request.contact_phone }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-heart text-4xl mb-4 text-gray-300"></i>
+                            <p class="mb-4">No active blood requests at the moment</p>
+                            <a href="{% url 'blood_network' %}" class="text-red-500 hover:text-red-700 font-medium">
+                                Post a Blood Request →
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-6 text-center">
+                        <a href="{% url 'blood_network' %}"
+                        class="inline-block bg-red-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-200 font-medium">
+                            🩸 Need Blood? Post Request
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Card: Active Donors -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-user-friends text-green-500 mr-3"></i>
+                            Active Donors
+                        </h3>
+                        <a href="{% url 'blood_network' %}#search" class="text-green-500 hover:text-green-700 font-medium text-sm">
+                            View All →
+                        </a>
+                    </div>
+
+                    {% if active_donors %}
+                        <div class="space-y-4">
+                            {% for donor in active_donors %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-3 mb-2">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800">
+                                                    {{ donor.blood_group }}
+                                                </span>
+                                                {% if donor.emergency_donor %}
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">
+                                                        ⚡ Emergency
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+
+                                            <h4 class="font-semibold text-gray-900 mb-1">
+                                                {{ donor.user.first_name }} {{ donor.user.last_name|first }}.
+                                            </h4>
+
+                                            <div class="flex items-center text-sm text-gray-600 mb-2">
+                                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                                {{ donor.city }}{% if donor.area_sector %}, {{ donor.area_sector }}{% endif %}
+                                            </div>
+
+                                            {% if donor.last_blood_donation %}
+                                                <div class="flex items-center text-sm text-gray-600 mb-3">
+                                                    <i class="fas fa-calendar-check mr-1"></i>
+                                                    Last donated: {{ donor.last_blood_donation|date:"M Y" }}
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="flex items-center space-x-3">
+                                                <a href="tel:{{ donor.phone_number }}"
+                                                class="inline-flex items-center px-3 py-1 bg-green-500 text-white text-sm rounded-full hover:bg-green-600 transition-colors duration-200">
+                                                    <i class="fas fa-phone mr-1"></i>
+                                                    Contact
+                                                </a>
+                                                <span class="text-sm text-gray-500">
+                                                    {{ donor.phone_number }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-users text-4xl mb-4 text-gray-300"></i>
+                            <p class="mb-4">No active donors available</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'citizen_profile_setup' %}" class="text-green-500 hover:text-green-700 font-medium">
+                                    Become a Donor →
+                                </a>
+                            {% else %}
+                                <a href="{% url 'register_citizen' %}" class="text-green-500 hover:text-green-700 font-medium">
+                                    Register to Become a Donor →
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-6 text-center">
+                        <a href="{% url 'blood_network' %}#search"
+                        class="inline-block bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-200 font-medium">
+                            🔍 Find Blood Donors
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div class="text-center mt-12">
+                <a href="{% url 'blood_network' %}"
+                class="bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 px-8 rounded-full shadow-lg hover:from-red-600 hover:to-pink-600 transition-all duration-300 font-semibold text-lg">
+                    🩸 Access Full Blood Network
+                </a>
+            </div>
+        </section>
+
     <!-- Replace the existing Emergency Services Directory section in homepage.html -->
 <!-- Emergency Services Directory Section -->
 <section class="container mx-auto px-6 py-16">
@@ -324,223 +562,23 @@
     </div>
 </section>
 
-    
 
-        <!-- Role-Based Emergency Access Section - Added -->
-        <section class="container mx-auto px-6 py-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Role-Based Emergency Access</h2>
-                <p class="mt-2 text-gray-600">Secure access to critical information based on your user role.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Role Card 1: Citizen -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <i class="fas fa-user-friends text-4xl text-custom-red mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Citizen</h3>
-                    <p class="text-gray-600 text-sm flex-grow">Receive timely and relevant alerts based on your location and preferences. Report incidents easily.</p>
-                    <a href="#" class="mt-4 bg-custom-red text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">Access Portal</a>
-                </div>
-                <!-- Role Card 2: Responder -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <i class="fas fa-user-shield text-4xl text-blue-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Responder</h3>
-                    <p class="text-gray-600 text-sm flex-grow">Get critical incident details, dispatch information, and real-time coordination tools.</p>
-                    <a href="#" class="mt-4 bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold">Access Portal</a>
-                </div>
-                <!-- Role Card 3: Administrator -->
-                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
-                    <i class="fas fa-user-cog text-4xl text-green-500 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Administrator</h3>
-                    <p class="text-gray-600 text-sm flex-grow">Manage alerts, monitor system performance, and analyze data to improve emergency response.</p>
-                    <a href="#" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Portal</a>
-                </div>
-            </div>
-        </section>
+        <!-- Role Card 2: Service Provider -->
+<div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+    <i class="fas fa-hospital text-4xl text-green-500 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Service Provider</h3>
+    <p class="text-gray-600 text-sm flex-grow">Emergency services, hospitals, fire stations, and police. Manage alerts and coordinate emergency responses.</p>
 
-        
-<!-- SPRINT 5: Replace the existing "Blood Donor Emergency Network" section with this -->
-        <section class="container mx-auto px-6 py-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900">Blood Donor Emergency Network</h2>
-                <p class="mt-2 text-gray-600">Find and connect with blood donors in your area instantly.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                
-                <!-- Left Card: Recent Blood Requests -->
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                            Recent Blood Requests
-                        </h3>
-                        <a href="{% url 'blood_network' %}#feed" class="text-red-500 hover:text-red-700 font-medium text-sm">
-                        View All →
-                        </a>
-                    </div>
-                    
-                    {% if recent_blood_requests %}
-                        <div class="space-y-4">
-                            {% for request in recent_blood_requests %}
-                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-3 mb-2">
-                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
-                                                    {{ request.blood_type_needed }}
-                                                </span>
-                                                {% if request.urgency == 'urgent' %}
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-800">
-                                                        🚨 URGENT
-                                                    </span>
-                                                {% endif %}
-                                                <span class="text-xs text-gray-500">
-                                                    {{ request.created_at|timesince }} ago
-                                                </span>
-                                            </div>
-                                            
-                                            <h4 class="font-semibold text-gray-900 mb-1">
-                                            {{ request.bags_needed }} bag{{ request.bags_needed|pluralize }} of {{ request.blood_type_needed }} needed for {{ request.patient_name }}
-                                            </h4>
-                                            
-                                            <div class="flex items-center text-sm text-gray-600 mb-2">
-                                                <i class="fas fa-map-marker-alt mr-1"></i>
-                                                {{ request.location }}
-                                            </div>
-                                            
-                                            <div class="flex items-center text-sm text-gray-600 mb-3">
-                                                <i class="fas fa-calendar-alt mr-1"></i>
-                                                Needed by: {{ request.needed_by_date|date:"M d, Y" }}
-                                            </div>
-                                            
-                                            <div class="flex items-center space-x-3">
-                                                <a href="tel:{{ request.contact_phone }}" 
-                                                class="inline-flex items-center px-3 py-1 bg-red-500 text-white text-sm rounded-full hover:bg-red-600 transition-colors duration-200">
-                                                    <i class="fas fa-phone mr-1"></i>
-                                                    Call Now
-                                                </a>
-                                                <span class="text-sm text-gray-500">
-                                                    {{ request.contact_phone }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-heart text-4xl mb-4 text-gray-300"></i>
-                            <p class="mb-4">No active blood requests at the moment</p>
-                            <a href="{% url 'blood_network' %}" class="text-red-500 hover:text-red-700 font-medium">
-                                Post a Blood Request →
-                            </a>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="mt-6 text-center">
-                        <a href="{% url 'blood_network' %}" 
-                        class="inline-block bg-red-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-600 transition-colors duration-200 font-medium">
-                            🩸 Need Blood? Post Request
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Right Card: Active Donors -->
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-user-friends text-green-500 mr-3"></i>
-                            Active Donors
-                        </h3>
-                        <a href="{% url 'blood_network' %}#search" class="text-green-500 hover:text-green-700 font-medium text-sm">
-                            View All →
-                        </a>
-                    </div>
-                    
-                    {% if active_donors %}
-                        <div class="space-y-4">
-                            {% for donor in active_donors %}
-                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-3 mb-2">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800">
-                                                    {{ donor.blood_group }}
-                                                </span>
-                                                {% if donor.emergency_donor %}
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">
-                                                        ⚡ Emergency
-                                                    </span>
-                                                {% endif %}
-                                            </div>
-                                            
-                                            <h4 class="font-semibold text-gray-900 mb-1">
-                                                {{ donor.user.first_name }} {{ donor.user.last_name|first }}.
-                                            </h4>
-                                            
-                                            <div class="flex items-center text-sm text-gray-600 mb-2">
-                                                <i class="fas fa-map-marker-alt mr-1"></i>
-                                                {{ donor.city }}{% if donor.area_sector %}, {{ donor.area_sector }}{% endif %}
-                                            </div>
-                                            
-                                            {% if donor.last_blood_donation %}
-                                                <div class="flex items-center text-sm text-gray-600 mb-3">
-                                                    <i class="fas fa-calendar-check mr-1"></i>
-                                                    Last donated: {{ donor.last_blood_donation|date:"M Y" }}
-                                                </div>
-                                            {% endif %}
-                                            
-                                            <div class="flex items-center space-x-3">
-                                                <a href="tel:{{ donor.phone_number }}" 
-                                                class="inline-flex items-center px-3 py-1 bg-green-500 text-white text-sm rounded-full hover:bg-green-600 transition-colors duration-200">
-                                                    <i class="fas fa-phone mr-1"></i>
-                                                    Contact
-                                                </a>
-                                                <span class="text-sm text-gray-500">
-                                                    {{ donor.phone_number }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-users text-4xl mb-4 text-gray-300"></i>
-                            <p class="mb-4">No active donors available</p>
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'citizen_profile_setup' %}" class="text-green-500 hover:text-green-700 font-medium">
-                                    Become a Donor →
-                                </a>
-                            {% else %}
-                                <a href="{% url 'register_citizen' %}" class="text-green-500 hover:text-green-700 font-medium">
-                                    Register to Become a Donor →
-                                </a>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                    
-                    <div class="mt-6 text-center">
-                        <a href="{% url 'blood_network' %}#search" 
-                        class="inline-block bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition-colors duration-200 font-medium">
-                            🔍 Find Blood Donors
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bottom CTA -->
-            <div class="text-center mt-12">
-                <a href="{% url 'blood_network' %}" 
-                class="bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 px-8 rounded-full shadow-lg hover:from-red-600 hover:to-pink-600 transition-all duration-300 font-semibold text-lg">
-                    🩸 Access Full Blood Network
-                </a>
-            </div>
-        </section>
- 
-        
+    {% if user.is_authenticated and user.user_type == 'service_provider' %}
+        <div class="mt-4 space-y-2 w-full">
+            <a href="{% url 'service_provider_dashboard' %}" class="block bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Dashboard</a>
+            <a href="{% url 'disasters:nearby_disasters' %}" class="block bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold text-sm">Nearby Emergencies</a>
+        </div>
+    {% else %}
+        <a href="{% url 'register_service_provider' %}" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Register Organization</a>
+    {% endif %}
+</div>
+
 
         <!-- Emergency Services Directory Section - Added -->
         <section class="container mx-auto px-6 py-16">
@@ -569,6 +607,37 @@
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">Medical Emergency</h3>
                     <p class="text-gray-600 text-sm flex-grow">Request ambulance services and medical aid.</p>
                     <a href="tel:102" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Call 102</a>
+                </div>
+            </div>
+        </section>
+
+         <!-- Role-Based Emergency Access Section - Added -->
+        <section class="container mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">Role-Based Emergency Access</h2>
+                <p class="mt-2 text-gray-600">Secure access to critical information based on your user role.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Role Card 1: Citizen -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-friends text-4xl text-custom-red mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Citizen</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Receive timely and relevant alerts based on your location and preferences. Report incidents easily.</p>
+                    <a href="#" class="mt-4 bg-custom-red text-white py-2 px-6 rounded-full shadow-lg hover:bg-red-700 transition duration-300 font-semibold">Access Portal</a>
+                </div>
+                <!-- Role Card 2: Responder -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-shield text-4xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Responder</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Get critical incident details, dispatch information, and real-time coordination tools.</p>
+                    <a href="#" class="mt-4 bg-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 font-semibold">Access Portal</a>
+                </div>
+                <!-- Role Card 3: Administrator -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center">
+                    <i class="fas fa-user-cog text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Administrator</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Manage alerts, monitor system performance, and analyze data to improve emergency response.</p>
+                    <a href="#" class="mt-4 bg-green-500 text-white py-2 px-6 rounded-full shadow-lg hover:bg-green-600 transition duration-300 font-semibold">Access Portal</a>
                 </div>
             </div>
         </section>
@@ -628,7 +697,13 @@
         </section>
     </main>
         <!-- Alert Notifications (if user is logged in) -->
-    {% if user.is_authenticated %}
+    <!--{% if user.is_authenticated and user.user_type == 'citizen' %}
+       <div id="alertNotifications1" class="fixed top-20 right-4 space-y-2 z-50" style="display: none;">
+            <-- Alerts will be populated via JavaScript ->
+        </div>
+    {% endif %}-->
+
+    {% if user.is_authenticated or user.user_type == 'service_provider' or user.user_type == 'citizen' %}
         <div id="alertNotifications" class="fixed top-20 right-4 space-y-2 z-50" style="display: none;">
             <!-- Alerts will be populated via JavaScript -->
         </div>
@@ -673,7 +748,7 @@
         </div>
     </footer>
 <script>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated or user.user_type == 'service_provider' or user.user_type == 'citizen' %}
         // Notification system
         async function checkForAlerts() {
             try {
@@ -708,7 +783,7 @@
                     </div>
                     <div class="mt-3 flex justify-between items-center">
                         <span class="text-xs opacity-75">${alert.time_reported}</span>
-                        <a href="{% url 'disasters:disaster_detail' 0 %}".replace('0', alert.disaster_id)
+                        <a href="/disasters/${alert.disaster_id}/"
                            class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
                             View
                         </a>
@@ -764,6 +839,32 @@
             setInterval(checkForAlerts, 60000); // Check every minute
         });
         {% endif %}
+
+    // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInsideNav = event.target.closest('nav');
+            if (!isClickInsideNav && mobileMenu.classList.contains('active')) {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Close mobile menu when window is resized to desktop size
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768 && mobileMenu.classList.contains('active')) {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
 
 </script>
 </body>
