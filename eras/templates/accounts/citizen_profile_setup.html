@@ -7,7 +7,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+      // Ensure all custom classes are recognized
+      safelist: [
+        'glass-morphism', 'gradient-border', 'gradient-border-content',
+        'floating-animation', 'glow-effect', 'form-field', 'sidebar-item',
+        'progress-indicator', 'pulse-ring', 'section-card', 'readonly-field',
+        'locked-icon', 'completion-status', 'status-incomplete', 'status-complete'
+      ]
+    }
+  </script>
   <style>
+    /* Custom Styles - Keep these for the visual flair */
     .glass-morphism {
       background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(10px);
@@ -141,11 +160,63 @@
       background: #d1fae5;
       color: #059669;
     }
+
+    /* ********** START: RESPONSIVENESS STYLES ********** */
+
+    /* Hide sidebar by default on small screens */
+    .mobile-sidebar-hidden {
+      display: none;
+    }
+
+    /* Show sidebar on screens larger than 'lg' */
+    @media (min-width: 1024px) {
+      .lg\:mobile-sidebar-hidden {
+        display: flex; /* or block */
+      }
+    }
+
+    /* Style for the mobile menu button (hidden on desktop) */
+    .mobile-menu-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: #ef4444;
+      color: white;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .mobile-menu-button:hover {
+      background: #dc2626;
+    }
+
+    @media (min-width: 1024px) {
+      .mobile-menu-button {
+        display: none;
+      }
+    }
+    
+    /* Overlay for mobile menu */
+    #sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 40; /* Lower than sidebar */
+      display: none;
+    }
+
+    #sidebar-overlay.active {
+      display: block;
+    }
+
+    /* ********** END: RESPONSIVENESS STYLES ********** */
+
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 font-inter text-gray-800 overflow-x-hidden">
   
-  <!-- Animated Background Elements -->
   <div class="fixed inset-0 overflow-hidden pointer-events-none">
     <div class="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation"></div>
     <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-400 to-green-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 floating-animation" style="animation-delay: 2s;"></div>
@@ -154,10 +225,10 @@
 
   <div class="flex min-h-screen relative z-10">
     
-    <!-- Enhanced Sidebar -->
-    <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex-col justify-between border-r border-white/20 z-50 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out flex">
       <div>
-        <!-- Logo Section with Glow -->
         <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
           <div class="relative">
             <div class="absolute inset-0 bg-red-500 rounded-full blur-sm opacity-75 pulse-ring"></div>
@@ -169,7 +240,6 @@
           </div>
         </div>
 
-        <!-- Progress Indicator -->
         <div class="px-6 py-4 border-b border-gray-100/50">
           <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-medium text-gray-600">Profile Completion</span>
@@ -181,8 +251,7 @@
           <div class="text-xs text-gray-500 mt-1">Complete your profile to unlock all features</div>
         </div>
 
-        <!-- Navigation -->
-      <nav class="px-4 py-6 space-y-2">
+        <nav class="px-4 py-6 space-y-2">
           <a href="{% url 'homepage' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-red-50 text-gray-700 group">
               <i class="fas fa-home mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i>
               <span class="font-medium">Home</span>
@@ -198,7 +267,6 @@
           </nav>
       </div>
 
-      <!-- Logout Section -->
       <div class="p-4 border-t border-gray-100/50">
         <a href="{% url 'logout' %}" class="sidebar-item flex items-center px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 group w-full">
           <i class="fas fa-sign-out-alt mr-4 text-gray-400 group-hover:text-red-500 transition-colors"></i> 
@@ -207,26 +275,31 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-y-auto">
+    <main class="flex-1 p-4 sm:p-8 overflow-y-auto">
       
-      <!-- Enhanced Profile Header -->
-      <div class="section-card rounded-2xl p-8 mb-8">
-        <div class="flex items-center space-x-6">
-          <div class="relative group">
-            <div class="w-24 h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-red-400 to-pink-500 p-1">
+      <div class="flex justify-between items-center mb-6 lg:hidden">
+        <h1 class="text-2xl font-bold text-gray-800">Complete Profile</h1>
+        <button class="mobile-menu-button" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      
+      <div class="section-card rounded-2xl p-6 sm:p-8 mb-8">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+          <div class="relative group flex-shrink-0">
+            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-red-400 to-pink-500 p-1">
               <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f3f4f6'/%3E%3Ccircle cx='50' cy='35' r='15' fill='%23ef4444'/%3E%3Cpath d='M25 75 Q25 55 50 55 Q75 55 75 75' fill='%23ef4444'/%3E%3C/svg%3E" alt="Profile" class="w-full h-full object-cover rounded-xl bg-white">
             </div>
             <button class="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
               <i class="fas fa-camera text-xs"></i>
             </button>
           </div>
-          <div class="flex-1">
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div class="flex-1 text-center sm:text-left">
+            <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
               {{ user.get_full_name|default:user.username }}
             </h2>
             <p class="text-gray-500 mb-2">Citizen Profile</p>
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-wrap justify-center sm:justify-start items-center space-x-4">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
                 <span class="text-sm text-yellow-600 font-medium">Profile Incomplete</span>
@@ -237,7 +310,7 @@
               </div>
             </div>
           </div>
-          <div class="text-right">
+          <div class="text-center sm:text-right pt-4 sm:pt-0">
             <div class="text-2xl font-bold text-red-600" id="header-completion">25%</div>
             <div class="text-sm text-gray-500">Complete</div>
             <div class="text-xs text-red-600 font-medium mt-1">Profile Required</div>
@@ -245,18 +318,17 @@
         </div>
       </div>
 
-      <form method="post" class="space-y-8">
+      <form method="post" class="space-y-6 sm:space-y-8">
         {% csrf_token %}
         
-        <!-- Personal Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-user text-white"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Personal Information</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Personal Information</h2>
                 <p class="text-gray-500 text-sm">Your account details (cannot be changed here)</p>
               </div>
             </div>
@@ -316,15 +388,14 @@
           </div>
         </div>
 
-        <!-- Address Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-home text-white"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Address Information</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Address Information</h2>
                 <p class="text-gray-500 text-sm">Required for emergency response</p>
               </div>
             </div>
@@ -382,15 +453,14 @@
           </div>
         </div>
 
-        <!-- Emergency Contact Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-phone-alt text-white"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Emergency Contact</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Emergency Contact</h2>
                 <p class="text-gray-500 text-sm">Someone to contact in case of emergency</p>
               </div>
             </div>
@@ -439,15 +509,14 @@
           </div>
         </div>
 
-        <!-- Medical Information Section -->
-        <div class="section-card rounded-2xl p-8">
-          <div class="flex items-center justify-between mb-8">
+        <div class="section-card rounded-2xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-heartbeat text-white"></i>
               </div>
               <div>
-                <h2 class="text-2xl font-bold text-gray-800">Medical Information</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Medical Information</h2>
                 <p class="text-gray-500 text-sm">Important for first responders</p>
               </div>
             </div>
@@ -527,12 +596,11 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-between items-center mt-8">
-          <a href="{% url 'homepage' %}" class="px-8 py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+        <div class="flex flex-col sm:flex-row justify-between items-center mt-8 space-y-4 sm:space-y-0">
+          <a href="{% url 'homepage' %}" class="w-full sm:w-auto text-center px-8 py-4 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors border border-gray-200">
             <i class="fas fa-arrow-left mr-2"></i> Back to Home
           </a>
-          <button type="submit" class="px-8 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
+          <button type="submit" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">
             Save Profile <i class="fas fa-check ml-2"></i>
           </button>
         </div>
@@ -541,6 +609,21 @@
   </div>
 
 <script>
+  // --- Script for Mobile Sidebar Toggle ---
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar.classList.contains('translate-x-full')) {
+      // Show sidebar
+      sidebar.classList.remove('-translate-x-full');
+      overlay.classList.add('active');
+    } else {
+      // Hide sidebar
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.remove('active');
+    }
+  }
+  
   document.addEventListener('DOMContentLoaded', function() {
 
     // --- Function to update profile completion percentage ---
@@ -576,31 +659,24 @@
     // --- Function to auto-calculate Age from DOB ---
     const dobField = document.querySelector('[name="date_of_birth"]');
     if (dobField) {
-      // Calculate age on page load if DOB exists
-      if (dobField.value) {
+      // Calculation logic
+      const calculateAge = (dob) => {
+        if (!dob) return '—';
         const today = new Date();
-        const birthDate = new Date(dobField.value);
+        const birthDate = new Date(dob);
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
           age--;
         }
-        document.getElementById('calculated-age').textContent = age;
-      }
+        return age;
+      };
+      
+      // Initial calculation on load
+      document.getElementById('calculated-age').textContent = calculateAge(dobField.value);
 
       dobField.addEventListener('change', function() {
-        if (dobField.value) {
-          const today = new Date();
-          const birthDate = new Date(dobField.value);
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const m = today.getMonth() - birthDate.getMonth();
-          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-          }
-          document.getElementById('calculated-age').textContent = age;
-        } else {
-          document.getElementById('calculated-age').textContent = '—';
-        }
+        document.getElementById('calculated-age').textContent = calculateAge(dobField.value);
       });
     }
 
@@ -621,6 +697,9 @@
           } else {
             availabilityField.value = "no";
           }
+        } else {
+            // If date is cleared, reset availability
+            availabilityField.value = "";
         }
       });
     }

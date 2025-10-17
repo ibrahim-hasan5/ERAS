@@ -35,7 +35,7 @@
     .blood-network-page {
       max-width: 1100px; 
       margin: 0 auto;
-      padding: 20px;
+      padding: 15px; /* Adjusted padding for smaller screens */
     }
 
     /* --- NAVIGATION BAR STYLES (Colorful/Popping) --- */
@@ -88,34 +88,55 @@
       /* Stronger, richer gradient */
       background: linear-gradient(135deg, #a50000, #dc2626, #ef4444); 
       color: white;
-      padding: 55px 20px; 
+      padding: 40px 15px; /* Adjusted padding for small screens */
       border-radius: 20px; 
       margin-bottom: 35px;
       /* Very noticeable shadow to lift it */
       box-shadow: 0 15px 50px rgba(165, 0, 0, 0.5); 
     }
     
+    .quick-stats {
+        display: flex; /* Ensure stats flex */
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+        justify-content: center;
+        gap: 10px; /* Space between stats */
+    }
+    
     .quick-stats span {
       background: rgba(255, 255, 255, 0.4); 
-      padding: 10px 25px; 
+      padding: 8px 15px; /* Adjusted padding */
       border-radius: 30px;
       font-weight: 800; /* Bolder text for impact */
       backdrop-filter: blur(8px); 
       border: 1px solid rgba(255, 255, 255, 0.5);
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      font-size: 0.875rem; /* Smaller font on small screens */
+    }
+    @media (min-width: 640px) {
+        .quick-stats span {
+            padding: 10px 25px;
+            font-size: 1rem;
+        }
     }
 
     /* Tabs - Clean and Responsive */
     .tab-btn {
       background: #e5e7eb;
       color: #374151; 
-      padding: 12px 25px; 
+      padding: 10px 18px; /* Adjusted padding */
       margin: 0 4px;
       border-radius: 9999px;
       font-weight: 700;
       transition: all 0.3s;
       border: none;
       cursor: pointer;
+      font-size: 0.9rem; /* Smaller font on small screens */
+    }
+    @media (min-width: 640px) {
+        .tab-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+        }
     }
     .tab-btn:hover {
       background: #fee2e2; 
@@ -133,15 +154,20 @@
 
     .section-title {
       color: #a50000; /* Deeper red for headings */
-      font-size: 1.9rem; 
+      font-size: 1.7rem; /* Adjusted font size for smaller screens */
       font-weight: 800;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       text-align: center;
+    }
+    @media (min-width: 640px) {
+        .section-title {
+            font-size: 1.9rem;
+        }
     }
 
     /* Form Controls - High Contrast */
     .form-control {
-      padding: 14px 18px; 
+      padding: 12px 16px; /* Adjusted padding */
       border: 1px solid #d1d5db; 
       border-radius: 10px; 
       font-size: 16px;
@@ -160,13 +186,19 @@
       background: linear-gradient(135deg, #ef4444, #dc2626); /* Brighter gradient */
       color: white;
       border: none;
-      padding: 15px 35px; 
+      padding: 14px 30px; /* Adjusted padding */
       border-radius: 10px;
-      font-size: 1.1rem;
+      font-size: 1rem; /* Adjusted font size */
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+    }
+    @media (min-width: 640px) {
+        .btn-red {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+        }
     }
     .btn-red:hover {
       transform: translateY(-3px); /* More pronounced lift */
@@ -285,23 +317,23 @@
 <body class="bg-gray-50">
 
 <header class="bg-white shadow-xl sticky top-0 z-10 border-b border-red-light-bg">
-  <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+  <nav class="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-2">
-      <span class="text-2xl font-extrabold text-red-darker">🩸 ERAS Blood Network</span>
+      <span class="text-xl sm:text-2xl font-extrabold text-red-darker whitespace-nowrap">🩸 ERAS Blood Network</span>
     </div>
-    <div class="flex items-center space-x-4">
-      <a href="/" class="text-gray-600 hover:text-custom-red transition font-medium">
+    <div class="flex items-center space-x-2 sm:space-x-4">
+      <a href="/" class="text-gray-600 hover:text-custom-red transition font-medium hidden sm:inline-flex items-center">
           <i class="fas fa-home mr-1"></i> Back to Home
       </a>
       {% if user.is_authenticated %}
-        <span class="text-gray-600 hidden md:inline">Welcome, <span class="font-semibold">{{ user.username }}</span></span>
-        <a href="{% url 'logout' %}" class="bg-red-darker text-white px-4 py-2 rounded-full shadow hover:bg-custom-red transition font-semibold">
-            <i class="fas fa-sign-out-alt"></i> Logout
+        <span class="text-gray-600 hidden md:inline whitespace-nowrap">Welcome, <span class="font-semibold">{{ user.username }}</span></span>
+        <a href="{% url 'logout' %}" class="bg-red-darker text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow hover:bg-custom-red transition font-semibold text-sm sm:text-base whitespace-nowrap">
+            <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Logout</span>
         </a>
       {% else %}
-        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red font-medium">Login</a>
-        <a href="{% url 'register_choice' %}" class="btn-red text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg transition font-semibold">
-            <i class="fas fa-user-plus"></i> Register
+        <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red font-medium text-sm hidden sm:inline">Login</a>
+        <a href="{% url 'register_choice' %}" class="btn-red text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-md hover:shadow-lg transition font-semibold text-sm sm:text-base whitespace-nowrap">
+            <i class="fas fa-user-plus"></i> <span class="hidden sm:inline">Register</span>
         </a>
       {% endif %}
     </div>
@@ -311,9 +343,9 @@
 <main class="blood-network-page">
 
   <div class="hero-section">
-    <h1 class="text-4xl sm:text-5xl font-extrabold mb-3 tracking-wide">🩸 Emergency Blood Network</h1>
-    <p class="text-xl opacity-95 mb-8 font-medium">Connecting patients with donors instantly for life-saving help.</p>
-    <div class="quick-stats">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-3 tracking-wide">🩸 Emergency Blood Network</h1>
+    <p class="text-md sm:text-xl opacity-95 mb-8 font-medium">Connecting patients with donors instantly for life-saving help.</p>
+    <div class="quick-stats flex justify-center flex-wrap gap-3">
       <span><i class="fas fa-heartbeat mr-2"></i> {{ active_requests.count }} Active Requests</span>
       <span><i class="fas fa-user-check mr-2"></i> {{ donors.count }} Available Donors</span>
     </div>
@@ -329,13 +361,13 @@
   {% endif %}
 
   <div class="flex justify-center mb-8 flex-wrap gap-3">
-    <button class="tab-btn active" data-tab="request"><i class="fas fa-hand-holding-water mr-2"></i> Post Request</button>
-    <button class="tab-btn" data-tab="search"><i class="fas fa-search mr-2"></i> Search Donors</button>
-    <button class="tab-btn" data-tab="feed"><i class="fas fa-list-alt mr-2"></i> Requests Feed</button>
+    <button class="tab-btn active" data-tab="request"><i class="fas fa-hand-holding-water mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Post</span> Request</button>
+    <button class="tab-btn" data-tab="search"><i class="fas fa-search mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Search</span> Donors</button>
+    <button class="tab-btn" data-tab="feed"><i class="fas fa-list-alt mr-1 sm:mr-2"></i> Requests <span class="hidden sm:inline">Feed</span></button>
   </div>
 
   <div id="request" class="tab-content">
-    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
       <h2 class="section-title">🩸 Need Blood? Post a Request</h2>
       <form method="POST" class="grid gap-6">
         {% csrf_token %}
@@ -361,9 +393,8 @@
           </div>
         </div>
         
-        <div class="grid md:grid-cols-4 gap-4">
-          <div>
-            <label for="blood_type_needed" class="block text-sm font-medium text-gray-700 mb-1">Blood Type Needed *</label>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4"> <div>
+            <label for="blood_type_needed" class="block text-sm font-medium text-gray-700 mb-1">Blood Type *</label>
             <select id="blood_type_needed" name="blood_type_needed" class="form-control" required>
               <option value="">Select Type</option>
               {% for value, label in blood_types %}
@@ -373,7 +404,7 @@
           </div>
   
           <div>
-            <label for="bags_needed" class="block text-sm font-medium text-gray-700 mb-1">Number of Bags *</label>
+            <label for="bags_needed" class="block text-sm font-medium text-gray-700 mb-1">Bags *</label>
             <input type="number" 
                   id="bags_needed"
                   name="bags_needed" 
@@ -385,7 +416,7 @@
           </div>
   
           <div>
-            <label for="urgency" class="block text-sm font-medium text-gray-700 mb-1">Urgency Level *</label>
+            <label for="urgency" class="block text-sm font-medium text-gray-700 mb-1">Urgency *</label>
             <select id="urgency" name="urgency" class="form-control" required>
               <option value="urgent">🚨 Urgent</option>
               <option value="normal" selected>📋 Normal</option>
@@ -393,7 +424,7 @@
           </div>
           
           <div>
-            <label for="needed_by_date" class="block text-sm font-medium text-gray-700 mb-1">Needed By Date *</label>
+            <label for="needed_by_date" class="block text-sm font-medium text-gray-700 mb-1">Needed By *</label>
             <input type="date" 
                    id="needed_by_date"
                    name="needed_by_date" 
@@ -439,8 +470,8 @@
         </button>
         
         {% if not user.is_authenticated %}
-          <p class="login-hint">
-            💡 <a href="{% url 'login' %}">Login</a> to auto-fill your information and track your requests
+          <p class="text-sm text-center text-gray-500 mt-3">
+            💡 <a href="{% url 'login' %}" class="text-custom-red font-semibold hover:text-red-darker">Login</a> to auto-fill your information and track your requests.
           </p>
         {% endif %}
       </form>
@@ -448,10 +479,10 @@
   </div>
 
   <div id="search" class="tab-content hidden">
-    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
       <h2 class="section-title">🔍 Find Blood Donors</h2>
-      <form method="GET" action="{% url 'blood_network' %}" class="grid md:grid-cols-5 gap-4 items-end mb-6">
-        <div class="md:col-span-2">
+      <form method="GET" action="{% url 'blood_network' %}" class="grid grid-cols-2 md:grid-cols-5 gap-4 items-end mb-6">
+        <div class="col-span-2 md:col-span-2">
             <label for="search_blood_type" class="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
             <select id="search_blood_type" name="blood_type" class="form-control">
               <option value="">All Types</option>
@@ -460,7 +491,7 @@
               {% endfor %}
             </select>
         </div>
-        <div class="md:col-span-2">
+        <div class="col-span-2 md:col-span-2">
             <label for="search_city" class="block text-sm font-medium text-gray-700 mb-1">City/Location</label>
             <select id="search_city" name="city" class="form-control">
               <option value="">All Cities</option>
@@ -470,50 +501,82 @@
             </select>
         </div>
         
-        <button type="submit" class="btn-red md:col-span-1 h-full flex items-center justify-center">
-            <i class="fas fa-search"></i> Search
+        <button type="submit" class="btn-red col-span-2 md:col-span-1 h-full flex items-center justify-center min-h-[44px]">
+            <i class="fas fa-search"></i> <span class="ml-2 inline sm:hidden">Search</span>
         </button>
         
-        <label class="flex items-center gap-2 md:col-span-5">
+        <label class="flex items-center gap-2 col-span-2 md:col-span-5 mt-2">
           <input type="checkbox" 
                  name="emergency_only" 
                  value="true"
                  class="w-4 h-4 text-custom-red border-gray-300 rounded focus:ring-custom-red"
                  {% if current_filters.emergency_only %}checked{% endif %}> 
-          <span class="text-gray-700 font-medium">⚡ Only Emergency Donors</span>
+          <span class="text-gray-700 font-medium text-sm">⚡ Only Emergency Donors</span>
         </label>
       </form>
-      
+
       <div class="mt-8">
         {% if donors %}
-          <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2 border-gray-200">Donors Available ({{ donors|length }})</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2 border-gray-200">
+            Donors Available ({{ donors|length }})
+          </h3>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for donor in donors %}
               <div class="donor-card flex flex-col justify-between border-l-4 border-green-primary">
                 <div>
-                  <div class="flex items-center justify-between mb-2">
-                      <span class="blood-type">{{ donor.blood_group }}</span>
-                      {% if donor.emergency_donor %}
-                          <span class="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">⚡ EMERGENCY</span>
-                      {% endif %}
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="blood-type">{{ donor.blood_group }}</span>
+                    {% if donor.emergency_donor %}
+                      <span class="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md whitespace-nowrap">
+                        ⚡ EMERGENCY
+                      </span>
+                    {% endif %}
                   </div>
-                  <h4 class="text-lg font-bold text-gray-900">{{ donor.user.first_name }} {{ donor.user.last_name|first }}.</h4>
-                  <p class="text-sm text-gray-600 mt-1">
-                      <i class="fas fa-map-marker-alt mr-1 text-custom-red"></i> 
-                      {{ donor.city }}, {{ donor.area_sector }}
-                  </p>
+                  
+                  <h4 class="text-lg font-bold text-gray-900 mb-2">
+                    {{ donor.user.first_name }} {{ donor.user.last_name|first }}.
+                  </h4>
+                  
+                  <div class="flex items-center text-sm text-gray-600 mb-2">
+                    <i class="fas fa-map-marker-alt mr-2 text-custom-red"></i> 
+                    <span class="font-medium">{{ donor.city }}</span>
+                    {% if donor.area_sector %}
+                      <span class="ml-1">, {{ donor.area_sector }}</span>
+                    {% endif %}
+                  </div>
+
+                  {% if donor.last_blood_donation %}
+                    <div class="flex items-center text-sm text-gray-600 mb-3">
+                      <i class="fas fa-calendar-check mr-2 text-blue-500"></i>
+                      <span>Last donated: <strong>{{ donor.last_blood_donation|date:"M Y" }}</strong></span>
+                    </div>
+                  {% else %}
+                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                      <i class="fas fa-info-circle mr-2"></i>
+                      <span class="italic">First time donor</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-2">
+                        <i class="fas fa-phone-alt text-green-600"></i>
+                        <span class="text-sm font-semibold text-gray-700">Contact:</span>
+                      </div>
+                      <span class="text-base font-bold text-green-600">
+                        {{ donor.phone_number|default:donor.user.phone_number }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div class="mt-4">
-                    <a href="tel:{{ donor.phone_number }}" class="btn-call">
-                        <i class="fas fa-phone-alt"></i> Call Now
-                    </a>
+                
                 </div>
-              </div>
             {% endfor %}
           </div>
         {% else %}
-          <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl">
-              <i class="fas fa-user-times mr-2 text-custom-red"></i> No donors found matching your criteria. Try adjusting filters.
+          <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl p-4">
+            <i class="fas fa-user-times mr-2 text-custom-red"></i> 
+            No donors found matching your criteria. Try adjusting filters.
           </p>
         {% endif %}
       </div>
@@ -521,7 +584,7 @@
   </div>
 
   <div id="feed" class="tab-content hidden">
-    <div class="bg-white p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-card-pop border border-red-light-bg">
       <h2 class="section-title">🚨 Active Blood Requests Feed</h2>
       {% if active_requests %}
         <div class="grid md:grid-cols-2 gap-6">
@@ -530,7 +593,7 @@
             <div>
                 <div class="flex items-center gap-3 mb-3 flex-wrap">
                   <span class="blood-type">{{ request.blood_type_needed }}</span>
-                  <span class="text-sm font-semibold text-gray-700 bg-gray-200 px-3 py-1 rounded-full">
+                  <span class="text-sm font-semibold text-gray-700 bg-gray-200 px-3 py-1 rounded-full whitespace-nowrap">
                     <i class="fas fa-tint mr-1"></i> {{ request.bags_needed }} Bag{{ request.bags_needed|pluralize }}
                   </span>
                   <span class="urgency {{ request.urgency }}">{{ request.get_urgency_display }}</span>
@@ -551,17 +614,20 @@
                 {% endif %}
             </div>
             
-            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 flex-wrap gap-2">
                 <span class="text-xs text-gray-500">Posted {{ request.created_at|timesince }} ago</span>
-                <a href="tel:{{ request.contact_phone }}" class="btn-call">
-                    <i class="fas fa-phone-alt"></i> Call Contact
-                </a>
+                <div class="text-center">
+                  <span class="text-sm font-semibold text-gray-700">Contact: </span>
+                  <span class="text-base font-bold text-green-600 whitespace-nowrap">
+                    {{ request.contact_phone }}
+                  </span>
+                </div>
             </div>
           </div>
         {% endfor %}
         </div>
       {% else %}
-        <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl">
+        <p class="text-center text-gray-500 py-6 text-lg border-2 border-dashed border-red-light-bg rounded-xl p-4">
             <i class="fas fa-box-open mr-2 text-custom-red"></i> No active requests right now. Be the first to post!
         </p>
       {% endif %}
@@ -569,16 +635,16 @@
   </div>
 
   {% if user.is_authenticated and user_requests %}
-    <div class="bg-white p-8 rounded-2xl shadow-card-pop mt-8 border border-red-light-bg">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-card-pop mt-8 border border-red-light-bg">
       <h3 class="font-bold text-xl mb-4 text-gray-800">📋 My Recent Requests</h3>
       <div class="grid sm:grid-cols-2 gap-4">
       {% for request in user_requests|slice:":5" %} 
-        <div class="my-request-card flex justify-between items-center p-4 hover:shadow-lg transition">
+        <div class="my-request-card flex justify-between items-center p-4 hover:shadow-lg transition flex-wrap gap-2">
           <div class="flex items-center gap-3">
             <span class="blood-type">{{ request.blood_type_needed }}</span> 
             <span class="font-semibold text-gray-800">{{ request.patient_name }}</span>
           </div>
-          <span class="text-sm text-gray-500">
+          <span class="text-sm text-gray-500 whitespace-nowrap">
               <i class="fas fa-clock mr-1"></i> {{ request.created_at|date:"M d" }}
           </span>
         </div>
@@ -603,7 +669,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (targetTab) {
       targetTab.classList.add("active");
       document.getElementById(tabId).classList.remove("hidden");
-      window.history.pushState(null, null, `#${tabId}`);
+      // Optional: Update URL hash without causing a page reload
+      if (window.location.hash.substring(1) !== tabId) {
+        window.history.pushState(null, null, `#${tabId}`);
+      }
     }
   }
 
@@ -617,11 +686,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const hash = window.location.hash.substring(1);
   const urlParams = new URLSearchParams(window.location.search);
   
-  if (hash && ['request', 'search', 'feed'].includes(hash)) {
-    activateTab(hash);
-  } else if (urlParams.has('blood_type') || urlParams.has('city') || urlParams.has('emergency_only')) {
+  // Prioritize URL parameters for the 'search' tab if present
+  if (urlParams.has('blood_type') || urlParams.has('city') || urlParams.has('emergency_only')) {
     activateTab('search');
+  } else if (hash && ['request', 'search', 'feed'].includes(hash)) {
+    // Then check the hash
+    activateTab(hash);
   } else {
+    // Default to 'request'
     activateTab('request');
   }
 

@@ -89,9 +89,20 @@
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-10 floating-animation" style="animation-delay: 4s;"></div>
     </div>
 
-    <div class="flex min-h-screen relative z-10">
+    <!-- Main Flex Container: Changed to block on small screens, flex on md and up -->
+    <div class="flex md:flex min-h-screen relative z-10">
         
-        <aside class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex flex-col justify-between border-r border-white/20">
+        <!-- Mobile Menu Button - Added for Responsiveness -->
+        <button id="sidebar-toggle" class="md:hidden fixed top-4 left-4 z-50 p-3 bg-red-500 text-white rounded-full shadow-lg">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar Backdrop Overlay (Click to close on mobile) -->
+        <div id="sidebar-backdrop" class="hidden md:hidden fixed inset-0 bg-black/50 z-30 transition-opacity duration-300 opacity-0"></div>
+
+        <!-- Sidebar: Added fixed, inset-y-0, left-0, hidden on mobile by default, shown via JS, block on md and up -->
+        <!-- Added md:block and md:relative to ensure it takes up space on desktop -->
+        <aside id="sidebar" class="w-72 bg-white/90 backdrop-blur-lg shadow-2xl flex-shrink-0 flex flex-col justify-between border-r border-white/20 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 md:block">
             <div>
                 <div class="p-6 flex items-center space-x-3 border-b border-gray-100/50">
                     <div class="relative">
@@ -143,26 +154,29 @@
             </div>
         </aside>
 
-        <main class="flex-1 p-8 overflow-y-auto">
+        <!-- Main Content Area: Added pt-20 on small screens to make space for the toggle button -->
+        <!-- Added md:ml-0 to ensure it takes up the correct space next to the non-fixed sidebar -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto pt-20 md:pt-8">
             <h1 class="text-3xl font-bold mb-6 text-gray-800">Your Profile Dashboard</h1>
             
-            <div class="section-card rounded-2xl p-8">
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center space-x-3">
+            <div class="section-card rounded-2xl p-4 sm:p-6 md:p-8">
+                <!-- Personal Information -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3 mb-4 sm:mb-0">
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-user text-white"></i>
                         </div>
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Personal Information</h2>
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Personal Information</h2>
                             <p class="text-gray-500 text-sm">Your account and personal details</p>
                         </div>
                     </div>
-                    <a href="{% url 'citizen_profile_update' %}" class="px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors duration-300">
+                    <a href="{% url 'citizen_profile_update' %}" class="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors duration-300 text-center">
                         <i class="fas fa-user-edit mr-2"></i> Edit Profile
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                         <p class="text-gray-600 font-semibold mb-1">Name:</p>
                         <p class="font-medium text-gray-900">{{ user.first_name }} {{ user.last_name }}</p>
@@ -188,15 +202,16 @@
                         <p class="font-medium text-gray-900">{{ profile.get_blood_group_display|default:"Not specified" }}</p>
                     </div>
                 </div>
-
+                
+                <!-- Address Information -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-home text-white"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Address Information</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Address Information</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div>
                             <p class="text-gray-600 font-semibold mb-1">House/Road No.:</p>
                             <p class="font-medium text-gray-900">{{ profile.house_road_no|default:"Not specified" }}</p>
@@ -214,7 +229,7 @@
                             <p class="font-medium text-gray-900">{{ profile.postal_code|default:"Not specified" }}</p>
                         </div>
                         {% if profile.landmarks %}
-                        <div class="md:col-span-2">
+                        <div class="sm:col-span-2 lg:col-span-3">
                             <p class="text-gray-600 font-semibold mb-1">Landmarks:</p>
                             <p class="font-medium text-gray-900">{{ profile.landmarks }}</p>
                         </div>
@@ -222,14 +237,15 @@
                     </div>
                 </div>
 
+                <!-- Emergency Contact -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-phone-alt text-white"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Emergency Contact</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Emergency Contact</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <p class="text-gray-600 font-semibold mb-1">Name:</p>
                             <p class="font-medium text-gray-900">{{ profile.emergency_contact_name|default:"Not specified" }}</p>
@@ -245,14 +261,15 @@
                     </div>
                 </div>
 
+                <!-- Medical Information -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-heartbeat text-white"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Medical Information</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Medical Information</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {% if profile.medical_conditions %}
                         <div>
                             <p class="text-gray-600 font-semibold mb-1">Medical Conditions:</p>
@@ -274,14 +291,15 @@
                     </div>
                 </div>
                 
+                <!-- Blood Donation Information -->
                 <div class="mt-8">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-hand-holding-heart text-white"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Blood Donation Information</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Blood Donation Information</h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <p class="text-gray-600 font-semibold mb-1">Last Blood Donation:</p>
                             <p class="font-medium text-gray-900">{{ profile.last_blood_donation|default:"Not specified" }}</p>
@@ -304,12 +322,12 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-tint text-white"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Blood Network Activity</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Blood Network Activity</h2>
                     </div>
                     
-                    <!-- Blood Donation Status -->
+                    <!-- Blood Donation Status: Ensured 3 columns for md and up -->
                     <div class="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-xl border border-red-100 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div class="text-center">
                                 <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <span class="text-white font-bold text-xl">{{ profile.blood_group|default:"?" }}</span>
@@ -342,42 +360,42 @@
                         </div>
                     </div>
 
-                    <!-- Blood Request Statistics -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Blood Request Statistics: Ensured 3 columns for md and up -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
-                            <div class="text-2xl font-bold text-red-600">{{ blood_stats.open_requests }}</div>
-                            <div class="text-sm text-gray-600">Open Requests</div>
+                            <div class="text-xl sm:text-2xl font-bold text-red-600">{{ blood_stats.open_requests }}</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Open Requests</div>
                         </div>
                         <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
-                            <div class="text-2xl font-bold text-green-600">{{ blood_stats.fulfilled_requests }}</div>
-                            <div class="text-sm text-gray-600">Fulfilled</div>
+                            <div class="text-xl sm:text-2xl font-bold text-green-600">{{ blood_stats.fulfilled_requests }}</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Fulfilled</div>
                         </div>
                         <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
-                            <div class="text-2xl font-bold text-blue-600">{{ blood_stats.total_requests }}</div>
-                            <div class="text-sm text-gray-600">Total Posted</div>
+                            <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ blood_stats.total_requests }}</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Total Posted</div>
                         </div>
                     </div>
 
                     <!-- Recent Blood Requests -->
                     {% if user_blood_requests %}
-                        <div class="bg-white p-6 rounded-xl border border-gray-200">
+                        <div class="bg-white p-4 sm:p-6 rounded-xl border border-gray-200">
                             <h3 class="font-bold text-lg mb-4 flex items-center">
                                 <i class="fas fa-history mr-2 text-red-500"></i>
                                 Recent Blood Requests
                             </h3>
                             <div class="space-y-3">
                                 {% for request in user_blood_requests %}
-                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium flex-shrink-0">
                                                 {{ request.blood_type_needed }}
                                             </span>
-                                            <div>
-                                                <p class="font-medium text-gray-800">{{ request.patient_name }}</p>
-                                                <p class="text-sm text-gray-600">{{ request.location }}</p>
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-800 truncate">{{ request.patient_name }}</p>
+                                                <p class="text-sm text-gray-600 truncate">{{ request.location }}</p>
                                             </div>
                                         </div>
-                                        <div class="text-right">
+                                        <div class="text-left sm:text-right flex-shrink-0">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 {% if request.status == 'open' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">
                                                 {{ request.get_status_display }}
@@ -390,18 +408,18 @@
                         </div>
                     {% endif %}
 
-                    <!-- Quick Action Buttons -->
+                    <!-- Quick Action Buttons: Used flex-wrap for overflow -->
                     <div class="mt-6 flex flex-wrap gap-3">
-                        <a href="{% url 'blood_network' %}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300">
+                        <a href="{% url 'blood_network' %}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 text-sm">
                             <i class="fas fa-plus mr-2"></i>
                             Post Blood Request
                         </a>
-                        <a href="{% url 'blood_network' %}?tab=search" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                        <a href="{% url 'blood_network' %}?tab=search" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 text-sm">
                             <i class="fas fa-search mr-2"></i>
                             Find Donors
                         </a>
                         {% if not blood_stats.is_donor and profile.blood_group %}
-                            <a href="{% url 'citizen_profile_update' %}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-300">
+                            <a href="{% url 'citizen_profile_update' %}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-300 text-sm">
                                 <i class="fas fa-heart mr-2"></i>
                                 Become a Donor
                             </a>
@@ -431,6 +449,48 @@
             </div>
         </main>
     </div>
+    
+    <!-- JavaScript for Mobile Sidebar Toggle - Added for Responsiveness -->
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        
+        function toggleSidebar() {
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            
+            if (isOpen) {
+                // Close sidebar
+                sidebar.classList.add('-translate-x-full');
+                sidebarBackdrop.classList.add('hidden', 'opacity-0');
+                sidebarBackdrop.classList.remove('block', 'opacity-100');
+                document.body.style.overflow = ''; // Enable scrolling
+            } else {
+                // Open sidebar
+                sidebar.classList.remove('-translate-x-full');
+                sidebarBackdrop.classList.remove('hidden', 'opacity-0');
+                sidebarBackdrop.classList.add('block', 'opacity-100');
+                document.body.style.overflow = 'hidden'; // Disable scrolling
+            }
+        }
+
+        // 1. Toggle button handler
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // 2. Backdrop click handler (closes sidebar)
+        sidebarBackdrop.addEventListener('click', toggleSidebar);
+
+        // 3. Desktop resize handler (ensures sidebar is visible and scroll enabled on desktop)
+        window.addEventListener('resize', () => {
+            // Tailwind's 'md' breakpoint is 768px
+            if (window.innerWidth >= 768) { 
+                sidebar.classList.remove('-translate-x-full');
+                sidebarBackdrop.classList.add('hidden', 'opacity-0');
+                sidebarBackdrop.classList.remove('block', 'opacity-100');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 
 </body>
 </html>
