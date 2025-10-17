@@ -44,6 +44,7 @@
         .hamburger.active span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
         }
+
     </style>
 
 </head>
@@ -86,7 +87,12 @@
                 <div class="hidden md:flex items-center space-x-4">
                     {% if user.is_authenticated %}
                         <span class="text-gray-600">Welcome, {{ user.username }}</span>
-                        <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'disasters:citizen_nearby_disasters' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🔔 Notifications</a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'disasters:nearby_disasters' %}" class="text-gray-600 hover:text-custom-red transition duration-300">🔔 Notifications</a>
+                    {% endif %}
+                     <a href="{% url 'logout' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Logout</a>
                     {% else %}
                         <a href="{% url 'login' %}" class="text-gray-600 hover:text-custom-red transition duration-300">Login</a>
                         <a href="{% url 'register_choice' %}" class="bg-custom-red text-white py-2 px-4 rounded-full shadow-lg hover:bg-red-700 transition duration-300">Register</a>
@@ -124,6 +130,11 @@
                         <a href="{% url 'service_provider_dashboard' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">
                             <i class="fas fa-tachometer-alt w-5 mr-2"></i>Dashboard
                         </a>
+                    {% if user.is_authenticated and user.user_type == 'citizen' %}
+                        <a href="{% url 'disasters:citizen_nearby_disasters' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">🔔 Notifications</a>
+                    {% elif user.is_authenticated and user.user_type == 'service_provider' %}
+                        <a href="{% url 'disasters:nearby_disasters' %}" class="block px-3 py-2 text-gray-600 hover:text-custom-red hover:bg-gray-50 rounded-md transition duration-300">🔔 Notifications</a>
+                    {% endif %}
                     {% endif %}
 
                     <div class="border-t border-gray-200 my-2"></div>
