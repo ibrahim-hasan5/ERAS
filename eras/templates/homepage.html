@@ -45,6 +45,22 @@
             transform: rotate(45deg) translate(-5px, -6px);
         }
 
+        /* Simple fade-in animation for new requests */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+        animation: fade-in 0.3s ease-out;
+        }       
+
     </style>
 
 </head>
@@ -278,7 +294,7 @@
     {% endif %}
 </section>
 
-        <!-- SPRINT 5: Blood Donor Emergency Network -->
+        <!-- SPRINT 5: Blood Donor Emergency Network with REAL-TIME UPDATES -->
         <section class="container mx-auto px-6 py-16">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900">Blood Donor Emergency Network</h2>
@@ -287,20 +303,25 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-                <!-- Left Card: Recent Blood Requests -->
+                <!-- Left Card: Recent Blood Requests with REAL-TIME UPDATES -->
                 <div class="bg-white rounded-xl shadow-lg p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-2xl font-semibold text-gray-900 flex items-center">
                             <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
                             Recent Blood Requests
+                            <!-- Loading indicator -->
+                            <span id="loading-indicator" class="ml-3 text-sm text-gray-400 hidden">
+                                <i class="fas fa-sync-alt fa-spin"></i> Updating...
+                            </span>
                         </h3>
                         <a href="{% url 'blood_network' %}#feed" class="text-red-500 hover:text-red-700 font-medium text-sm">
                         View All →
                         </a>
                     </div>
 
-                    {% if recent_blood_requests %}
-                        <div class="space-y-4">
+                    <!-- Blood Requests Container (will be updated dynamically) -->
+                    <div id="blood-requests-container" class="space-y-4">
+                        {% if recent_blood_requests %}
                             {% for request in recent_blood_requests %}
                                 <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
                                     <div class="flex items-start justify-between">
@@ -347,16 +368,16 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-heart text-4xl mb-4 text-gray-300"></i>
-                            <p class="mb-4">No active blood requests at the moment</p>
-                            <a href="{% url 'blood_network' %}" class="text-red-500 hover:text-red-700 font-medium">
-                                Post a Blood Request →
-                            </a>
-                        </div>
-                    {% endif %}
+                        {% else %}
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-heart text-4xl mb-4 text-gray-300"></i>
+                                <p class="mb-4">No active blood requests at the moment</p>
+                                <a href="{% url 'blood_network' %}" class="text-red-500 hover:text-red-700 font-medium">
+                                    Post a Blood Request →
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
 
                     <div class="mt-6 text-center">
                         <a href="{% url 'blood_network' %}"
@@ -460,9 +481,9 @@
             </div>
         </section>
 
-    <!-- Replace the existing Emergency Services Directory section in homepage.html -->
+    
 <!-- Emergency Services Directory Section -->
-<section class="container mx-auto px-6 py-16">
+<section class="container mx-auto px-6 py-16">>
     <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900">Emergency Services Directory</h2>
         <p class="mt-2 text-gray-600">Find verified emergency service providers in your area instantly.</p>
@@ -876,6 +897,103 @@
                 mobileMenu.classList.remove('active');
             }
         });
+
+// Simple Real-Time Blood Request Updates
+function updateBloodRequests() {
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.classList.remove('hidden');
+    }
+    
+    // Fetch new data from API
+    fetch('/accounts/api/blood-requests/')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('blood-requests-container');
+            
+            if (data.requests && data.requests.length > 0) {
+                // Clear current content
+                container.innerHTML = '';
+                
+                // Add each request
+                data.requests.forEach(request => {
+                    const requestHTML = `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 animate-fade-in">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                            ${request.blood_type}
+                                        </span>
+                                        ${request.urgency === 'urgent' ? 
+                                            '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-800">🚨 URGENT</span>' 
+                                            : ''}
+                                        <span class="text-xs text-gray-500">
+                                            ${request.created_ago}
+                                        </span>
+                                    </div>
+
+                                    <h4 class="font-semibold text-gray-900 mb-1">
+                                        ${request.bags_needed} bag${request.bags_needed > 1 ? 's' : ''} of ${request.blood_type} needed for ${request.patient_name}
+                                    </h4>
+
+                                    <div class="flex items-center text-sm text-gray-600 mb-2">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>
+                                        ${request.location}
+                                    </div>
+
+                                    <div class="flex items-center text-sm text-gray-600 mb-3">
+                                        <i class="fas fa-calendar-alt mr-1"></i>
+                                        Needed by: ${request.needed_by}
+                                    </div>
+
+                                    <div class="flex items-center space-x-3">
+                                        <a href="tel:${request.contact_phone}"
+                                           class="inline-flex items-center px-3 py-1 bg-red-500 text-white text-sm rounded-full hover:bg-red-600 transition-colors duration-200">
+                                            <i class="fas fa-phone mr-1"></i>
+                                            Call Now
+                                        </a>
+                                        <span class="text-sm text-gray-500">
+                                            ${request.contact_phone}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += requestHTML;
+                });
+            } else {
+                // No requests found
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-heart text-4xl mb-4 text-gray-300"></i>
+                        <p class="mb-4">No active blood requests at the moment</p>
+                        <a href="/accounts/blood-network/" class="text-red-500 hover:text-red-700 font-medium">
+                            Post a Blood Request →
+                        </a>
+                    </div>
+                `;
+            }
+            
+            // Hide loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching blood requests:', error);
+            // Hide loading indicator on error
+            if (loadingIndicator) {
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+}
+
+// Update every 60 seconds (1 minute)
+setInterval(updateBloodRequests, 60000);
+
 
 </script>
 </body>

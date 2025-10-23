@@ -521,19 +521,26 @@ def blood_network(request):
     cities = CitizenProfile.objects.filter(
         available_to_donate='yes'
     ).exclude(city__in=['', None]).values_list('city', flat=True).distinct()
-
     # Auto-fill data for logged-in users
     auto_fill = {}
     if request.user.is_authenticated:
         try:
             if hasattr(request.user, 'citizen_profile'):
                 profile = request.user.citizen_profile
+                # Priority: profile.phone_number > user.phone_number > empty string
+                user_phone = ''
+                if profile.phone_number:
+                    user_phone = profile.phone_number
+                elif hasattr(request.user, 'phone_number') and request.user.phone_number:
+                    user_phone = request.user.phone_number
+
                 auto_fill = {
                     'name': request.user.get_full_name() or request.user.username,
-                    'phone': profile.phone_number or request.user.phone_number,
+                    'phone': user_phone,
                     'city': profile.city or '',
                 }
-        except:
+        except Exception as e:
+            print(f"Error in auto_fill: {e}")
             pass
 
     # User's blood request history (only if logged in)
@@ -561,3 +568,26 @@ def blood_network(request):
     }
 
     return render(request, 'accounts/blood_network.html', context)
+
+
+def get_recent_blood_requests_json(request):
+    """Simple API to get recent blood requests as JSON"""
+    recent_requests = BloodRequest.objects.filter(
+        status='open'
+    ).order_by('-urgency', '-created_at')[:2]
+
+    data = []
+    for req in recent_requests:
+        data.append({
+            'id': req.id,
+            'blood_type': req.blood_type_needed,
+            'bags_needed': req.bags_needed,
+            'patient_name': req.patient_name,
+            'location': req.location,
+            'urgency': req.urgency,
+            'contact_phone': req.contact_phone,
+            'needed_by': req.needed_by_date.strftime('%b %d, %Y'),
+            'created_ago': f"{(datetime.now().date() - req.created_at.date()).days} days ago" if (datetime.now().date() - req.created_at.date()).days > 0 else "Today"
+        })
+
+    return JsonResponse({'requests': data})
