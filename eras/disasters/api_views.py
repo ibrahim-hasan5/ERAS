@@ -7,7 +7,7 @@ from .serializers import DisasterSerializer, DisasterAlertSerializer, DisasterRe
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 
 class DisasterViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    authentication_classes = [TokenAuthentication]
     queryset = Disaster.objects.filter(is_active=True).order_by('-created_at')
     serializer_class = DisasterSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -17,7 +17,7 @@ class DisasterViewSet(viewsets.ModelViewSet):
 
 class DisasterAlertViewSet(viewsets.ModelViewSet):
     serializer_class = DisasterAlertSerializer
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
