@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Disaster, DisasterImage, DisasterResponse, DisasterAlert
+from .models import Disaster, DisasterImage, DisasterResponse, DisasterAlert, DisasterUpdate
 
 class DisasterImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,9 +18,19 @@ class DisasterSerializer(serializers.ModelSerializer):
         read_only_fields = ['reporter', 'status', 'approved_by', 'approved_at', 'resolved_at']
 
 class DisasterResponseSerializer(serializers.ModelSerializer):
+    organization_name = serializers.CharField(source='service_provider.organization_name', read_only=True)
+    service_type = serializers.CharField(source='service_provider.service_type', read_only=True)
+
     class Meta:
         model = DisasterResponse
-        fields = '__all__'
+        fields = ['id', 'disaster', 'service_provider', 'organization_name', 'service_type', 'response_status', 'response_notes', 'estimated_arrival', 'actual_arrival', 'completion_time', 'created_at']
+
+class DisasterUpdateSerializer(serializers.ModelSerializer):
+    updated_by_name = serializers.CharField(source='updated_by.username', read_only=True)
+
+    class Meta:
+        model = DisasterUpdate
+        fields = ['id', 'disaster', 'updated_by', 'updated_by_name', 'update_type', 'notes', 'created_at']
 
 class DisasterAlertSerializer(serializers.ModelSerializer):
     disaster_title = serializers.CharField(source='disaster.title', read_only=True)

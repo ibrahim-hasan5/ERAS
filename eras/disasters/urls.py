@@ -5,6 +5,8 @@ from . import views, api_views
 router = DefaultRouter()
 router.register(r'api/disasters', api_views.DisasterViewSet, basename='api_disasters')
 router.register(r'api/alerts', api_views.DisasterAlertViewSet, basename='api_alerts')
+router.register(r'api/responses', api_views.DisasterResponseViewSet, basename='api_responses')
+router.register(r'api/updates', api_views.DisasterUpdateViewSet, basename='api_updates')
 
 app_name = 'disasters'
 

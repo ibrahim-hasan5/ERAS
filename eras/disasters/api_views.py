@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Disaster, DisasterAlert
-from .serializers import DisasterSerializer, DisasterAlertSerializer
+from .models import Disaster, DisasterAlert, DisasterResponse, DisasterUpdate
+from .serializers import DisasterSerializer, DisasterAlertSerializer, DisasterResponseSerializer, DisasterUpdateSerializer
 
 class DisasterViewSet(viewsets.ModelViewSet):
     queryset = Disaster.objects.filter(is_active=True).order_by('-created_at')
@@ -27,3 +27,32 @@ class DisasterAlertViewSet(viewsets.ModelViewSet):
         alert.read_at = timezone.now()
         alert.save()
         return Response({'status': 'alert marked as read'})
+
+class DisasterResponseViewSet(viewsets.ModelViewSet):
+    serializer_class = DisasterResponseSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        disaster_id = self.request.query_params.get('disaster')
+        if disaster_id:
+            return DisasterResponse.objects.filter(disaster_id=disaster_id).order_by('-created_at')
+        return DisasterResponse.objects.all()
+
+    def perform_create(self, serializer):
+        # Ensure user is a service provider
+        if self.request.user.user_type != 'service_provider':
+             raise serializers.ValidationError("Only service providers can respond to disasters.")
+        
+        from accounts.models import ServiceProviderProfile
+        profile = ServiceProviderProfile.objects.get(user=self.request.user)
+        serializer.save(service_provider=profile)
+
+class DisasterUpdateViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DisasterUpdateSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        disaster_id = self.request.query_params.get('disaster')
+        if disaster_id:
+            return DisasterUpdate.objects.filter(disaster_id=disaster_id).order_by('-created_at')
+        return DisasterUpdate.objects.all()
