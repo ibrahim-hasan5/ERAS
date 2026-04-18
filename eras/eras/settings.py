@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-y43p6mj^_3zmq#=9@=9d2)60+skwftot)l)h+hkz^)zuk@$vmd
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://eras-1.onrender.com']
 
 
 # Application definition
@@ -149,3 +150,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Add these for better file handling
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
