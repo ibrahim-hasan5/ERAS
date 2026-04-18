@@ -47,5 +47,7 @@ urlpatterns = [
     path('api/login/', api_views.api_login, name='api_login'),
     path('api/register/', api_views.api_register, name='api_register'),
     path('api/profile/', api_views.api_get_profile, name='api_get_profile'),
+    path('api/profile/update/', api_views.api_update_profile, name='api_update_profile'),
+    path('api/dashboard/', api_views.api_dashboard, name='api_dashboard'),
     path('', include(router.urls)),
 ]

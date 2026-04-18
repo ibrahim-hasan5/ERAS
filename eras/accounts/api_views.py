@@ -3,7 +3,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
+from django.db.models import Count, Avg
 from .models import CitizenProfile, ServiceProviderProfile, BloodRequest
+from disasters.models import Disaster, DisasterAlert
+from disasters.serializers import DisasterSerializer
 from .serializers import (
     UserSerializer, CitizenProfileSerializer, 
     ServiceProviderProfileSerializer, BloodRequestSerializer,
@@ -63,6 +66,82 @@ def api_get_profile(request):
         except ServiceProviderProfile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=404)
     return Response({'error': 'Invalid user type'}, status=400)
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def api_update_profile(request):
+    user = request.user
+    if user.user_type == 'citizen':
+        try:
+            profile = user.citizen_profile
+            serializer = CitizenProfileSerializer(profile, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+        except CitizenProfile.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=404)
+            
+    elif user.user_type == 'service_provider':
+        try:
+            profile = user.service_provider_profile
+            serializer = ServiceProviderProfileSerializer(profile, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+        except ServiceProviderProfile.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=404)
+    return Response({'error': 'Invalid user type'}, status=400)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def api_dashboard(request):
+    user = request.user
+    data = {}
+    
+    if user.user_type == 'citizen':
+        try:
+            profile = user.citizen_profile
+            user_disasters = Disaster.objects.filter(reporter=user)
+            data['disaster_stats'] = {
+                'total': user_disasters.count(),
+                'pending': user_disasters.filter(status='pending').count(),
+                'approved': user_disasters.filter(status='approved').count(),
+            }
+            
+            user_blood_requests = BloodRequest.objects.filter(created_by=user)
+            data['blood_stats'] = {
+                'total_requests': user_blood_requests.count(),
+                'open_requests': user_blood_requests.filter(status='open').count(),
+            }
+            data['profile_complete'] = profile.is_profile_complete()
+            
+            recent_disasters = Disaster.objects.filter(status='approved').order_by('-created_at')[:5]
+            data['recent_disasters'] = DisasterSerializer(recent_disasters, many=True).data
+            
+        except Exception as e:
+            data['error'] = str(e)
+
+    elif user.user_type == 'service_provider':
+        try:
+            profile = user.service_provider_profile
+            data['capacity_percentage'] = profile.get_capacity_percentage()
+            data['avg_rating'] = profile.ratings.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+            
+            disaster_stats = {
+                'reported': Disaster.objects.filter(reporter=user).count(),
+                'responded_to': profile.disaster_responses.count(),
+            }
+            data['disaster_stats'] = disaster_stats
+            
+            recent_disasters = Disaster.objects.filter(status='approved').order_by('-created_at')[:5]
+            data['recent_disasters'] = DisasterSerializer(recent_disasters, many=True).data
+            data['profile_complete'] = profile.is_profile_complete()
+        except Exception as e:
+            data['error'] = str(e)
+            
+    return Response(data)
 
 class BloodRequestViewSet(viewsets.ModelViewSet):
     queryset = BloodRequest.objects.all()
