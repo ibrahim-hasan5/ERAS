@@ -1,5 +1,9 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views, api_views
+
+router = DefaultRouter()
+router.register(r'api/disasters', api_views.DisasterViewSet, basename='api_disasters')
 
 app_name = 'disasters'
 
@@ -31,4 +35,7 @@ path('citizen/nearby/', views.citizen_nearby_disasters, name='citizen_nearby_dis
     path('api/<int:disaster_id>/mark-resolved/', views.mark_resolved, name='mark_resolved'),
     path('api/alerts/', views.user_alerts, name='user_alerts'),
     path('api/alerts/<int:alert_id>/mark-read/', views.mark_alert_read, name='mark_alert_read'),
+
+    # REST API endpoints
+    path('', include(router.urls)),
 ]

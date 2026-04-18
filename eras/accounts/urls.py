@@ -1,6 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from . import views
+from rest_framework.routers import DefaultRouter
+from . import views, api_views
+
+router = DefaultRouter()
+router.register(r'api/blood-requests', api_views.BloodRequestViewSet, basename='api_blood_requests')
 
 urlpatterns = [
     path('register/', views.register_choice, name='register_choice'),
@@ -38,4 +42,9 @@ urlpatterns = [
 
     # NEW: Blood Network URL (Sprint 1)
     path('blood-network/', views.blood_network, name='blood_network'),
+
+    # REST API URLs
+    path('api/login/', api_views.api_login, name='api_login'),
+    path('api/profile/', api_views.api_get_profile, name='api_get_profile'),
+    path('', include(router.urls)),
 ]
