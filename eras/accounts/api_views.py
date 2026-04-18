@@ -6,7 +6,8 @@ from django.contrib.auth import authenticate
 from .models import CitizenProfile, ServiceProviderProfile, BloodRequest
 from .serializers import (
     UserSerializer, CitizenProfileSerializer, 
-    ServiceProviderProfileSerializer, BloodRequestSerializer
+    ServiceProviderProfileSerializer, BloodRequestSerializer,
+    RegistrationSerializer
 )
 
 @api_view(['POST'])
@@ -25,6 +26,23 @@ def api_login(request):
         })
     else:
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def api_register(request):
+    serializer = RegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        try:
+            user = serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
+            user_data = UserSerializer(user).data
+            return Response({
+                'token': token.key,
+                'user': user_data
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])

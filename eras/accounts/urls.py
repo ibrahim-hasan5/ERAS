@@ -45,6 +45,7 @@ urlpatterns = [
 
     # REST API URLs
     path('api/login/', api_views.api_login, name='api_login'),
+    path('api/register/', api_views.api_register, name='api_register'),
     path('api/profile/', api_views.api_get_profile, name='api_get_profile'),
     path('', include(router.urls)),
 ]
