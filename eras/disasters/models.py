@@ -77,7 +77,7 @@ class Disaster(models.Model):
     emergency_contact = models.CharField(max_length=15, blank=True, help_text="Emergency contact on scene")
 
     # Status and Approval
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='approved')
     approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
                                     related_name='approved_disasters')
     approved_at = models.DateTimeField(null=True, blank=True)
