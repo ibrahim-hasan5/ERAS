@@ -11,11 +11,23 @@ class DisasterSerializer(serializers.ModelSerializer):
     reporter_name = serializers.CharField(source='reporter.username', read_only=True)
     severity_color = serializers.CharField(source='get_severity_color', read_only=True)
     disaster_icon = serializers.CharField(source='get_disaster_icon', read_only=True)
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
+        write_only=True,
+        required=False
+    )
 
     class Meta:
         model = Disaster
         fields = '__all__'
         read_only_fields = ['reporter', 'status', 'approved_by', 'approved_at', 'resolved_at']
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('uploaded_images', [])
+        disaster = Disaster.objects.create(**validated_data)
+        for image_data in images_data:
+            DisasterImage.objects.create(disaster=disaster, image=image_data)
+        return disaster
 
 class DisasterResponseSerializer(serializers.ModelSerializer):
     organization_name = serializers.CharField(source='service_provider.organization_name', read_only=True)

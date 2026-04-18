@@ -13,7 +13,7 @@ class DisasterViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(reporter=self.request.user, status='pending')
+        serializer.save(reporter=self.request.user, status='approved')
 
 class DisasterAlertViewSet(viewsets.ModelViewSet):
     serializer_class = DisasterAlertSerializer
