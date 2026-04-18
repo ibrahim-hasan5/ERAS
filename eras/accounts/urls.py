@@ -5,6 +5,7 @@ from . import views, api_views
 
 router = DefaultRouter()
 router.register(r'api/blood-requests', api_views.BloodRequestViewSet, basename='api_blood_requests')
+router.register(r'api/providers', api_views.ServiceProviderViewSet, basename='api_providers')
 
 urlpatterns = [
     path('register/', views.register_choice, name='register_choice'),
@@ -50,5 +51,6 @@ urlpatterns = [
     path('api/profile/update/', api_views.api_update_profile, name='api_update_profile'),
     path('api/dashboard/', api_views.api_dashboard, name='api_dashboard'),
     path('api/donors/search/', api_views.api_search_donors, name='api_search_donors'),
+    path('api/providers/<int:provider_id>/rate/', api_views.api_submit_rating, name='api_submit_rating'),
     path('', include(router.urls)),
 ]

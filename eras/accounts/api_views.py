@@ -165,3 +165,29 @@ def api_search_donors(request):
         
     serializer = CitizenProfileSerializer(donors, many=True)
     return Response(serializer.data)
+
+class ServiceProviderViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ServiceProviderProfile.objects.all()
+    serializer_class = ServiceProviderProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def api_submit_rating(request, provider_id):
+    try:
+        provider = ServiceProviderProfile.objects.get(id=provider_id)
+        rating_val = request.data.get('rating')
+        review = request.data.get('review', '')
+        
+        if not rating_val:
+            return Response({'error': 'Rating is required'}, status=400)
+            
+        from .models import ServiceProviderRating
+        rating, created = ServiceProviderRating.objects.update_or_create(
+            service_provider=provider,
+            user=request.user,
+            defaults={'rating': rating_val, 'review': review}
+        )
+        return Response({'success': True})
+    except ServiceProviderProfile.DoesNotExist:
+        return Response({'error': 'Provider not found'}, status=404)
