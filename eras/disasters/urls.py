@@ -36,6 +36,8 @@ path('citizen/nearby/', views.citizen_nearby_disasters, name='citizen_nearby_dis
     # AJAX endpoints
     path('api/areas-by-city/', views.get_areas_by_city, name='get_areas_by_city'),
     path('api/<int:disaster_id>/mark-resolved/', views.mark_resolved, name='mark_resolved'),
+    path('api/user-alerts/', views.user_alerts, name='user_alerts'),
+    path('api/mark-alert-read/<int:alert_id>/', views.mark_alert_read, name='mark_alert_read'),
 
 
     # REST API endpoints
