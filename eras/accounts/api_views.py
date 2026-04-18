@@ -144,6 +144,24 @@ def api_dashboard(request):
     return Response(data)
 
 class BloodRequestViewSet(viewsets.ModelViewSet):
-    queryset = BloodRequest.objects.all()
+    queryset = BloodRequest.objects.all().order_by('-id')
     serializer_class = BloodRequestSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def api_search_donors(request):
+    blood_group = request.query_params.get('blood_group')
+    city = request.query_params.get('city')
+    
+    donors = CitizenProfile.objects.filter(available_to_donate='yes')
+    if blood_group:
+        donors = donors.filter(blood_group=blood_group)
+    if city:
+        donors = donors.filter(city__icontains=city)
+        
+    serializer = CitizenProfileSerializer(donors, many=True)
+    return Response(serializer.data)

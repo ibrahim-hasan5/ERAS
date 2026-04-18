@@ -49,5 +49,6 @@ urlpatterns = [
     path('api/profile/', api_views.api_get_profile, name='api_get_profile'),
     path('api/profile/update/', api_views.api_update_profile, name='api_update_profile'),
     path('api/dashboard/', api_views.api_dashboard, name='api_dashboard'),
+    path('api/donors/search/', api_views.api_search_donors, name='api_search_donors'),
     path('', include(router.urls)),
 ]
